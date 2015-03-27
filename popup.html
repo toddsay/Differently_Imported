@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<!--
+/*!
+ * HTML5/JS web player Differently imported
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ *
+ * phil / @ / pbarton / .co / .uk
+ * Copyright 2014, Phil Barton
+ * 
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+ *
+ * Includes Loads of things
+ * di.js
+ * di.css
+ * fullpage.html
+ * fullpage.css
+ * fullpage.js
+ * player.js
+ * popup.html
+ * licence.txt
+ *
+ *
+ * Date: 13th September 2014. 07.00 BST
+*/
+-->
+
+<head>
+
+    <script src="jquery.js"></script>
+    <script src="di.js"></script>
+    <script src="cookie.js"></script>
+    <link href="di.css" rel="stylesheet" type="text/css">
+
+    <title></title>
+</head>
+
+<body>
+	<div  class="floatysettings">
+	<div id="fsclose" class = "mouselight settings">X</div>
+
+ Choose a location near you:
+	<select class="setWide" id="server" title="Pick a server close to you.">
+            <option title="Europe" value="2">
+                Europe
+            </option>
+
+            <option title="US 1" value="1">
+                US 1
+            </option>
+
+            <option title="US 2" value="4">
+                US 2
+            </option>
+
+            <option title="Asia" value="3">
+                Asia
+            </option>
+        </select>
+
+				
+		<br />
+	Gone premium? Enter or update your listen key:
+		<input id="lK" type="text" value="" class="setWide">
+		<br />
+		Audio Quality:
+		<select class="setWide" id="hQ" title="Enjoy DI.fm's new HQ audio stream!">
+            <option title="High Quality" value="1">
+                High Quality(320k Premium)
+            </option>
+            <option title="Low Quality" selected value="0">
+                Low Quality (Quicker)
+            </option>
+			
+        </select>	
+
+		<br />
+
+		
+		<div id="nag" style="display:none">You are using DI.fm Free. <a href="http://di.fm/premium" target="_blank">Get Premium now. </a></div>
+		<div id="saveS" class="mouselight">Save</div>
+		</div>
+		
+		
+<div id="container">
+	<div id="left">
+
+		<div id="left_container">
+		  <span class="sm_but mouselight" id="plBut" title="Play">
+		<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAYAAACiyHcXAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAhpJREFUWEfFl11OAjEQx7kM4QEVE0GRr/jBAqJiIuILJmKCPvlkInfhMhyCCxBOwGfCA4FxZ9rCdunCdlnWJr+0OzN0/p0pkA2dJgoQixtwYiJm6xpnHVSf2bZP5DgHoWS2AtmbqpKMw9qJXTGq/cLRNBORSN/DefqBSPDZvvYLzEX5Mo80k4jNIPnZT+TDsjWJOGRSNygr4QbVibwexpMISkr95DZcp9aidPGnElxAYJWQ22D3yc9u8elOyM+6aIsolUqQvn6GC/Me2H1ehUgi3JSzWCzCaDSCbrcLuduXVWKvrUC0KyFE4JjP51CpNiGZqyhj3eKpHUKEGG8fP2CU66sY3apoiygUCjAejyn5crkkcDQ+W1Crf9Mfkoi1/nZsE+apHZPJRBIg1o2vFrw3f832PEmf2XVhSQT7irkDRQyHQ0qOA++FGP1+H66MV9oYEwtEMqyMak+LCHWAHcMwYDqdwmKx4KkBZrMZtNttui/YLoxjQhi4jqfKks2KdiVQBLYDB7ag0+lArVajCllP7DSzfeQDh6MZFMHK5gY86WAwgF6vR6VH2zqBiUhotQvfBiyOV8I0iOAd5PN5yJi/mPbEtKElTsJpf25nIuzOLaAIlX0ftEX4Qdz2TCLQKBxiHSSSCPwaWZ2HQ87DRXDjJc7Bw0SI5Dj/AyTiTOEIEiYiead0BgWJiPEXYmSfF2Fk28uwky9ylIU/WvT+88wbJvsAAAAASUVORK5CYII=">
+		</span> 
+		<span class="sm_but mouselight" id="stBut" title="Stop">
+		<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAYAAACiyHcXAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAYBJREFUWEfll11ugzAMx3uZqg/d1kiDqiswsQk27fNhOwEX5WoZthONeAYSBtnDkH6KEwf7H6eJykalD/qQ1Pqqw7Z9G9oQpHfG4uwub/XmVLzr4v5TJB+wh5iaI8Xb7jMSkWYv+pi9Iqlpub0UkAvz5W/Yooifk9z+kriLJRtFrJnUB7ESPkgrmruYWSIwKe6nGQP7/C0qlGUqYQREq4S7Ddzn9n1Z6Dfh9kMJFlGWpVZKeZHffYgxOI4In3K2bat9n+TmWYzBCa4ErND3UcdHMQbnf4kY2+p1RXRz4Z2pk4Mi6Ij5ESqCX2pSzJ4IeQInXAQJSM50Ung8YPVK2Aq4lXAXvN3nIIL+ZExR13XQPQEXGybG5BIkyFSiG7CTR6iqap6IofhmnERw5wgQGG5COH5Q7iGapkGkGJxgEUuQsD6KgEHrsHZMHBFwjPrO9XDzGBFmsNtrsuNCImxyaP8AFHEtOGJCIk5PojMWKOJgPoiB33wIA2Mfw0O+3UWhvwA3CIjvKQJfoAAAAABJRU5ErkJggg==">
+		</span>
+		  <div id="volBord" title="Volume">
+            <img alt="" id="vlmIm" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABmUlEQVRIia1Vu0oDURScWURCkLCIEButFP/A78gnWNkIomApWoiliG0Ka1u/Q79AENHCRkRtggSZsdno3Zt7YxIzzS7nnDlzz+zjEDOA7RLAFoA+gC7Jr1n0haRS0pHtN1eQdDrTxpIcNLek67B2bpLGlRW7tvcBlLYH8SynJiCpCeCA5EqmtgOgJDnJuWonPAtGdeo+uj7a3rZ9k7OoiATWRo1b1QDAs+0dkusku7b7OV7Nomj0PoD3Kt4C0KjyTwA2SH5meDXEE/xcbd+SbBdF0bZ9FeR7YfMELy8QFueQy09j0VD8r3wKoyxKxlMYZVFygvhE406QytcEJvV3nHzNIpJTTRHyYiT/RZNalOMNCUSjbkp6qeILQbwpqVkURS/DqyFrEYA5kksAlvD7FYPkKoB7SXu2GwleXgDAXUxIPReSyyTPATxI2gWQFYotOgbwRnLF9k9xdT9vuwNgMaAsA7j46y0bG7Zbkg4lvYZbbNRGmwqpXRzg/wID2C5tn0j6GCymeOlPufuGhBZtb5HsAbgk2R/kvgEO+IMhCWFdyAAAAABJRU5ErkJggg==" style="position:relative; display:block; float:left; background-color:#272727; height:18px;">
+            <div id="volume">
+               <div id="vKnob" class="mouselight"></div>
+            </div>
+        </div>
+	
+		<!-- magic here -->
+		<div id="popup_nowplay"></div>
+					<div class="settings_holder">
+			<div class = "full_screen mouselight" title="Pop out Player">&curren;</div>
+		
+		</div>
+		<div id="imageContainer"></div>
+
+		<div id="canvas_box">
+            <canvas height="120" id="visualise_screen" width="220"></canvas>
+        </div>
+	
+		</div><!--left container -->
+	</div>
+
+	<div id="right">
+			
+						<div id="scroll_box_box">
+							<div id="up_pad" class="mouselight">
+
+							
+							</div>
+							<div class="select channel" id="lC" title="Pick a channel.">
+								<!-- Channel selector -->
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/1f2189badb0bb9ccba20e54163afff69.png?size=145x145" title="00's Club Hits " data-trigger="324_00sclubhits">
+									00's Club Hits
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/9760862fcf5601c05c3581d6c0984128.png?size=145x145" title="Ambient" data-trigger="12_ambient">
+									Ambient
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/89b0dfb93cb7eba4d345d116f7fc00e7.png?size=145x145" title="Bass & Jackin' House " data-trigger="290_bassnjackinhouse">
+									Bass & Jackin' House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/98bbdb73486e5c0431a44117af617576.png?size=145x145" title="Bassline" data-trigger="12_bassline">
+									Bassline
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/949efba54329d6d9264dfd54eeebbc31.png?size=145x145" title="Big Beat" data-trigger="325_bigbeat">
+									Big Beat
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/5b7f5db07bd3bc6e8097ea33bbea7552.png?size=145x145" title="Big Room House" data-trigger="209_bigroomhouse">
+									Big Room House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/5fe8da68c08afeba771f1c0a5ba6bc2f.png?size=145x145" title="Breaks" data-trigger="15_breaks">
+									Breaks
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/2bca153955723e44b5ef9ab9e9fcba8d.png?size=145x145" title="ChillHop" data-trigger="224_chillhop">
+									ChillHop
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/8f7ce44aa749a97563c98dc5b69053aa.png?size=145x145" title="Chillout" data-trigger="3_chillout">
+									Chillout
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/7a0a070cca01976ea62c9e1c5a19e9b1.png?size=145x145" title="Chillout Dreams" data-trigger="68_chilloutdreams">
+									Chillout Dreams
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/7251688497a15b6a27a8e6952a3318fc.png?size=145x145" title="Chillstep" data-trigger="275_chillstep">
+									Chillstep
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/a272766a55dc1d3c5b63e688d7a3d0de.png?size=145x145" title="Classic EuroDance" data-trigger="69_classiceurodance">
+									Classic EuroDance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/f9c6cdb880da74aa74ec581dc3f09dbd.png?size=145x145" title="Classic EuroDisco" data-trigger="183_classiceurodisco">
+									Classic EuroDisco
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/53906dc786e7f3d55536defca56a4b5f.png?size=145x145" title="Classic Trance" data-trigger="90_classictrance">
+									Classic Trance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/6c59bb5709a2e2ecae99765d64ce57e6.png?size=145x145" title="Classic Vocal Trance" data-trigger="125_classicvocaltrance">
+									Classic Vocal Trance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/29b1b727e81f9dc1c6ca40926ac8ae34.jpg?size=145x145" title="Club Dubstep" data-trigger="177_clubdubstep">
+									Club Dubstep
+								</li>
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/6620a82bb6a6d0bc281260645b996b0a.png?size=145x145" title="Club Sounds" data-trigger="70_club">
+									Club Sounds
+								</li>
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/1561ba009eb79c68b9de141f8685c927.png?size=145x145" title="Dark DnB" data-trigger="181_darkdnb">
+									Dark DnB
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/7addf6ec30967ceec317dc46c861f0d1.png?size=145x145" title="Dark PsyTrance" data-trigger="346_darkpsytrance">
+									Dark PsyTrance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/8dd90c88b4ee5399e6182204a2ede8ed.jpg?size=145x145" title="Deep House" data-trigger="174_deephouse">
+									Deep House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/3896ecff86795302304c64386ff2c5db.png?size=145x145" title="Deep Nu-Disco" data-trigger="137_deepnudisco">
+									Deep Nu-Disco
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/87d3b2ee913e6ac75882329971d58be4.png?size=145x145" title="Deep Tech" data-trigger="182_deeptech">
+									Deep Tech
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/0ea9396414430256ffb76cd6148bf88a.png?size=145x145" title="Disco House" data-trigger="92_discohouse">
+									Disco House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/5a0a6603d9a3f151b9eced1629e77d66.png?size=145x145" title="DJ Mixes" data-trigger="10_djmixes">
+									DJ Mixes
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/6da83f72080cb225acf608e54f992cf2.png?size=145x145" title="Downtempo Lounge" data-trigger="180_downtempolounge">
+									Downtempo Lounge
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/f2ed26a932bdb5cd0a0eac576aebfa3f.png?size=145x145" title="Drum and Bass" data-trigger="13_drumandbass">
+									Drum and Bass
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/ed6a072e2ee5db23ceed7136fa2db72b.png?size=145x145" title="Drumstep" data-trigger="291_drumstep">
+									DrumStep
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/e4b346b193c1adec01f8489b98a2bf3f.png?size=145x145" title="Dub" data-trigger="348_dub">
+									Dub
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/e0614d304c8fd5879a1278dd626d8769.png?size=145x145" title="Dubstep" data-trigger="91_dubstep">
+									Dubstep
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/969d1a4840606786752ebb02bad71a8a.png?size=145x145" title="EBM" data-trigger="326_ebm">
+									EBM
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/25f559a97855d8107e7cdc63f2acb345.png?size=145x145" title="EcLectronica" data-trigger="208_eclectronica">
+									EcLectronica
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/387bfe3c7d50b4edd1408135596a03df.png?size=145x145" title="Electro House" data-trigger="56_electrohouse">
+									Electro House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/6cc168f2893ea542fc02fa32e32dd27a.png?size=145x145" title="Electronic Pioneers" data-trigger="280_electronicpioneers">
+									Electronic Pioneers
+								</li>
+						
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/469edf6810765faa963eda29c02a787f.jpg?size=145x145" title="Electronics" data-trigger="347_electronics">
+									Electronics
+								</li>
+							
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/72852e54a50b903aa0a726f87c0050c2.jpg?size=145x145" title="Electropop" data-trigger="286_electropop">
+									Electropop
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/f37dde025f56dee1631102fc3ad9d2b0.png?size=145x145" title="Electro Swing" data-trigger="327_electroswing">
+									Electro Swing
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/5a76739725cd2106a3e2f30a1461a9bd.jpg?size=145x145" title="Epic Trance" data-trigger="175_epictrance">
+									Epic Trance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/a42ae2b9810acb81c6003915113c7d9d.png?size=145x145" title="EuroDance" data-trigger="6_eurodance">
+									EuroDance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/45d5aa9e246fd59fe03e601171059581.png?size=145x145" title="Funky House" data-trigger="58_funkyhouse">
+									Funky House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/d6aa1e9b4c48141fa573d498eba41a2a.png?size=145x145" title="Future Garage" data-trigger="292_futuregarage">
+									Future Garage
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/f4b0f3c30b34cf76de0955652ae5664a.png?size=145x145" title="Future Synthpop" data-trigger="53_futuresynthpop">
+									Future Synthpop
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/83b92cbe5cdc692fb0c8871135e98c55.png?size=145x145" title="Gabber" data-trigger="16_gabber">
+									Gabber
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/b5b22bf5232f246bf63b25914bd369e3.png?size=145x145" title="Goa &amp; Psy" data-trigger="8_goapsy">
+									Goa &amp; Psy
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/9d04d9b20de5378994fa8653a1dc69f3.jpg?size=145x145" title="Hands Up" data-trigger="176_handsup">
+									Hands Up
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/14f1a4484dc88e0df006e9cd71407bcb.png?size=145x145" title="Hardcore" data-trigger="9_hardcore">
+									Hardcore
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/a67b19cab6cdb97ec77f8264f9c4c562.png?size=145x145" title="Hard Dance" data-trigger="5_harddance">
+									Hard Dance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/b27a7b020806ce4428307b30b44734ec.png?size=145x145" title="Hardstyle" data-trigger="60_hardstyle">
+									Hardstyle
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/64249abcb7fcfb5b790953632dc6c779.png?size=145x145" title="Hard Techno" data-trigger="276_hardtechno">
+									Hard Techno
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/6f8a0b3279c24b1c5fa1c6c1397b9b56.png?size=145x145" title="House" data-trigger="4_house">
+									House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/1501288819231087619e6e659f122830.png?size=145x145" title="Jungle" data-trigger="293_jungle">
+									Jungle
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/fb8908953ab95d2f01402660e2cc0883.png?size=145x145" title="Latin House" data-trigger="117_latinhouse">
+									Latin House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/75b2b5e697e7948f5fcd64a1c54f3f72.png?size=145x145" title="Liquid DnB" data-trigger="105_liquiddnb">
+									Liquid DnB
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/df258a92e9d5152cb182b439f1d0eb2b.png?size=145x145" title="Liquid Dubstep" data-trigger="184_liquiddubstep">
+									Liquid Dubstep
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/58f7afca5a6883c063f8642bfd2cef80.png?size=145x145" title="Lounge" data-trigger="11_lounge">
+									Lounge
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/5bafe3802484d479d77b21aa34f537fe.png?size=145x145" title="Mainstage" data-trigger="210_mainstage">
+									Mainstage
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/5c29e3063f748d156260fb874634b602.png?size=145x145" title="Minimal" data-trigger="59_minimal">
+									Minimal
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/2200134b0c655a3cd40e0fbf7380c9a0.png?size=145x145" title="Nightcore" data-trigger="294_nightcore">
+									Nightcore
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/4ba0684daed5c3c422b8ad3aa59c7eaf.png?size=145x145" title="Nu Disco House" data-trigger="295_nudisco">
+									Nu Disco House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/7edf76e784f740c1a20904309bbc7080.png?size=145x145" title="Oldschool Acid" data-trigger="124_oldschoolacid">
+									Oldschool Acid
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/503959f01400b6ecf59379d9c6844d11.png?size=145x145" title="Oldschool House" data-trigger="104_oldschoolhouse">
+									Oldschool House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/8c4ec9353361ef5fd6c9cbc4999e2fd1.png?size=145x145" title="Oldschool Rave" data-trigger="296_oldschoolrave">
+									Oldschool Rave
+								</li>
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/fcea7c9d9a16314103a41f66bd6dfd15.png?size=145x145" title="Progressive" data-trigger="7_progressive">
+									Progressive
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/4aeae25360c3792e8e9fd6f2e5cdf39e.jpg?size=145x145" title="Progressive Psy" data-trigger="178_progressivepsy">
+									Progressive Psy
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/178802e0d43b3d42f2476a183541d652.jpg?size=145x145" title="Psybient" data-trigger="285_psybient">
+									Psybient
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/f301e3e597472b3edbf50a770a52c087.png?size=145x145" title="PsyChill" data-trigger="67_psychill">
+									PsyChill
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/3b2e1348eb2ded04b1b97e1791001bf8.png?size=145x145" title="Russian Club Hits" data-trigger="213_russianclubhits">
+									Russian Club Hits
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/950ff823b9989f18f19ba65fb149fcad.png?size=145x145" title="Soulful House" data-trigger="47_soulfulhouse">
+									Soulful House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/4531d1656bc302d4f1898f779a988c17.png?size=145x145" title="Space Dreams" data-trigger="64_spacemusic">
+									Space Dreams
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/a1cb226c2170a74ed0fdb4839dafe869.png?size=145x145" title="Tech House" data-trigger="66_techhouse">
+									Tech House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/cedaa3b495a451bdd6ee4b21311e155c.png?size=145x145" title="Techno" data-trigger="36_techno">
+									Techno
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/befc1043f0a216128f8570d3664856f7.png?size=145x145" title="Trance Channel" data-trigger="1_trance">
+									Trance
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/a79fc1acd04100c12f7b55c17c72a23e.png?size=145x145" title="Trap" data-trigger="230_trap">
+									Trap
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/4af36061eb3e97a0aa21b746b51317dd.png?size=145x145" title="Tribal House" data-trigger="57_tribalhouse">
+									Tribal House
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/2c91e9bbb77821106c9905653a5ade9e.png?size=145x145" title="UMF Radio" data-trigger="215_umfradio">
+									UMF Radio
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/de8a86031fd9b112ca9ace584bc98e7f.jpg?size=145x145" title="Underground Techno" data-trigger="288_undergroundtechno">
+									Underground Techno
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/a5b0bd27de43d04e1da9acf5b8883e85.png?size=145x145" title="Vocal Chillout" data-trigger="142_vocalchillout">
+									Vocal Chillout
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/5381371e7ebab35aaa3b8f3f290f31ca.png?size=145x145" title="Vocal Lounge" data-trigger="278_vocallounge">
+									Vocal Lounge
+								</li>
+
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/009b4fcdb032cceee6f3da5efd4a86e9.png?size=145x145" title="Vocal Trance" data-trigger="2_vocaltrance">
+									Vocal Trance
+								</li>
+							</div> 
+							<div id="down_pad" class="mouselight">
+							</div>
+				<div class = "settings mouselight" title="Settings"><img src="spanner.png"></div>
+
+						</div>				
+	</div>	
+	<div id ="track">
+
+	</div>
+</div>	
+	

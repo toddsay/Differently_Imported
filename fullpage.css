@@ -1,0 +1,215 @@
+/*!
+ * HTML5/JS web player Differently imported
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ *
+ * phil / @ / pbarton / .co / .uk
+ * Copyright 2014, Phil Barton
+ * 
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+ *
+ * Includes Loads of things
+ * di.js
+ * di.css
+ * fullpage.html
+ * fullpage.css
+ * fullpage.js
+ * player.js
+ * popup.html
+ * licence.txt
+ *
+ *
+ * Date: 13th September 2014. 07.00 BST
+*/
+
+
+html{
+  height: 100%;
+}
+body{
+	background-color:#555;
+	color: rgb(230, 230, 230);
+	font-size:20px;
+	font-family:verdana;
+	height:100%;
+	width:100%;
+	overflow:hidden;
+}
+.full_screen{
+width:30px;
+
+}
+
+.setHead{
+	font-size:12px;
+	margin:10px;
+	
+}
+#visTab{
+position:fixed;
+left:0px; top:0px;
+z-index:-1000;
+}
+.unselectable {
+  -webkit-user-select: none;
+}
+#visualise_screen{
+position:fixed;
+left:0px; top:0px;
+z-index:-1000;
+}
+#canvas_box{
+position:fixed;
+left:0px; top:0px;
+z-index:-1000;
+}
+.select{
+margin-left:3px;
+border-radius:5px;
+width:200px;
+background-color:#ccc;
+}
+.keybox{
+border-radius:5px;
+width:135px;
+background-color:#ccc;
+
+}
+.channel{ 
+
+font-size:16px;
+
+}
+.settings {
+height:20px;
+cursor:pointer;
+
+z-index:100;
+}
+#controls{
+position:fixed;
+left:0px; top:0px;
+}
+.full_screen{
+height:30px;
+background-color:#363B4C;
+cursor:pointer;
+z-index:100;
+width:15px;
+}
+.full_screen a{
+color:white;
+text-decoration:none;
+}
+.sm_but{
+float:left;
+height:20px;
+width:20px;
+margin-top:5px;
+cursor:pointer;
+}
+#stBut{
+margin-left:15px;
+
+}
+#setCBut{
+
+display:inline-block;
+width:20px;
+margin-top:5px;
+padding-top:2px;
+padding-left:10px;
+padding-right:5px;
+
+cursor:pointer;
+z-index:100;
+height:28px;
+
+}
+.sm_but{
+float:left;
+
+}
+#volBord{
+width:124px;
+height:21px;
+padding: 3px;
+padding-top:7px;
+float:left;
+margin-top:5px;
+margin-right: 5px;
+
+}
+.fs_but{
+display:inline-block;
+margin-left:15px;
+width:20px;
+margin-top:5px;
+padding-top:2px;
+padding-left:10px;
+padding-right:5px;
+background-color:#363B4C;
+cursor:pointer;
+z-index:100;
+height:28px;
+}
+
+#track{
+	margin-top: 5px;
+	margin-bottom:5px; 
+	text-align:right;
+	vertical-align:top;
+	width:50%;
+	color:white;
+position:fixed;
+right:20px;
+top:10px;
+	font-size:23px;
+	padding-top:5px;
+	
+}
+#track span{
+	vertical-align:top;
+	margin-right:5px;
+}
+
+#track img{
+height:200px;
+width:200px!important;
+}
+#volume{
+position:relative;
+float:left;
+cursor:pointer; 
+width: 0;
+height: 0;
+border-style: solid;
+border-width: 9px 100px 9px 0;
+border-color: transparent #cccccc transparent transparent;
+}
+
+
+#vKnob{
+	position:relative; 
+	left:92px; 
+	margin-top:-9px;
+	height:20px; 
+	width:5px;
+	background-color:white;
+	
+}
+
+.mouselight:hover{
+transition: all 0.4s ease-out-in;
+  opacity:0.6;
+
+}
+		

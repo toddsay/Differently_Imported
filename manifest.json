@@ -1,0 +1,23 @@
+{
+"update_url": "https://clients2.google.com/service/update2/crx",
+
+ "manifest_version": 2,
+
+  "name": "Differently Imported for di.fm",
+  "description": "Differently Imported: addictive electronic music player for Di.Fm",
+  "version": "4.1.1", 
+  "permissions": ["http://prem2.di.fm:80/*"],
+  "content_security_policy":"script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "browser_action": {
+  "default_icon": "di.png",
+
+    "default_popup": "popup.html"
+  },
+  "background": {
+	"page": "player.html",
+    "persistent": true
+  },
+  "icons": { "128": "di.png" }
+  
+}
+
