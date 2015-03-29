@@ -1,43 +1,70 @@
 /*!
+
  * HTML5/JS web player Differently imported
- * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
  * 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
- *
- * Includes Loads of things
- * di.js
- * di.css
- * fullpage.html
- * fullpage.css
- * fullpage.js
- * player.js
- * popup.html
- * licence.txt
- *
- *
- * Date: 13th September 2014. 07.00 BST
+ 
+	This library is free to use, and always will be however the source is the property of the original developer. 
+	
+	You may make any modifications to the source for your own personal use, but you may not release or offer a 
+	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
+	(Fork Milkshake on Github) 
+	
+	Any components listed specifically as being under the terms of a different License will fall under the  
+	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	with any acknowledgements to original authors.
+	
+    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	
+	More importantly I hope you enjoy using the App. 
+	
+ * Date: 3rd March 2015. 16.33 GMT
 */
+
 var context;
 var source;
 var analyser;
 var audioContext;
 var apiUrl = "http://api.audioaddict.com/v1/di/track_history";
-var diIMG="<img src='diffI.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:170px; width:170px;'>";
+var diIMG="<img src='diffI.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
+var playing = false;
 $(document).ready(function() { //Set some vars 
+ chrome.commands.onCommand.addListener(function(command) {
+  if (command == "toggle-play"){
+		if (!playing){
+			 playing = true;
+            server = $.cookie("Diserver");
+            key = $.cookie("diKeys");
+            channel = $.cookie("diChan");
+            vol = $.cookie("diVol");
+            play(channel, key, vol, server);
+            pollFlag = 1;
+            var audio = document.getElementById('diPlyr');
+            audio.volume = $.cookie("diVol") / 100;
+			
+		}
+		else{
+			   playing = false;
+				stop();	
+		}
+  }
+
+});
+setTimeout(function(){
+makeTS();
+timeEngine();
+},2000);
+
     capAudio = document.getElementById('diPlyr');
-    audioContext = new webkitAudioContext();
+    audioContext = new AudioContext();
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 2048;
     source = audioContext.createMediaElementSource(capAudio);
@@ -67,7 +94,7 @@ $(document).ready(function() { //Set some vars
                             });							
 	}
 	
-	motd = "<span>Differently Imported v4.1.1 <br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+	motd = "<span>Differently Imported v4.2.0 <br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
     $.cookie("diChTn", motd, {
         expires: 365
     });
@@ -188,14 +215,24 @@ $(document).ready(function() { //Set some vars
             if (flag) {
                 if (!txTim) {
                     txTim = setInterval(function() {
-                        txtAnim = anim[ts];
-                        ts++;
-                        if (ts >= 8) {
-                            ts = 0;
-                        }
-                        chrome.browserAction.setBadgeText({
-                            text: txtAnim
-                        });
+						if(playing){
+							txtAnim = anim[ts];
+							ts++;
+							if (ts >= 8) {
+								ts = 0;
+							}
+							chrome.browserAction.setBadgeText({
+								text: txtAnim
+							});
+						}
+						else {
+							clearInterval(txTim);
+							txTim = false;
+							chrome.browserAction.setBadgeText({
+								text: " "
+							});
+							stop();
+						}
                     }, 200);
                 }
             } else {
@@ -227,7 +264,7 @@ $(document).ready(function() { //Set some vars
                         if (key == chId) {
                             tl = val.duration;
                             ts = val.started;
-                            tr = "<span title='" + val.track + "'>" +$.cookie("diChPt") +" : " + val.track + "</span>";
+                            tr = "<span title='" + val.track + "'>" + val.track + "</span>";
                             tp = val.art_url;
                             pollTime = parseInt(tl) + parseInt(ts);
                             $.cookie("diPt", pollTime, {
@@ -259,7 +296,7 @@ $(document).ready(function() { //Set some vars
 
     function showErr(event) {
             if (playing == true) {
-                $.cookie("diChTn", "Network Error! Is your listen key valid and your internet online? Try lower quality in the settings.", {
+                $.cookie("diChTn", "Network Error! Check Server; Lower Quality; Remove non-premium Keys", {
                     expires: 365
                 });
                 $.cookie("newT", "1", {
@@ -283,22 +320,93 @@ $(document).ready(function() { //Set some vars
         //-----------------------------------------------
 
     function makeHtml(image) {
-        var html = "<img title='drag and drop this album art into your browser to view full size.' src='" + image + "' style='border:1px solid white; margin-top:20px; margin-left:15px; height:170px; width:170px;'>";
+        var html = "<img title='drag and drop this album art into your browser to view full size.' src='" + image + "' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
         return (html)
     }
-});
 
 
 function timeEngine(){
-			now = Math.round(+new Date() / 1000);
-            if ($.cookie("diOnT") && now >= $.cookie("diOnT")) {
-                doPlay();
-				$.cookie("diOnT", null, { path: '/' });
+			var currentD = new Date();
+            if (($.cookie("diOnTrig") =="1") && (alOn <= currentD.getTime())){
+                	if (!playing){    
+						playing = true;
+						server = $.cookie("Diserver");
+						key = $.cookie("diKeys");
+						channel = $.cookie("diChan");
+						vol = $.cookie("diVol");
+						play(channel, key, vol, server);
+						pollFlag = 1;
+						var audio = document.getElementById('diPlyr');
+						audio.volume = $.cookie("diVol") / 100;
+					}
+					if ($.cookie("dailyPlay") !="1"){
+						$.cookie("diOnTrig", "0", {
+							expires: 365
+						});
+					}
+					else{
+						makeTS();
+					}
             }
 			
-			if ($.cookie("diOffT") && now >= $.cookie("diOffT")) {
-                doStop();
-				$.cookie("diOffT", null, { path: '/' });
+			if (($.cookie("diOffTrig") == '1') && (alOff <= currentD.getTime())){
+                playing = false;
+				stop();	
+				if ($.cookie("dailyStop") !="1"){
+					$.cookie("diOffTrig", "0", {
+						expires: 365
+					});
+				}
+				else{
+					makeTS();
+				}
+				
 			}
-			setTimeout(timeEngine(), 1000);
+			setTimeout(function(){timeEngine();}, 1000);
+
+}
+
+});
+	var alOff ;
+	var alOn;
+function makeTS(){
+			onH =$.cookie("diOnTH");
+			onM=$.cookie("diOnTM");
+			offH=$.cookie("diOffTH");
+			offM=$.cookie("diOffTM");
+			var currentD = new Date();
+		   alOff = new Date();
+		   alOff.setHours(offH,offM,00); 
+			if(currentD >= alOff ){
+				alOff.setDate(alOff.getDate() + 1);
+				alOff.setHours(offH,offM,00); 
+			}
+			 alOn = new Date();
+			alOn.setHours(onH,onM,00); 
+			if(currentD >= alOn ){
+				alOn.setDate(alOn.getDate() + 1);
+				alOn.setHours(onH,onM,00); 
+			}
+			alOn = alOn.getTime();
+			alOff = alOff.getTime();		
+}
+var sleepyTime = -1;
+var sleepNumber;
+var sleepyTimer;
+function setSleep(inSleeps){
+	sleepyTime = inSleeps;
+	sleepNumber = setInterval(function(){
+					sleepyTime = sleepyTime - 1;
+			}, 1000);		
+	sleepyTimer = setTimeout(function(){
+			   stopSleep();
+			   playing = false;
+				stop();
+		 }, sleepyTime*1000);
+}
+function stopSleep(){
+		sleepyTime = -1;
+		clearInterval(sleepNumber);
+		clearTimeout(sleepyTimer);
+		
 }

@@ -1,35 +1,32 @@
 /*!
  * HTML5/JS web player Differently imported
- * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
  * 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
- *
- * Includes Loads of things
- * di.js
- * di.css
- * fullpage.html
- * fullpage.css
- * fullpage.js
- * player.js
- * popup.html
- * licence.txt
- *
- *
- * Date: 13th September 2014. 07.00 BST
+ 
+	This library is free to use, and always will be however the source is the property of the original developer. 
+	
+	You may make any modifications to the source for your own personal use, but you may not release or offer a 
+	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
+	(Fork Milkshake on Github) 
+	
+	Any components listed specifically as being under the terms of a different License will fall under the  
+	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	with any acknowledgements to original authors.
+	
+    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	
+	More importantly I hope you enjoy using the App. 
+	
+ * Date: 3rd March 2015. 16.33 GMT
 */
-
 
 html{
   height: 100%;
@@ -44,10 +41,22 @@ body{
 	overflow:hidden;
 }
 .full_screen{
-width:30px;
-
+display:inline-block;
+margin:4px;
+height:22px!important;
+cursor:pointer;
+background-color:#212737;
+z-index:100000!important;
+width:28px!important;
+border:1px solid gray;
+padding-top:5px;
 }
-
+.full_screen img{
+display:block;
+height:15px !important;
+width:15px!important;
+margin:auto auto !important;
+}
 .setHead{
 	font-size:12px;
 	margin:10px;
@@ -84,7 +93,7 @@ background-color:#ccc;
 
 }
 .channel{ 
-
+cursor:pointer;
 font-size:16px;
 
 }
@@ -97,54 +106,112 @@ z-index:100;
 #controls{
 position:fixed;
 left:0px; top:0px;
+height:80px;
+width:290px;
+background-color:#212737;
+border:1px solid white;
+padding:5px;
 }
-.full_screen{
-height:30px;
-background-color:#363B4C;
-cursor:pointer;
-z-index:100;
-width:15px;
+#controlP{
+position:fixed;
+z-index:-100;
+color:#ccc;
+background-color:#212737;
+height:28px;
+width:28px;
+border:1px solid #ccc;
+left:0px;
+top:0px;
+text-align:center;
+opacity:0.5;
 }
 .full_screen a{
 color:white;
 text-decoration:none;
 }
-.sm_but{
-float:left;
-height:20px;
-width:20px;
-margin-top:5px;
-cursor:pointer;
+
+
+.channel {
+margin-left:40px;
+  width: 210px;
+  background-color:#212737;
+	color:white;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-top: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  height: 34px;
+  -webkit-appearance: none;
+  font-weight: 200;
+ font-family: "lato", sans-serif;
+ font-size: 18px;
+ }
+
+
+ .channel:focus {
+outline: none;
+ }
+
+.imgBox img{
+display:inline-block;
+height:175px!important;
+width:175px!important;
+margin-right:5px !important;
+} 
+#plBut{
+height:30px;
+width:30px;
+margin-top:3px;
+}
+#plBut img{
+height:30px;
+width:30px;
 }
 #stBut{
-margin-left:15px;
+margin-top:3px;
+margin-left:3px;
+height:30px;
+width:30px;
 
+}
+#stBut img{
+height:30px;
+width:30px;
 }
 #setCBut{
 
 display:inline-block;
-width:20px;
-margin-top:5px;
-padding-top:2px;
-padding-left:10px;
-padding-right:5px;
-
+margin:4px;
+height:22px!important;
 cursor:pointer;
-z-index:100;
-height:28px;
-
+background-color:#212737;
+z-index:100000!important;
+width:28px!important;
+border:1px solid gray;
+padding-top:5px;
 }
+#setCBut img{
+display:block;
+height:15px !important;
+width:15px!important;
+margin:auto auto !important;
+}
+
+
 .sm_but{
 float:left;
 
 }
-#volBord{
+#vol{
+cursor:pointer;
 width:124px;
 height:21px;
 padding: 3px;
 padding-top:7px;
 float:left;
-margin-top:5px;
+margin-top:2px;
 margin-right: 5px;
 
 }
@@ -181,10 +248,7 @@ top:10px;
 	margin-right:5px;
 }
 
-#track img{
-height:200px;
-width:200px!important;
-}
+
 #volume{
 position:relative;
 float:left;
@@ -196,16 +260,6 @@ border-width: 9px 100px 9px 0;
 border-color: transparent #cccccc transparent transparent;
 }
 
-
-#vKnob{
-	position:relative; 
-	left:92px; 
-	margin-top:-9px;
-	height:20px; 
-	width:5px;
-	background-color:white;
-	
-}
 
 .mouselight:hover{
 transition: all 0.4s ease-out-in;

@@ -1,33 +1,31 @@
 /*!
  * HTML5/JS web player Differently imported
- * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
  * 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
- *
- * Includes Loads of things
- * di.js
- * di.css
- * fullpage.html
- * fullpage.css
- * fullpage.js
- * player.js
- * popup.html
- * licence.txt
- *
- *
- * Date: 13th September 2014. 07.00 BST
+ 
+	This library is free to use, and always will be however the source is the property of the original developer. 
+	
+	You may make any modifications to the source for your own personal use, but you may not release or offer a 
+	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
+	(Fork Milkshake on Github) 
+	
+	Any components listed specifically as being under the terms of a different License will fall under the  
+	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	with any acknowledgements to original authors.
+	
+    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	
+	More importantly I hope you enjoy using the App. 
+	
+ * Date: 3rd March 2015. 16.33 GMT
 */
 html{
 background-color:#212737;
@@ -46,10 +44,22 @@ width:400px;
 position:absolute;
 }
 #left{
-width:220px;
+width:170px;
 float:left;
 position:relative;
 height:350px;
+}
+#centreColumn{
+margin-left:5px;
+margin-right:5px;
+width:35px;
+float:left;
+position:relative;
+height:350px;
+background-image:url('diff.png');
+background-repeat:no-repeat;
+background-size: 100% 100%;
+background-position: center;
 }
 #right{
 width:180px;
@@ -63,12 +73,15 @@ border-top: 1px groove #ccc;
 margin-left:8px;
 position:relative;
 float:left;
-height:50px;
-width:350px;
+height:45px;
+width:375px;
 background-color:#212737;
-font-family:"Lucida Console", Monaco, monospace;
-font-size:13px;
-padding-top:10px;
+text-align:center;
+/*background-color:#000;*/
+/*font-family:"Lucida Console", Monaco, monospace;*/
+font-size:12.5px;
+padding-top:5px;
+padding-left:5px;
 }
 .selected{
 background-color:white;
@@ -77,91 +90,119 @@ background-color:white;
 .setWide{
 width:176px;
 }
-#volBord {
+#vol {
 	float:left;
-	margin-left:10px;
+	margin-left:3px;
 	margin-top:7px;
-    width:124px;
+    width:80px;
     height:18px;
-    padding:3px
+    padding:3px;
+}
+#vol::-webkit-slider-thumb {
+  cursor: pointer;
+  margin-top: -8px; 
+  }
+
+#vol::-webkit-slider-runnable-track {
+
+background-color:#30374D ;
+height:5px;
 }
 
-#volume {
-    position:relative;
-    float:left;
-    cursor:pointer;
-    width:0;
-    height:0;
-    border-style:solid;
-    border-width:9px 100px 9px 0;
-    border-color:transparent #ccc transparent transparent
+.buttonBar{
+height:30px;
+z-index:10000000;
+
 }
 
-#vKnob {
-    position:relative;
-    left:92px;
-    margin-top:-9px;
-    height:20px;
-    width:5px;
-    background-color:#fff
+#miniSettings{
+/*background-image:url('gunmetal.png');*/
+	width:156px;
+	height:145px;
+	/*border:1px solid #30374D;**/
+	margin-left:10px;
+	margin-top:0px;
+	
+margin-bottom:10px;
+	font-size:13px;
+
+background-color:#212737 ;
+			 
 }
-.settings_holder{
-width:180px;
-height:10px;
-}
-.settings {
-float:right;
-height:20px;
+
+.lilButton {
+display:block;
+margin:4px;
+float:left;
+height:28px;
 cursor:pointer;
 background-color:#30374D;
-position:absolute;
-right:10px;
-z-index:100;
-margin-top:20px;
-}
-.full_screen{
-right :0px;
-margin-top:5px;
-height:28px;
-background-color:#363B4C;
-cursor:pointer;
-position:absolute;
-z-index:100;
-display:inline-block;
+z-index:100000!important;
 width:20px;
 padding-top:2px;
 padding-left:10px;
 padding-right:3px;
+}
+.full_screen{
+margin-left:10px;
 
 }
-.full_screen a{
+.lilButton a{
 color:white;
 text-decoration:none;
 }
 .sm_but{
 float:left;
-height:20px;
-width:20px;
 margin-top:5px;
 cursor:pointer;
 }
+
 #plBut{
-margin-left:-2px;
+height:30px;
+width:30px;
 }
+#plBut img{
+height:100%; width:100%;}
+
 #stBut{
-margin-left:14px;
+margin-left:3px;
+height:30px;
+width:30px;
 
 }
-
+#stBut img{
+height:100%; width:100%;
+}
 #canvas_box{
-top:238px;
-position:fixed;
-left:15px;
+width:155px;
+margin-left:1px;
+margin-top:10px;
+border-bottom:1px solid #ccc;
+margin-bottom:5px;
 }
 #imageContainer{
 
+margin-top:10px;
+margin-left:10px;
+height:150px;
+width:150px;
+padding-bottom:8px;
+}
+#imageContainer img{
+margin:0 !important;
+height:150px!important;
+width:150px!important;
 
 }
+
+#miniChannel{
+font-size:12px;
+text-align:center;
+width:100%;
+height:10px;
+display:inline-block;
+}
+
 .select::-webkit-scrollbar {
     width: 12px;
 }
@@ -234,29 +275,37 @@ border-color: transparent transparent #30374D transparent;
 	height:350px;
 	width:180px;
 }
-
+#sleepBox{
+height:20px;
+}
 #popup_nowplay{
 position:fixed;
-top:58px;
-left:23px;
+top:47px;
+left:18px;
 display:none;
 z-index:1000;
-background-color:#30374D;
+background-image:url('bgGunM.png');
+background-color:#000;
 font-size:14px;
 padding:5px;
-width:163px;
-height:164px;
+width:140px!important;
+height:143px !important;
 overflow:hidden;
 border:1px solid white;
+text-align:center;
 }
-
-#fsclose{
+.close{
+cursor:pointer;
 position:relative;
 float:right;
-margin-right:-15px;
+margin-left:-10px;
+margin-right:0px;
 margin-top:-5px;
-padding:3px;
+padding:5px;
 background-color:#212737;
+}
+#fsclose{
+
 }
 .floatysettings{
 padding:10px;
@@ -280,14 +329,56 @@ font-weight:bold;
 .floatysettings input,select{
 margin:5px;
 }
-#saveS{
+.floatytimings{
+padding:10px;
+position:absolute;
+left:-300px;
+top:75px;
+height:220px;
+width:200px;
+z-index:100000!important;
+background-color:#30374D;
+border-radius:3px;
+border:1px solid #CCCCCC;
+/*font-family:"Lucida Console", Monaco, monospace;*/
+color:white;
+font-size:12px;
+}
+.floatytimings a{
+color:white;
+font-weight:bold;
+}
+.floatytimings input,select{
+margin:5px;
+}
+
+.save{
 padding:3px;
-margin-top:15px;
+margin-top:10px;
 cursor:pointer;
 background-color:#212737;
 font-family:Arial;
+font-weight:bold;
+text-align:center;
+color:white;
+width:100%;
 }
-
+#tSave{
+margin-top:2px;
+}
+#goSleep{
+padding:3px;
+cursor:pointer;
+background-color:#212737;
+font-family:Arial;
+fint-weight:bold;
+text-align:center;
+color:white;
+}
+.tText{
+width:30px;
+height:15px;
+}
 
 .mouselight:hover{
 transition: all 0.4s ease-out-in;

@@ -3,37 +3,34 @@
 <!--
 /*!
  * HTML5/JS web player Differently imported
- * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
  * 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
- *
- * Includes Loads of things
- * di.js
- * di.css
- * fullpage.html
- * fullpage.css
- * fullpage.js
- * player.js
- * popup.html
- * licence.txt
- *
- *
- * Date: 13th September 2014. 07.00 BST
+ 
+	This library is free to use, and always will be however the source is the property of the original developer. 
+	
+	You may make any modifications to the source for your own personal use, but you may not release or offer a 
+	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
+	(Fork Milkshake on Github) 
+	
+	Any components listed specifically as being under the terms of a different License will fall under the  
+	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	with any acknowledgements to original authors.
+	
+    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	
+	More importantly I hope you enjoy using the App. 
+	
+ * Date: 3rd March 2015. 16.33 GMT
 */
 -->
-
 <head>
 
     <script src="jquery.js"></script>
@@ -45,10 +42,10 @@
 </head>
 
 <body>
-	<div  class="floatysettings">
-	<div id="fsclose" class = "mouselight settings">X</div>
-
- Choose a location near you:
+	<div  class="floatysettings ">
+	<div id="fsclose" class = "settings mouselight close">X</div>
+Settings<hr>
+ Choose a Server near you:
 	<select class="setWide" id="server" title="Pick a server close to you.">
             <option title="Europe" value="2">
                 Europe
@@ -69,7 +66,7 @@
 
 				
 		<br />
-	Gone premium? Enter or update your listen key:
+	Premium? Enter your listen key:
 		<input id="lK" type="text" value="" class="setWide">
 		<br />
 		Audio Quality:
@@ -87,48 +84,73 @@
 
 		
 		<div id="nag" style="display:none">You are using DI.fm Free. <a href="http://di.fm/premium" target="_blank">Get Premium now. </a></div>
-		<div id="saveS" class="mouselight">Save</div>
+		<button id="saveS" class="mouselight save">Save</button>
 		</div>
 		
-		
+	<div  class="floatytimings">
+	<div id="ftclose" class = "close mouselight timings">X</div>
+	Alarm and Sleep<hr />
+Play Music at
+<input type="number" class="tText" placeholder="0-23" min = "0" max="23" id = "onAH"/>:<input placeholder="0-59" min = "0" max="59"  id = "onAM" type="number" class="tText" />
+<br />
+Enabled?<input class=""  type="checkbox" id="playAlarm">
+
+Daily?<input class=""  type="checkbox" id="dailyPlay"><br>
+<hr>
+Stop Music at <input placeholder="0-23" min = "0" max="23" type="number" class="tText" id = "offAH" />:<input placeholder="0-59" min = "0" max="59" type="number"  id = "offAM" class="tText" />
+<br />
+Enabled?<input class=""  type="checkbox" id="stopAlarm">
+
+Daily?<input class=""  type="checkbox" id="dailyStop"><br/>
+	<button id="tSave" class="mouselight save">Save</button>
+	<hr />
+Stop in <select id="sleepBox" class="" style = "width:70px;">
+				<option value="15">15mins</option>
+				<option value="30">30mins</option>
+				<option value="45">45mins</option>
+				<option value="60">1Hour</option>
+				<option value="120">2Hours</option>
+			</select>
+			<button style = "width:60px;" id="goSleep">Go/Stop</button>
+
+		</div>
+
 <div id="container">
 	<div id="left">
-
-		<div id="left_container">
-		  <span class="sm_but mouselight" id="plBut" title="Play">
-		<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAYAAACiyHcXAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwQAADsEBuJFr7QAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAhpJREFUWEfFl11OAjEQx7kM4QEVE0GRr/jBAqJiIuILJmKCPvlkInfhMhyCCxBOwGfCA4FxZ9rCdunCdlnWJr+0OzN0/p0pkA2dJgoQixtwYiJm6xpnHVSf2bZP5DgHoWS2AtmbqpKMw9qJXTGq/cLRNBORSN/DefqBSPDZvvYLzEX5Mo80k4jNIPnZT+TDsjWJOGRSNygr4QbVibwexpMISkr95DZcp9aidPGnElxAYJWQ22D3yc9u8elOyM+6aIsolUqQvn6GC/Me2H1ehUgi3JSzWCzCaDSCbrcLuduXVWKvrUC0KyFE4JjP51CpNiGZqyhj3eKpHUKEGG8fP2CU66sY3apoiygUCjAejyn5crkkcDQ+W1Crf9Mfkoi1/nZsE+apHZPJRBIg1o2vFrw3f832PEmf2XVhSQT7irkDRQyHQ0qOA++FGP1+H66MV9oYEwtEMqyMak+LCHWAHcMwYDqdwmKx4KkBZrMZtNttui/YLoxjQhi4jqfKks2KdiVQBLYDB7ag0+lArVajCllP7DSzfeQDh6MZFMHK5gY86WAwgF6vR6VH2zqBiUhotQvfBiyOV8I0iOAd5PN5yJi/mPbEtKElTsJpf25nIuzOLaAIlX0ftEX4Qdz2TCLQKBxiHSSSCPwaWZ2HQ87DRXDjJc7Bw0SI5Dj/AyTiTOEIEiYiead0BgWJiPEXYmSfF2Fk28uwky9ylIU/WvT+88wbJvsAAAAASUVORK5CYII=">
-		</span> 
-		<span class="sm_but mouselight" id="stBut" title="Stop">
-		<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAYAAACiyHcXAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAAYBJREFUWEfll11ugzAMx3uZqg/d1kiDqiswsQk27fNhOwEX5WoZthONeAYSBtnDkH6KEwf7H6eJykalD/qQ1Pqqw7Z9G9oQpHfG4uwub/XmVLzr4v5TJB+wh5iaI8Xb7jMSkWYv+pi9Iqlpub0UkAvz5W/Yooifk9z+kriLJRtFrJnUB7ESPkgrmruYWSIwKe6nGQP7/C0qlGUqYQREq4S7Ddzn9n1Z6Dfh9kMJFlGWpVZKeZHffYgxOI4In3K2bat9n+TmWYzBCa4ErND3UcdHMQbnf4kY2+p1RXRz4Z2pk4Mi6Ij5ESqCX2pSzJ4IeQInXAQJSM50Ung8YPVK2Aq4lXAXvN3nIIL+ZExR13XQPQEXGybG5BIkyFSiG7CTR6iqap6IofhmnERw5wgQGG5COH5Q7iGapkGkGJxgEUuQsD6KgEHrsHZMHBFwjPrO9XDzGBFmsNtrsuNCImxyaP8AFHEtOGJCIk5PojMWKOJgPoiB33wIA2Mfw0O+3UWhvwA3CIjvKQJfoAAAAABJRU5ErkJggg==">
-		</span>
-		  <div id="volBord" title="Volume">
-            <img alt="" id="vlmIm" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABmUlEQVRIia1Vu0oDURScWURCkLCIEButFP/A78gnWNkIomApWoiliG0Ka1u/Q79AENHCRkRtggSZsdno3Zt7YxIzzS7nnDlzz+zjEDOA7RLAFoA+gC7Jr1n0haRS0pHtN1eQdDrTxpIcNLek67B2bpLGlRW7tvcBlLYH8SynJiCpCeCA5EqmtgOgJDnJuWonPAtGdeo+uj7a3rZ9k7OoiATWRo1b1QDAs+0dkusku7b7OV7Nomj0PoD3Kt4C0KjyTwA2SH5meDXEE/xcbd+SbBdF0bZ9FeR7YfMELy8QFueQy09j0VD8r3wKoyxKxlMYZVFygvhE406QytcEJvV3nHzNIpJTTRHyYiT/RZNalOMNCUSjbkp6qeILQbwpqVkURS/DqyFrEYA5kksAlvD7FYPkKoB7SXu2GwleXgDAXUxIPReSyyTPATxI2gWQFYotOgbwRnLF9k9xdT9vuwNgMaAsA7j46y0bG7Zbkg4lvYZbbNRGmwqpXRzg/wID2C5tn0j6GCymeOlPufuGhBZtb5HsAbgk2R/kvgEO+IMhCWFdyAAAAABJRU5ErkJggg==" style="position:relative; display:block; float:left; background-color:#272727; height:18px;">
-            <div id="volume">
-               <div id="vKnob" class="mouselight"></div>
-            </div>
-        </div>
-	
+	<div class="buttonBar" >
+	<span class = "full_screen  lilButton mouselight" title="Pop out Player" ><img style="height:13px; width:13px;" src="fs.png"></span>
+	<span class = "timings lilButton mouselight" title="Alarm and Sleep Timer"><img style="height:13px; width:13px;" src="clock.png"></img></span>	
+	<span class = "settings lilButton mouselight" title="Settings"><img style="height:13px; width:13px;" src="spanner.png"></span>
+	<span class = "help lilButton mouselight" title="Help">?</span>	
+	</div>
 		<!-- magic here -->
 		<div id="popup_nowplay"></div>
-					<div class="settings_holder">
-			<div class = "full_screen mouselight" title="Pop out Player">&curren;</div>
-		
-		</div>
 		<div id="imageContainer"></div>
-
+		<div id="miniSettings">
 		<div id="canvas_box">
-            <canvas height="120" id="visualise_screen" width="220"></canvas>
+            <canvas height="80" id="visualise_screen" width="155"></canvas>
         </div>
-	
-		</div><!--left container -->
+		
+		  <span class="sm_but mouselight" id="plBut" title="Play">
+<img src="playRound.png">		
+		</span> 
+		
+         <input id ="vol" title="volume"  type="range" class ="">
+     
+		<span class="sm_but mouselight" id="stBut" title="Stop">
+<img src="stopRound.png">		</span>
+<span id="miniChannel"></span>
 	</div>
 
+	</div>
+<div id="centreColumn">
+
+</div>
 	<div id="right">
 			
 						<div id="scroll_box_box">
 							<div id="up_pad" class="mouselight">
 
-							
 							</div>
 							<div class="select channel" id="lC" title="Pick a channel.">
 								<!-- Channel selector -->
@@ -326,7 +348,7 @@
 									House
 								</li>
 
-								<li data-image = "http://api.audioaddict.com/v1/assets/image/1501288819231087619e6e659f122830.png?size=145x145" title="Jungle" data-trigger="293_jungle">
+								<li data-image = "http://api.audioaddict.com/v1/assets/image/1551288819231087619e6e659f122830.png?size=145x145" title="Jungle" data-trigger="293_jungle">
 									Jungle
 								</li>
 
@@ -443,7 +465,6 @@
 							</div> 
 							<div id="down_pad" class="mouselight">
 							</div>
-				<div class = "settings mouselight" title="Settings"><img src="spanner.png"></div>
 
 						</div>				
 	</div>	

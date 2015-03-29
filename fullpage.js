@@ -1,40 +1,86 @@
 /*!
  * HTML5/JS web player Differently imported
- * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
  * 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
- *
- * Includes Loads of things
- * di.js
- * di.css
- * fullpage.html
- * fullpage.css
- * fullpage.js
- * player.js
- * popup.html
- * licence.txt
- *
- *
- * Date: 13th September 2014. 07.00 BST
+ 
+	This library is free to use, and always will be however the source is the property of the original developer. 
+	
+	You may make any modifications to the source for your own personal use, but you may not release or offer a 
+	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
+	(Fork Milkshake on Github) 
+	
+	Any components listed specifically as being under the terms of a different License will fall under the  
+	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	with any acknowledgements to original authors.
+	
+    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	
+	More importantly I hope you enjoy using the App. 
+	
+ * Date: 3rd March 2015. 16.33 GMT
 */
 
 var frameLength = 5; //ms to display
 var bg = chrome.extension.getBackgroundPage();
-
+showControl = false;
+doShowC = false;
+function showCont(){
+	clearTimeout(showControl);
+	$( "#controls" ).css({"opacity": 1});	
+	showControl = setTimeout(function(){
+			$( "#controls" ).fadeTo( "fast" , 0);
+	},1000);
+	
+}		
 
 $(document).ready(function() {
+showCont();
+$('#controls').mouseout(function(){
+		showCont();
+});
+$('#controlP').mouseout(function(){
+		showCont();
+});
+$('#channel').mouseout(function(){
+		showCont();
+	});
+	$('#vol').mouseout(function(){
+		showCont();
+	});
+		
+		$('#controls').mouseover(function(){
+		showCont();
+	});
+		$('#controlP').mouseover(function(){
+		showCont();
+	});
+	$('#channel').mouseover(function(){
+		showCont();
+	});
+	$('#vol').mouseover(function(){
+		showCont();
+	});
+	
+	$('#controls').mousemove(function(){
+		showCont();
+	});
+		$('#controlP').mousemove(function(){
+		showCont();
+	});
+	$('#channel').mousemove(function(){
+		showCont();
+	});
+	$('#vol').mousemove(function(){
+		showCont();
+	});
     document.getElementById("lC").addEventListener('change', function() { // onClick for link to display key box
 
 			
@@ -63,23 +109,11 @@ $(document).ready(function() {
         $('#lK').val($.cookie("diKeys"));
         $('#lC').val($.cookie("diChan"));
         $('#server').val($.cookie("Diserver"));
-        vol = $.cookie("diVol");
+        $('#vol').val( $.cookie("diVol"));
         hQ = $.cookie("dihQ");
-        leftPos = vol
-        if (vol >= 95) {
-            leftPos = 98;
-        } // set a rightmost limit
-        if (vol <= 5) {
-            leftPos = 0;
-        } // let th
-        $("#vKnob").css("left", leftPos + "px"); // move the thingy 
         $('#hQ').val($.cookie("diHq"));
-        $('#volBord').attr("title", "Volume " + $.cookie("diVol") + "%");
-    } else {
-        vol = 75;
-        $('#volBord').attr("title", "Volume 75%");
-    }
 
+	}
     document.getElementById("stBut").addEventListener('click', function() { // On Stop Click
         $('#plBut').css("background-color", "#222");
         $('#stBut').css("background-color", "#000");
@@ -105,7 +139,7 @@ $(document).ready(function() {
 		doScreenBig(0);
 	});
 
-    document.getElementById("fsBut").addEventListener('click', function() {
+    document.getElementById("full_screen").addEventListener('click', function() {
         doScreenBig(0);
     });
     document.getElementById("setCBut").addEventListener('click', function() {
@@ -139,56 +173,40 @@ $(document).ready(function() {
     }, 1000);
 
     function getTn() {
+		if(!$('#vol').mousedown()){
+		$('#vol').val($.cookie("diVol"));
+		}
         chrome.runtime.sendMessage({
             play: "3"
         });
 		if(bg.playing){
-		            $("#track").html($.cookie("diChTn") +"<br />" +$.cookie("diChPic"));	
+		            $("#track").html($.cookie("diChTn") +"<br />" +"<span class='imgBox'>"+$.cookie("diChPic")+"</span>");	
 		}
 		else{
 			$("#track").html($.cookie("diChTn") )
 		}
-
-
-        
-        vol = $.cookie("diVol");
-        leftPos = vol
-        if (vol >= 95) {
-            leftPos = 98;
-        } // set a rightmost limit
-        if (vol <= 5) {
-            leftPos = 0;
-        } // let th
-        $("#vKnob").css("left", leftPos + "px"); // move the thingy 
-        $('#volBord').attr("title", "Volume " + $.cookie("diVol") + "%");
+     
         $('#lC').val($.cookie("diChan"));
         //Label some variables
     }
+	
 });
 $(document).ready(function(e) {
-    $('#volume').click(function(e) { // Volume change onClick
-        var posX = $(this).position().left; //get some stats 
-        leftPos = (e.pageX - posX);
-        vol = leftPos;
-        if (leftPos >= 95) {
-            leftPos = 98;
-            vol = 100;
-        } // set a rightmost limit
-        if (leftPos <= 5) {
-            leftPos = 2;
-            vol = 0;
-        } // let the volume work 0 to 100 without having to hit 1 pixel (bit of a jump at each end tho :p )
-        $("#vKnob").css("left", leftPos); // move the thingy 	
-        $.cookie("diVol", vol, {
+   $("#vol").on("input change", function() { 
+
+        $.cookie("diVol",   ($('#vol').val()),
+ {
             expires: 365
         });
-        $('#volBord').attr("title", "Volume " + $.cookie("diVol") + "%");
+		
+		
         chrome.runtime.sendMessage({
             play: "2", //Send method play:2 == Change player parameter
-            vol: vol
+            vol: ($('#vol').val())
         }); // player.js receives message and volume. does the doo.
         // Store volume for next time. 
     });
+
     analyse_this();
 });
 

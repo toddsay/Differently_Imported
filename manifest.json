@@ -5,7 +5,7 @@
 
   "name": "Differently Imported for di.fm",
   "description": "Differently Imported: addictive electronic music player for Di.Fm",
-  "version": "4.1.1", 
+  "version": "4.2.0", 
   "permissions": ["http://prem2.di.fm:80/*"],
   "content_security_policy":"script-src 'self' 'unsafe-eval'; object-src 'self'",
   "browser_action": {
@@ -17,7 +17,25 @@
 	"page": "player.html",
     "persistent": true
   },
-  "icons": { "128": "di.png" }
+  "icons": { 
+  "128": "di.png" 
+  },
+   "commands": {
+          "toggle-play": {
+            "suggested_key": {
+              "default": "Ctrl+Shift+1",
+             "windows": "Ctrl+Shift+1",
+              "mac": "Command+Shift+1",
+              "chromeos": "Ctrl+Shift+1",
+              "linux": "Ctrl+Shift+1"
+            },
+            "description": "Play / Pause DI.",
+			  "global": true
+
+          }
+
+}
+
   
 }
 

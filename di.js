@@ -1,37 +1,39 @@
 ﻿/*!
  * HTML5/JS web player Differently imported
- * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf?hl=en&gl=GB
+ * https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
  * 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
+ 
+	This library is free to use, and always will be however the source is the property of the original developer. 
+	
+	You may make any modifications to the source for your own personal use, but you may not release or offer a 
+	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
+	(Fork Milkshake on Github) 
+	
+	Any components listed specifically as being under the terms of a different License will fall under the  
+	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	with any acknowledgements to original authors.
+	
+    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	
+	More importantly I hope you enjoy using the App. 
+	
  *
- * Includes Loads of things
- * di.js
- * di.css
- * fullpage.html
- * fullpage.css
- * fullpage.js
- * player.js
- * popup.html
- * licence.txt
- *
- *
- * Date: 13th September 2014. 07.00 BST
+ * Date: 3rd March 2015. 16.33 GMT
 */
 
 var frameLength = 5; //ms to display
-var bg = chrome.extension.getBackgroundPage();
+var bg = chrome.extension.getBackgroundPage();  
+
+var s_out = true;
+  var t_out = true;
 $(document).ready(function() {
 	   analyseThis();
     if ($.cookie('diKeys') != null) {
@@ -39,23 +41,53 @@ $(document).ready(function() {
         $('#lC').val($.cookie("diChan"));
         $('#server').val($.cookie("Diserver"));
 		scrolCh();
-        vol = $.cookie("diVol");
+         $('#vol').val($.cookie("diVol"));
         hQ = $.cookie("dihQ");
-        leftPos = vol
-        if (vol >= 95) {
-            leftPos = 98;
-        } // set a rightmost limit
-        if (vol <= 5) {
-            leftPos = 0;
-        } // let th
-        $("#vKnob").css("left", leftPos + "px"); // move the thingy 
+
         $('#hQ').val($.cookie("diHq"));
-        $('#volBord').attr("title", "Volume " + $.cookie("diVol") + "%");
-    } else {
+		$("#miniChannel").text($.cookie("diChPt"));
+		 if($.cookie("diOnTrig") == "1"){
+		 $('#playAlarm').prop('checked', true);
+		 }
+		 if($.cookie("diOffTrig") == "1"){
+		 $('#stopAlarm').prop('checked', true);
+		 }
+		 	 if($.cookie("dailyPlay") == "1"){
+		 $('#dailyPlay').prop('checked', true);
+		 }
+		 if($.cookie("dailyStop") == "1"){
+		 $('#dailyStop').prop('checked', true);
+		 }
+		 
+		 dailyStop
+				$('#offAH').val( $.cookie("diOffTH"));
+				$('#offAM').val( $.cookie("diOffTM"));
+				$('#onAH').val( $.cookie("diOnTH"));
+				$('#onAM').val( $.cookie("diOnTM"));
+	
+
 		
-        vol = 75;
-        $('#volBord').attr("title", "Volume 75%");
+    } else {
+		         $('#vol').val(75);
+				$('#offAH').val( 00);
+				$('#offAM').val( 00);
+				$('#onAH').val( 00);
+				$('#onAM').val( 00);
+	
+        
     }
+	var sleepTracker;
+	if (bg.sleepyTime > -1){
+			sleepTracker = setInterval(function(){
+				var minTrack = Math.floor(bg.sleepyTime / 60);
+				var secTrack = bg.sleepyTime - minTrack * 60;
+				$('#goSleep').text(minTrack + ":"+secTrack);
+				if (bg.sleepyTime == -1){
+					$('#goSleep').text("Go/Stop");
+					clearInterval(sleepTracker);
+				}
+			}, 1000);		
+	}			
 	if (bg.playing) {
         $("#track").html($.cookie("diChTn"));
         $("#imageContainer").html($.cookie("diChPic"));
@@ -70,9 +102,49 @@ $(document).ready(function() {
 			$("#nag").css({"display":"block"});
 		}
 
-  var s_out = true;
- 
- $('.settings').click(function(){
+
+$("#vol").on("input change", function() { 
+ vol =  $('#vol').val();
+        $.cookie("diVol", vol, {
+            expires: 365
+        });
+        chrome.runtime.sendMessage({
+            play: "2", //Send method play:2 == Change player parameter
+            vol: vol
+        }); // player.js receives message and volume. does the doo.
+        // Store volume for next time. 
+
+		});
+
+$('.timings').click(function(){
+	 if (!s_out){
+	$('.floatysettings').animate({
+    left: "-=400"
+	}, 800);
+	s_out = true;	
+	}
+ // var t_out = true;
+	 if (t_out){
+	$('.floatytimings').animate({
+    left: "+=400"
+	}, 800);
+	t_out = false;
+	 }
+	 else{
+	$('.floatytimings').animate({
+    left: "-=400"
+	}, 800);
+	t_out = true;	
+	}
+	
+ });
+		$('.settings').click(function(){
+		 if (!t_out){
+		$('.floatytimings').animate({
+    left: "-=400"
+	}, 800);
+	t_out = true;	
+	 }
 	 if (s_out){
 	$('.floatysettings').animate({
     left: "+=400"
@@ -107,12 +179,24 @@ $("#saveS").click(function(){
 		
 		doPlay();
 	}
+	
 				doFlash();
+				 if (!s_out){
+				$('.floatysettings').animate({
+				left: "-=400"
+				}, 800);
+				s_out = true;	
+				}
 });
 
 
+$('.help').click(function(){
+	  window.open("support.html");
+ });
+
 
    $("#lC li").click(function() { // onClick for link to display key box
+		      
 
 			$.cookie("diChImage", $(this).attr("data-image"), {
                     expires: 365
@@ -121,6 +205,7 @@ $("#saveS").click(function(){
 			$.cookie("diChPt", $(this).text(), {		
 									expires: 365
 							});
+			 $("#miniChannel").text( $(this).text());
 			$.cookie("diChan", $(this).attr("data-trigger"), {
                     expires: 365
                 }); // Store key for next time.
@@ -170,12 +255,12 @@ $("#saveS").click(function(){
     }, 500);
 
     function getTn() {
+		$('#vol').val($.cookie("diVol"));
         chrome.runtime.sendMessage({
             play: "3"
         });
         if ($.cookie("newT") == "1") { //////change only if needs it.	
             $("#track").html($.cookie("diChTn"));
-		
 			$("#imageContainer").html($.cookie("diChPic"));
             $.cookie("newT", "0", {
                 expires: 365
@@ -197,40 +282,13 @@ $("#saveS").click(function(){
 	},300);
 });	
 
-$(document).ready(function(e) {
-    $('#volume').click(function(e) { // Volume change onClick
-        var posX = $(this).position().left; //get some stats 
-        leftPos = (e.pageX - posX) -9;
-        vol = leftPos;
-        if (leftPos >= 95) {
-            leftPos = 98;
-            vol = 100;
-        } // set a rightmost limit
-        if (leftPos <= 5) {
-            leftPos = 2;
-            vol = 0;
-        } // let the volume work 0 to 100 without having to hit 1 pixel (bit of a jump at each end tho :p )
-        $("#vKnob").css("left", leftPos); // move the thingy 	
-        $.cookie("diVol", vol, {
-            expires: 365
-        });
-        $('#volBord').attr("title", "Volume " + $.cookie("diVol") + "%");
-        chrome.runtime.sendMessage({
-            play: "2", //Send method play:2 == Change player parameter
-            vol: vol
-        }); // player.js receives message and volume. does the doo.
-        // Store volume for next time. 
-    });
-
-	
-});
 function scrolCh(){
 	setTimeout(function(){
 trappedC = 0;
 $(".channel li").each(function(){
 		if ($.cookie("diChPt") == $(this).text()){
 				newX  = $(this).position().top;
-				newX = newX - 150;
+				newX = newX - 155;
 				$(".channel").scrollTop(newX);
 				trappedC = 1;
 			}
@@ -290,6 +348,7 @@ function doPlay() {
         }
     });
 }
+
  maxYLen = 2600;
  scrollStep =9;
  //jQuery ismouseover  method
@@ -316,7 +375,102 @@ function doPlay() {
 })(jQuery);
 
 $(document).ready(function(){
+		$('#tSave').click(function(){
+			 if ($('#playAlarm').attr('checked')) {
+				  $.cookie("diOnTrig", "1" ,{
+                    expires: 365
+                }); // Store key for next time. 
+				}
+				else{
+						  $.cookie("diOnTrig", "0" ,{
+							expires: 365
+						}); // Store key for next time. 	
+				}
+			 if ($('#stopAlarm').attr('checked')) {
+					$.cookie("diOffTrig", "1", {
+                    expires: 365
+					}); // Store key for next time. 
+				}
+				else{
+				 $.cookie("diOffTrig", "0", {
+							expires: 365
+						}); // Store key for next time. 	
+				}
+	 if ($('#dailyPlay').attr('checked')) {
+					$.cookie("dailyPlay", "1", {
+                    expires: 365
+					}); // Store key for next time. 
+				}
+				else{
+				 $.cookie("dailyPlay", "0", {
+							expires: 365
+						}); // Store key for next time. 	
+				}	
+				
+				if ($('#dailyStop').attr('checked')) {
+					$.cookie("dailyStop", "1", {
+                    expires: 365
+					}); // Store key for next time. 
+				}
+				else{
+				 $.cookie("dailyStop", "0", {
+							expires: 365
+						}); // Store key for next time. 	
+				}
+		   $.cookie("diOffTH", $('#offAH').val(),{
+                    expires: 365
+                }); // Store key for next time. 
+			 $.cookie("diOffTM", $('#offAM').val(),{
+                    expires: 365
+                }); // Store key for next time. 
+				$.cookie("diOnTH", $('#onAH').val(),{
+                    expires: 365
+                }); // Store key for next time. 
+				$.cookie("diOnTM", $('#onAM').val(),{
+                    expires: 365
+                }); // Store key for next time. 				
+			
+	bg.makeTS();
+		if (!t_out){
+		$('.floatytimings').animate({
+			left: "-=400"
+			}, 800);
+		t_out = true;	
+		}
+	});
+/*
+var sleepTracker;
+	if(bg.sleepyTime > -1){
+			sleepTracker = setInterval(function(){
+				$('#goSleep').text(bg.SleepyTime);
+			}, 1000);		
+	}
+
+*/
+
+$('#goSleep').click(function(){
+	if (bg.sleepyTime > -1){
+		bg.stopSleep();
+		clearInterval(sleepTracker);
+		$('#goSleep').text("Go/Stop");
+	}
+	else{
+		bg.setSleep($('#sleepBox').val()* 60);
+
+			sleepTracker = setInterval(function(){
+				var minTrack = Math.floor(bg.sleepyTime / 60);
+				var secTrack = bg.sleepyTime - minTrack * 60;
+				$('#goSleep').text(minTrack + ":"+secTrack);
+				if (bg.sleepyTime == -1){
+					$('#goSleep').text("Go");
+					clearInterval(sleepTracker);
+				}
+			}, 1000);		
+
+	}
 	
+});
+
   $("#lC li").mouseover(function() {
 	channel_stuff = $(this).attr("data-trigger");
 	channel_name = $(this).text();
@@ -335,7 +489,7 @@ $(document).ready(function(){
 
 
 				
-	}, 150);
+	}, 155);
 });
 
 
@@ -391,8 +545,8 @@ var scalec;
 var timeDomain = new Uint8Array(2048);
 var freqDomain = new Uint8Array(2048);
 var bufferLength= 2048;
-var canvasX = 220;
-var canvasY = 120;
+var canvasX = 155;
+var canvasY = 80;
 var canvas;
 var drawContext;
 function analyseThis(){	
