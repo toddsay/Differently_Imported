@@ -194,6 +194,24 @@ $('.help').click(function(){
 	  window.open("support.html");
  });
 
+var ctrlPressed = false;
+function cacheIt(event) {
+    ctrlPressed = event.ctrlKey;
+}
+document.onkeydown = cacheIt;
+document.onkeyup = cacheIt;
+$("body").dblclick(function() {
+
+	if (ctrlPressed){
+		chrome.windows.create({
+			'url':'popup.html',
+			'width': 430,
+			'height': 460,
+			'focused': true,
+			'type': 'detached_panel'
+			});
+	}
+});
 
    $("#lC li").click(function() { // onClick for link to display key box
 		      
