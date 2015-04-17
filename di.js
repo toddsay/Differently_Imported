@@ -208,7 +208,7 @@ $("body").dblclick(function() {
 			'width': 430,
 			'height': 460,
 			'focused': true,
-			'type': 'detached_panel'
+			'type': 'panel'
 			});
 	}
 });

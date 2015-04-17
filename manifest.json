@@ -1,12 +1,21 @@
 {
-"update_url": "https://clients2.google.com/service/update2/crx",
-
  "manifest_version": 2,
 
   "name": "Differently Imported for di.fm",
   "description": "Differently Imported: addictive electronic music player for Di.Fm",
-  "version": "4.2.1", 
-  "permissions": ["http://prem2.di.fm:80/*"],
+  "version": "4.2.2", 
+  "permissions": [
+	"http://prem1.di.fm:80/*",	
+	"http://prem2.di.fm:80/*",
+	"http://prem3.di.fm:80/*",
+	"http://prem4.di.fm:80/*",
+	"http://pub1.di.fm:80/*",
+	"http://pub2.di.fm:80/*",
+	"http://pub3.di.fm:80/*",
+	"http://pub4.di.fm:80/*"	,
+	"http://api.audioaddict.com/*",
+	"http://listen.di.fm/public3/*"
+  ],
   "content_security_policy":"script-src 'self' 'unsafe-eval'; object-src 'self'",
   "browser_action": {
   "default_icon": "di.png",
