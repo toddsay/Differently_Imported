@@ -94,7 +94,7 @@ timeEngine();
                             });							
 	}
 	
-	motd = "<span>Differently Imported v4.2.1 <br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+	motd = "<span>Differently Imported v4.2.3 *New Channels*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
     $.cookie("diChTn", motd, {
         expires: 365
     });
@@ -211,28 +211,38 @@ timeEngine();
     var ts = 0;
     var txTim;
 
-   function scrollIcon(flag) {
-          if (flag) {
-              if (!txTim) {
-                  txTim = setInterval(function() {
-                      txtAnim = anim[ts];
-                      ts++;
-                      if (ts >= 8) {
-                          ts = 0;
-                      }
-                      chrome.browserAction.setBadgeText({
-                          text: txtAnim
-                      });
-                  }, 200);
-              }
-          } else {
-              clearInterval(txTim);
-              txTim = false;
-              chrome.browserAction.setBadgeText({
-                  text: " "
-              });
-          }
-      }
+  function scrollIcon(flag) {	
+            if (flag) {		
+                if (!txTim) {		
+                    txTim = setInterval(function() {		
+						if(playing){	
+							txtAnim = anim[ts];	
+							ts++;		
+							if (ts >= 8) {	
+								ts = 0;		
+							}		
+							chrome.browserAction.setBadgeText({	
+								text: txtAnim		
+							});		
+						}		
+						else {		
+							clearInterval(txTim);	
+							txTim = false;		
+							chrome.browserAction.setBadgeText({		
+								text: " "		
+							});		
+							stop();	
+						}	
+                    }, 200);	
+                }		
+            } else {		
+                clearInterval(txTim);		
+                txTim = false;		
+                chrome.browserAction.setBadgeText({		
+                    text: " "		
+                });		
+            }		
+        }		
         
         //-----------------------------------------------
     var tl;
@@ -341,8 +351,8 @@ function timeEngine(){
             }
 			
 			if (($.cookie("diOffTrig") == '1') && (alOff <= currentD.getTime())){
-                playing = false;
 				stop();	
+                playing = false;                
 				if ($.cookie("dailyStop") !="1"){
 					$.cookie("diOffTrig", "0", {
 						expires: 365
