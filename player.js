@@ -411,3 +411,86 @@ function stopSleep(){
 		clearTimeout(sleepyTimer);
 		
 }
+
+
+
+var last_fm_key = 'a215d8f01fed30fa10b7fb9c2e82a54d';
+var last_url = "http://ws.audioscrobbler.com/2.0/";
+var tokenUrl = 'http://ws.audioscrobbler.com/2.0/?method=auth.gettoken&api_key=a215d8f01fed30fa10b7fb9c2e82a54d&format=json';
+var last_response = {};
+function get_token(){
+   $.ajax({
+      type: "POST",
+      url: tokenUrl,
+      data: {},
+      success: function(res){
+          last_response['lt'] = res['token'];
+             var lastwin = window.open('http://www.last.fm/api/auth/?api_key=a215d8f01fed30fa10b7fb9c2e82a54d&token='+last_response['lt']);
+        var last_tmer = setInterval(function() {  
+            if(lastwin.closed) {  
+                clearInterval(last_tmer);  
+                last_get_token(last_response['lt']);
+            }  
+        }, 1000); 
+        },
+      dataType: 'json'
+     });
+   
+
+}
+
+function last_get_token(token){
+   // returns session key. 
+   // api_key: Your 32-character API Key.
+   // token: The authentication token received at your callback url as a GET variable.    
+   // api_sig: Your 32-character API method signature, as explained in Section 6
+      var method = 'auth.getSession';
+      result = last_call(method,{'token':last_response['lt']});
+}
+
+
+function last_call(method,data ){
+    last_response[method] = false;
+    data['api_key'] = last_fm_key;
+    data['method'] = method;
+    post_data = last_sign(data);
+    post_data['format'] = 'json';
+    $.ajax({
+      type: "post",
+      url: last_url,
+      data: post_data,
+      success: function(res){
+          last_response[method] = res;
+          console.log(res)
+          // Do something with response. 
+      },
+      dataType: 'json'
+     });
+     
+     loopchecker = Date.now() + 5000; // 10s timeout.
+     while (last_response[method] == false && loopchecker >= Date.now()){
+           continue
+     }
+     alert("LC: " + last_response[method]);
+     return last_response[method];
+}
+
+function last_sign(params){
+    ss = "";
+    st = []
+    so = {}
+    Object.keys(params).forEach(function(key){
+     st.push(key);   
+    });
+    st.sort();
+    st.forEach(function(std){
+        ss = ss + std + params[std];
+        so[std] = params[std];
+    });    
+    var secret = 'fbfe3fec71f925e72dbeb638c561eab8';
+    ss = ss + secret;
+    hashed_sec = unescape(encodeURIComponent($.md5(ss)));
+    so['api_sig'] = hashed_sec;
+    return so;
+    
+}

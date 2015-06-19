@@ -115,6 +115,10 @@ $("#vol").on("input change", function() {
         // Store volume for next time. 
 
 		});
+    
+    $('.popup_last').click(function(){
+        token = bg.get_token();
+    });
 
 $('.timings').click(function(){
 	 if (!s_out){
@@ -608,3 +612,4 @@ function go() {
 	drawContext.restore();
 
 	}
+    
