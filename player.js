@@ -28,41 +28,39 @@
 	
  * Date: 3rd March 2015. 16.33 GMT
 */
-
 var context;
 var source;
 var analyser;
 var audioContext;
 var last_response = {};
 var apiUrl = "http://api.audioaddict.com/v1/di/track_history";
-var diIMG="<img src='diffI.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
+var diIMG = "<img src='diffI.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
 var playing = false;
-$(document).ready(function() { //Set some vars 
- chrome.commands.onCommand.addListener(function(command) {
-  if (command == "toggle-play"){
-		if (!playing){
-			 playing = true;
-            server = $.cookie("Diserver");
-            key = $.cookie("diKeys");
-            channel = $.cookie("diChan");
-            vol = $.cookie("diVol");
-            play(channel, key, vol, server);
-            pollFlag = 1;
-            var audio = document.getElementById('diPlyr');
-            audio.volume = $.cookie("diVol") / 100;
-			
-		}
-		else{
-			   playing = false;
-				stop();	
-		}
-  }
+$(document).ready(function () { //Set some vars 
+    chrome.commands.onCommand.addListener(function (command) {
+        if (command == "toggle-play") {
+            if (!playing) {
+                playing = true;
+                server = $.cookie("Diserver");
+                key = $.cookie("diKeys");
+                channel = $.cookie("diChan");
+                vol = $.cookie("diVol");
+                play(channel, key, vol, server);
+                pollFlag = 1;
+                var audio = document.getElementById('diPlyr');
+                audio.volume = $.cookie("diVol") / 100;
 
-});
-setTimeout(function(){
-makeTS();
-timeEngine();
-},2000);
+            } else {
+                playing = false;
+                stop();
+            }
+        }
+
+    });
+    setTimeout(function () {
+        makeTS();
+        timeEngine();
+    }, 2000);
 
     capAudio = document.getElementById('diPlyr');
     audioContext = new AudioContext();
@@ -79,27 +77,27 @@ timeEngine();
     var key = "";
     var channel = "";
     var vol = "";
-	if (!$.cookie("diVol")){	
-    $.cookie("diChan", "324_00sclubhits", {
+    if (!$.cookie("diVol")) {
+        $.cookie("diChan", "324_00sclubhits", {
             expires: 365
         });
-	$.cookie("diVol", "75", {
+        $.cookie("diVol", "75", {
             expires: 365
         });
-		
-		$.cookie("diChPt", "00's Club Hits", {		
-									expires: 365
-							});
-	$.cookie("diChPic", "http://api.audioaddict.com/v1/assets/image/1f2189badb0bb9ccba20e54163afff69.png?size=145x145", {
-                                expires: 365
-                            });							
-	}
-	
-	motd = "<span>Differently Imported v4.2.4 *<a href='support.html' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Last.fm</span></a>*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+
+        $.cookie("diChPt", "00's Club Hits", {
+            expires: 365
+        });
+        $.cookie("diChPic", "http://api.audioaddict.com/v1/assets/image/1f2189badb0bb9ccba20e54163afff69.png?size=145x145", {
+            expires: 365
+        });
+    }
+
+    motd = "<span>Differently Imported v4.2.4 *<a href='support.html' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Last.fm</span></a>*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
     $.cookie("diChTn", motd, {
         expires: 365
     });
-	
+
     $.cookie("newT", "1", {
         expires: 365
     });
@@ -109,7 +107,7 @@ timeEngine();
     chrome.browserAction.setBadgeText({
         text: " "
     });
-    chrome.runtime.onMessage.addListener(function(action) { //Start the message listener and set some actions
+    chrome.runtime.onMessage.addListener(function (action) { //Start the message listener and set some actions
         if (action.play == "0") { // Play is a flag to control the player. 
             playing = false;
             stop();
@@ -212,213 +210,154 @@ timeEngine();
     var ts = 0;
     var txTim;
 
-  function scrollIcon(flag) {	
-            if (flag) {		
-                if (!txTim) {		
-                    txTim = setInterval(function() {		
-						if(playing){	
-							txtAnim = anim[ts];	
-							ts++;		
-							if (ts >= 8) {	
-								ts = 0;		
-							}		
-							chrome.browserAction.setBadgeText({	
-								text: txtAnim		
-							});		
-						}		
-						else {		
-							clearInterval(txTim);	
-							txTim = false;		
-							chrome.browserAction.setBadgeText({		
-								text: " "		
-							});		
-							stop();	
-						}	
-                    }, 200);	
-                }		
-            } else {		
-                clearInterval(txTim);		
-                txTim = false;		
-                chrome.browserAction.setBadgeText({		
-                    text: " "		
-                });		
-            }		
-        }		
-        
-        //-----------------------------------------------
-    var tl;
-    var ts;
-    var tp;
-    var tr;
-
-    //var nexttime = (2000 + (Math.round(+new Date()/1000)));
-    function showTrack() { // tracklist api call. timed with flags to stop server hammerage. 
-            unix = Math.round(+new Date() / 1000);
-            if (unix >= $.cookie("diPt")) {
-                pollFlag = 1;
-            }
-            /* 	if (unix <= nexttime){pollflag = 0;}
-		else {nexttime = (2000 + (Math.round(+new Date()/1000)));} */
-            if (pollFlag == 1) {
-                chId = $.cookie("diChId");
-                $.getJSON(apiUrl, function(data) {
-                    $.each(data, function(key, val) {
-                        if (key == chId) {
-                            tl = val.duration;
-                            ts = val.started;
-                            tr = "<span title='" + val.track + "'>" + val.track + "</span>";
-                            tp = val.art_url;
-                            last_response['last_np_artist'] = val.artist;
-                            last_response['last_np_track'] = val.title;
-                            pollTime = parseInt(tl) + parseInt(ts);
-                            $.cookie("diPt", pollTime, {
-                                expires: 365
-                            });
-                                if (tp != null) {
-                                    tp = stripslashes(tp);
-                                    tp = makeHtml(tp);
-                                }
-								else{
-						tp = makeHtml($.cookie("diChImage"));
-								}
-                            $.cookie("diChTn", tr, {
-                                expires: 365
-                            });
-                            $.cookie("newT", "1", {
-                                expires: 365
-                            });
-							$.cookie("diChPic", tp, {
-                                expires: 365
-                            });
+    function scrollIcon(flag) {
+        if (flag) {
+            if (!txTim) {
+                txTim = setInterval(function () {
+                    if (playing) {
+                        txtAnim = anim[ts];
+                        ts++;
+                        if (ts >= 8) {
+                            ts = 0;
                         }
-                    });
-                });
-                pollFlag = 0;
+                        chrome.browserAction.setBadgeText({
+                            text: txtAnim
+                        });
+                    } else {
+                        clearInterval(txTim);
+                        txTim = false;
+                        chrome.browserAction.setBadgeText({
+                            text: " "
+                        });
+                        stop();
+                    }
+                }, 200);
             }
+        } else {
+            clearInterval(txTim);
+            txTim = false;
+            chrome.browserAction.setBadgeText({
+                text: " "
+            });
         }
-        //-----------------------------------------------
+    }
+
+    //-----------------------------------------------
+
 
     function showErr(event) {
-            if (playing == true) {
-                $.cookie("diChTn", "Network Error! Check Server; Lower Quality; Remove non-premium Keys", {
-                    expires: 365
-                });
-                $.cookie("newT", "1", {
+        if (playing == true) {
+            $.cookie("diChTn", "Network Error! Check Server; Lower Quality; Remove non-premium Keys", {
+                expires: 365
+            });
+            $.cookie("newT", "1", {
+                expires: 365
+            });
+        } else {
+            $.cookie("diChTn", motd, {
+                expires: 365
+            });
+            $.cookie("newT", "1", {
+                expires: 365
+            });
+        }
+    }
+    //-----------------------------------------------
+
+
+    function timeEngine() {
+
+        if ($.cookie('lastNP') == '1') {
+            nowplayLast();
+        }
+
+
+        var currentD = new Date();
+        if (($.cookie("diOnTrig") == "1") && (alOn <= currentD.getTime())) {
+            if (!playing) {
+                playing = true;
+                server = $.cookie("Diserver");
+                key = $.cookie("diKeys");
+                channel = $.cookie("diChan");
+                vol = $.cookie("diVol");
+                play(channel, key, vol, server);
+                pollFlag = 1;
+                var audio = document.getElementById('diPlyr');
+                audio.volume = $.cookie("diVol") / 100;
+            }
+            if ($.cookie("dailyPlay") != "1") {
+                $.cookie("diOnTrig", "0", {
                     expires: 365
                 });
             } else {
-                $.cookie("diChTn", motd, {
-                    expires: 365
-                });
-                $.cookie("newT", "1", {
-                    expires: 365
-                });
+                makeTS();
             }
         }
-        //-----------------------------------------------
 
-    function stripslashes(urlIn) {
-            urlIn = urlIn.replace("\\", "");
-            return ("http:" + urlIn);
+        if (($.cookie("diOffTrig") == '1') && (alOff <= currentD.getTime())) {
+            stop();
+            playing = false;
+            if ($.cookie("dailyStop") != "1") {
+                $.cookie("diOffTrig", "0", {
+                    expires: 365
+                });
+            } else {
+                makeTS();
+            }
+
         }
-        //-----------------------------------------------
+        setTimeout(function () {
+            timeEngine();
+        }, 1000);
 
-    function makeHtml(image) {
-        var html = "<img title='drag and drop this album art into your browser to view full size.' src='" + image + "' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
-        return (html)
     }
 
-
-function timeEngine(){
-                 
-              if ($.cookie('lastNP') == '1'){
-                nowplayLast();
-             }
-                    
-                    
-			var currentD = new Date();
-            if (($.cookie("diOnTrig") =="1") && (alOn <= currentD.getTime())){
-                	if (!playing){    
-						playing = true;
-						server = $.cookie("Diserver");
-						key = $.cookie("diKeys");
-						channel = $.cookie("diChan");
-						vol = $.cookie("diVol");
-						play(channel, key, vol, server);
-						pollFlag = 1;
-						var audio = document.getElementById('diPlyr');
-						audio.volume = $.cookie("diVol") / 100;
-					}
-					if ($.cookie("dailyPlay") !="1"){
-						$.cookie("diOnTrig", "0", {
-							expires: 365
-						});
-					}
-					else{
-						makeTS();
-					}
-            }
-			
-			if (($.cookie("diOffTrig") == '1') && (alOff <= currentD.getTime())){
-				stop();	
-                playing = false;                
-				if ($.cookie("dailyStop") !="1"){
-					$.cookie("diOffTrig", "0", {
-						expires: 365
-					});
-				}
-				else{
-					makeTS();
-				}
-				
-			}
-			setTimeout(function(){timeEngine();}, 1000);
-
-}
-
 });
-	var alOff ;
-	var alOn;
-function makeTS(){
-			onH =$.cookie("diOnTH");
-			onM=$.cookie("diOnTM");
-			offH=$.cookie("diOffTH");
-			offM=$.cookie("diOffTM");
-			var currentD = new Date();
-		   alOff = new Date();
-		   alOff.setHours(offH,offM,00); 
-			if(currentD >= alOff ){
-				alOff.setDate(alOff.getDate() + 1);
-				alOff.setHours(offH,offM,00); 
-			}
-			 alOn = new Date();
-			alOn.setHours(onH,onM,00); 
-			if(currentD >= alOn ){
-				alOn.setDate(alOn.getDate() + 1);
-				alOn.setHours(onH,onM,00); 
-			}
-			alOn = alOn.getTime();
-			alOff = alOff.getTime();		
+var alOff;
+var alOn;
+
+function makeTS() {
+    onH = $.cookie("diOnTH");
+    onM = $.cookie("diOnTM");
+    offH = $.cookie("diOffTH");
+    offM = $.cookie("diOffTM");
+    var currentD = new Date();
+    alOff = new Date();
+    alOff.setHours(offH, offM, 00);
+    if (currentD >= alOff) {
+        alOff.setDate(alOff.getDate() + 1);
+        alOff.setHours(offH, offM, 00);
+    }
+    alOn = new Date();
+    alOn.setHours(onH, onM, 00);
+    if (currentD >= alOn) {
+        alOn.setDate(alOn.getDate() + 1);
+        alOn.setHours(onH, onM, 00);
+    }
+    alOn = alOn.getTime();
+    alOff = alOff.getTime();
 }
 var sleepyTime = -1;
 var sleepNumber;
 var sleepyTimer;
-function setSleep(inSleeps){
-	sleepyTime = inSleeps;
-	sleepNumber = setInterval(function(){
-					sleepyTime = sleepyTime - 1;
-			}, 1000);		
-	sleepyTimer = setTimeout(function(){
-			   stopSleep();
-			   playing = false;
-				stop();
-		 }, sleepyTime*1000);
+
+function setSleep(inSleeps) {
+    sleepyTime = inSleeps;
+    sleepNumber = setInterval(function () {
+        sleepyTime = sleepyTime - 1;
+    }, 1000);
+    sleepyTimer = setTimeout(function () {
+        stopSleep();
+        playing = false;
+        stop();
+    }, sleepyTime * 1000);
 }
-function stopSleep(){
-		sleepyTime = -1;
-		clearInterval(sleepNumber);
-		clearTimeout(sleepyTimer);
-		
+
+function stopSleep() {
+    sleepyTime = -1;
+    clearInterval(sleepNumber);
+    clearTimeout(sleepyTimer);
+
 }
 
 
@@ -426,122 +365,117 @@ function stopSleep(){
 var last_fm_key = 'a215d8f01fed30fa10b7fb9c2e82a54d';
 var last_url = "http://ws.audioscrobbler.com/2.0/";
 var tokenUrl = 'http://ws.audioscrobbler.com/2.0/?method=auth.gettoken&api_key=a215d8f01fed30fa10b7fb9c2e82a54d&format=json';
-function get_token(){
-   $.ajax({
-      type: "POST",
-      url: tokenUrl,
-      data: {},
-      success: function(res){
-          last_response['lt'] = res['token'];
-             var lastwin = window.open('http://www.last.fm/api/auth/?api_key=a215d8f01fed30fa10b7fb9c2e82a54d&token='+last_response['lt']);
-        var last_tmer = setInterval(function() {  
-            if(lastwin.closed) {  
-                clearInterval(last_tmer);  
-                last_get_token(last_response['lt']);
-            }  
-        }, 1000); 
+
+function get_token() {
+    $.ajax({
+        type: "POST",
+        url: tokenUrl,
+        data: {},
+        success: function (res) {
+            last_response['lt'] = res['token'];
+            var lastwin = window.open('http://www.last.fm/api/auth/?api_key=a215d8f01fed30fa10b7fb9c2e82a54d&token=' + last_response['lt']);
+            var last_tmer = setInterval(function () {
+                if (lastwin.closed) {
+                    clearInterval(last_tmer);
+                    last_get_token(last_response['lt']);
+                }
+            }, 1000);
         },
-      dataType: 'json'
-     });
-   
+        dataType: 'json'
+    });
+
 
 }
 
 
-function last_call(method,data, sign){
+function last_call(method, data, sign) {
     last_response[method] = false;
     data['api_key'] = last_fm_key;
     data['method'] = method;
-    if (sign){
+    if (sign) {
         post_data = last_sign(data);
-    }
-    else{
+    } else {
         post_data = data;
-        }
+    }
     post_data['format'] = 'json';
     $.ajax({
-      type: "post",
-      url: last_url,
-      data: post_data,
-      success: function(res){
-          last_response[method] = JSON.stringify(res);
-          doCallbackJS(JSON.stringify(res), method);
-          // Do something with response. 
-      },
-      dataType: 'json'
-     });
-     
+        type: "post",
+        url: last_url,
+        data: post_data,
+        success: function (res) {
+            last_response[method] = JSON.stringify(res);
+            doCallbackJS(JSON.stringify(res), method);
+            // Do something with response. 
+        },
+        dataType: 'json'
+    });
+
 }
 //-***************************************--------------------------------
-function doCallbackJS(data, method){
-     console.log("LC: " + JSON.parse(last_response[method]));
-     //return last_response[method];
-     datafornow = JSON.parse(last_response[method]);
-     if (datafornow["error"] == 9){
-         console.log('autherror');
-         alert('Last.FM has been disconnected from Differently Imported. Please reconnect through \'Settings\'');
-         $.cookie("lastSK",'', {
+function doCallbackJS(data, method) {
+    console.log("LC: " + JSON.parse(last_response[method]));
+    //return last_response[method];
+    datafornow = JSON.parse(last_response[method]);
+    if (datafornow["error"] == 9) {
+        console.log('autherror');
+        alert('Last.FM has been disconnected from Differently Imported. Please reconnect through \'Settings\'');
+        $.cookie("lastSK", '', {
             expires: 0
         });
-              $.cookie("lastToken",'', {
+        $.cookie("lastToken", '', {
             expires: 0
         });
-     }
-    if (method == 'auth.getSession'){
-           $.cookie("lastSK", datafornow['session']['key'], {
+    }
+    if (method == 'auth.getSession') {
+        $.cookie("lastSK", datafornow['session']['key'], {
             expires: 365
         });
-       $.cookie("lastToken",last_response['lt'], {
+        $.cookie("lastToken", last_response['lt'], {
             expires: 365
         });
     }
-    
+
     /*
     elif (method== ''){
         
     }
     */
-    else if (method== 'track.updateNowPlaying'){
+    else if (method == 'track.updateNowPlaying') {
         console.log('Now Playing Captured');
-    }     
-    
-    else if (method== 'track.getInfo'){
-        if (last_response['nextFunc'] == 'track.scrobble'){
-                last_response['nextFunc'] = 0;
-                params = {
-                    'token':$.cookie("lastToken"),
-                    'artist': datafornow['track']['artist']['name'],
-                    'track':datafornow['track']['name'],
-                    'chosenByUser': '0',
-                    'timestamp': Math.floor((new Date).getTime() / 1000) ,
-                    'sk': $.cookie("lastSK")
-                    }
-                    console.log(params);
-                result = last_call('track.scrobble',params, true);
+    } else if (method == 'track.getInfo') {
+        if (last_response['nextFunc'] == 'track.scrobble') {
+            last_response['nextFunc'] = 0;
+            params = {
+                'token': $.cookie("lastToken"),
+                'artist': datafornow['track']['artist']['name'],
+                'track': datafornow['track']['name'],
+                'chosenByUser': '0',
+                'timestamp': Math.floor((new Date).getTime() / 1000),
+                'sk': $.cookie("lastSK")
+            }
+            console.log(params);
+            result = last_call('track.scrobble', params, true);
+        } else if (last_response['nextFunc'] == 'track.updateNowPlaying') {
+            last_response['nextFunc'] = 0;
+            params = {
+                'token': $.cookie("lastToken"),
+                'artist': datafornow['track']['artist']['name'],
+                'track': datafornow['track']['name'],
+                'sk': $.cookie("lastSK")
+            }
+            console.log(params);
+            result = last_call('track.updateNowPlaying', params, true);
         }
-        
-          else if (last_response['nextFunc'] == 'track.updateNowPlaying'){
-                last_response['nextFunc'] = 0;
-                params = {
-                    'token':$.cookie("lastToken"),
-                    'artist': datafornow['track']['artist']['name'],
-                    'track':datafornow['track']['name'],
-                    'sk': $.cookie("lastSK")
-                    }
-                    console.log(params);
-                result = last_call('track.updateNowPlaying',params, true);
-        }
-        
-        
-    }     
-    else if (method== 'track.scrobble'){
+
+
+    } else if (method == 'track.scrobble') {
         console.log('Scrobbled');
-     } 
-    
-    
+    }
+
+
 }
 //-***************************************--------------------------------
-function scrobblage(){
+function scrobblage() {
     /*
 artist[i] (Required) : The artist name.
 track[i] (Required) : The track name.
@@ -554,12 +488,72 @@ last_response['last_np_artist'] = val.artist;
                             last_response['last_np_track'] = val.title;
                             
 */
-    trackgetInfo(last_response['last_np_artist'] , last_response['last_np_track']);
+    trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
     last_response['nextFunc'] = 'track.scrobble';
 }
+var tl;
+var ts;
+var tp;
+var tr;
 
+//var nexttime = (2000 + (Math.round(+new Date()/1000)));
+function showTrack() { // tracklist api call. timed with flags to stop server hammerage. 
+    unix = Math.round(+new Date() / 1000);
+    if (unix >= $.cookie("diPt")) {
+        pollFlag = 1;
+    }
+    /* 	if (unix <= nexttime){pollflag = 0;}
+		else {nexttime = (2000 + (Math.round(+new Date()/1000)));} */
+    if (pollFlag == 1) {
+        chId = $.cookie("diChId");
+        $.getJSON(apiUrl, function (data) {
+            $.each(data, function (key, val) {
+                if (key == chId) {
+                    tl = val.duration;
+                    ts = val.started;
+                    tr = "<span title='" + val.track + "'>" + val.track + "</span>";
+                    tp = val.art_url;
+                    last_response['last_np_artist'] = val.artist;
+                    last_response['last_np_track'] = val.title;
+                    pollTime = parseInt(tl) + parseInt(ts);
+                    $.cookie("diPt", pollTime, {
+                        expires: 365
+                    });
+                    if (tp != null) {
+                        tp = stripslashes(tp);
+                        tp = makeHtml(tp);
+                    } else {
+                        tp = makeHtml($.cookie("diChImage"));
+                    }
+                    $.cookie("diChTn", tr, {
+                        expires: 365
+                    });
+                    $.cookie("newT", "1", {
+                        expires: 365
+                    });
+                    $.cookie("diChPic", tp, {
+                        expires: 365
+                    });
+                }
+            });
+        });
+        pollFlag = 0;
+    }
+}
+//-----------------------------------------------
 
-function trackgetInfo(artist, track){
+function stripslashes(urlIn) {
+    urlIn = urlIn.replace("\\", "");
+    return ("http:" + urlIn);
+}
+//-----------------------------------------------
+
+function makeHtml(image) {
+    var html = "<img title='drag and drop this album art into your browser to view full size.' src='" + image + "' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
+    return (html)
+}
+
+function trackgetInfo(artist, track) {
     /*
 artist[i] (Required) : The artist name.
 track[i] (Required) : The track name.
@@ -568,59 +562,69 @@ api_key (Required) : A Last.fm API key.
 */
 
     params = {
-            'artist': last_response['last_np_artist'] , 
-            'track': last_response['last_np_track'],
-            'autocorrect': 1
+        'artist': last_response['last_np_artist'],
+        'track': last_response['last_np_track'],
+        'autocorrect': 1
     }
-     method = 'track.getInfo';
-     result = last_call(method,params, false);
-     
+    method = 'track.getInfo';
+    result = last_call(method, params, false);
+
 }
 npt = "";
-npa="";
-function nowplayLast(){
+npa = "";
+nptimer = false;
+
+function nowplayLast() {
     // returns session key. 
     //      artist (Required) : The artist name.
     //track (Required) : The track name.//
     //api_key (Required) : A Last.fm API key.
     //api_sig (Required) : A Last.fm method signature. See authentication for more information.
     //sk (Required)
-    if (playing){
-        if (last_response['last_np_artist'] != npa &&  last_response['last_np_track'] != npt && last_response['last_np_artist']  !== 'undefined'){
-             npa = last_response['last_np_artist'];
-             npt = last_response['last_np_track'];
-                trackgetInfo(last_response['last_np_artist'] , last_response['last_np_track']);
-                last_response['nextFunc'] = 'track.updateNowPlaying';
-          }
+    if (playing) {
+        if (nptimer == false) {
+            nptimer = setTimeout(function () {
+                showTrack();
+                nptimer = false
+            }, 5000);
+        }
+        if (last_response['last_np_artist'] != npa && last_response['last_np_track'] != npt && last_response['last_np_artist'] !== 'undefined') {
+            npa = last_response['last_np_artist'];
+            npt = last_response['last_np_track'];
+            trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
+            last_response['nextFunc'] = 'track.updateNowPlaying';
+        }
     }
 }
 
-function last_get_token(token){
-   // returns session key. 
-   // api_key: Your 32-character API Key.
-   // token: The authentication token received at your callback url as a GET variable.    
-   // api_sig: Your 32-character API method signature, as explained in Section 6
-      var method = 'auth.getSession';
-      result = last_call(method,{'token':last_response['lt']}, true);
+function last_get_token(token) {
+    // returns session key. 
+    // api_key: Your 32-character API Key.
+    // token: The authentication token received at your callback url as a GET variable.    
+    // api_sig: Your 32-character API method signature, as explained in Section 6
+    var method = 'auth.getSession';
+    result = last_call(method, {
+        'token': last_response['lt']
+    }, true);
 }
 
 
-function last_sign(params){
+function last_sign(params) {
     ss = "";
     st = []
     so = {}
-    Object.keys(params).forEach(function(key){
-     st.push(key);   
+    Object.keys(params).forEach(function (key) {
+        st.push(key);
     });
     st.sort();
-    st.forEach(function(std){
+    st.forEach(function (std) {
         ss = ss + std + params[std];
         so[std] = params[std];
-    });    
+    });
     var secret = 'fbfe3fec71f925e72dbeb638c561eab8';
     ss = ss + secret;
     hashed_sec = unescape(encodeURIComponent($.md5(ss)));
     so['api_sig'] = hashed_sec;
     return so;
-    
+
 }
