@@ -3,9 +3,9 @@
 
   "name": "Differently Imported for di.fm",
   "description": "Differently Imported: addictive electronic music player for Di.Fm",
-  "version": "4.2.4", 
+  "version": "4.2.41",
   "permissions": [
-	"http://prem1.di.fm:80/*",	
+	"http://prem1.di.fm:80/*",
 	"http://prem2.di.fm:80/*",
 	"http://prem3.di.fm:80/*",
 	"http://prem4.di.fm:80/*",
@@ -26,8 +26,8 @@
 	"page": "player.html",
     "persistent": true
   },
-  "icons": { 
-  "128": "di.png" 
+  "icons": {
+  "128": "di.png"
   },
    "commands": {
           "toggle-play": {
@@ -45,6 +45,6 @@
 
 }
 
-  
+
 }
 

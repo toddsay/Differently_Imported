@@ -586,6 +586,9 @@ $("#up_pad").mouseout(function() {
 });
 
 $("#doScrob").click(function() {
+        storedhtml = $("#track").html();
+        setTimeout(function(){$("#track").html(storedhtml);}, 150);
+         $("#track").html('Scrobbled');
 		bg.scrobblage();
 });
 
