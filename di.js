@@ -36,7 +36,7 @@ var s_out = true;
   var t_out = true;
 $(document).ready(function() {
 	   analyseThis();
-    if ($.cookie('diKeys') != null) {
+    if ($.cookie('diChan') != null) {
         $('#lK').val($.cookie("diKeys"));
         $('#lC').val($.cookie("diChan"));
         $('#server').val($.cookie("Diserver"));
@@ -64,9 +64,18 @@ $(document).ready(function() {
 				$('#offAM').val( $.cookie("diOffTM"));
 				$('#onAH').val( $.cookie("diOnTH"));
 				$('#onAM').val( $.cookie("diOnTM"));
-	
+	//.popup_last,#doScrob
 
-		
+        if ($.cookie('lastSK') != null) {
+            $('.popup_last').css('display', 'none');
+            $('#doScrob').css('display', 'block');
+            $('#npScrob').css('display', 'block');
+            if ($.cookie('lastNP') == true){
+                   $('.lastNP').text('Turn off last.fm Now Playing');
+                
+            }
+            
+        }
     } else {
 		         $('#vol').val(75);
 				$('#offAH').val( 00);
@@ -117,6 +126,7 @@ $("#vol").on("input change", function() {
 		});
     
     $('.popup_last').click(function(){
+        alert('This may take a moment, Close the Last.fm page after authing to finish connecting.');
         token = bg.get_token();
     });
 
@@ -161,7 +171,21 @@ $('.timings').click(function(){
 	}, 800);
 	s_out = true;	
 	}
-	
+	$('.lastNP').click(function(){
+        if ($.cookie('lastNP') == '1'){
+            $('.lastNP').text('Turn on last.fm Now Playing');
+            $.cookie("lastNP", "0", {
+				expires: 365
+			});
+					
+        }
+        else{
+            $('.lastNP').text('Turn off last.fm Now Playing');
+              $.cookie("lastNP", "1", {
+						expires: 365
+				});
+        }
+    });
  });
 
 function doFlash(){
@@ -560,6 +584,12 @@ $("#up_pad").mouseout(function() {
 		clearInterval(scr_timer);
 
 });
+
+$("#doScrob").click(function() {
+		bg.scrobblage();
+});
+
+
 });
 
 var scalec;
