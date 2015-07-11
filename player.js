@@ -93,7 +93,7 @@ $(document).ready(function () { //Set some vars
         });
     }
 
-    motd = "<span>Differently Imported v4.2.4 *<a href='support.html' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Last.fm</span></a>*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+    motd = "<span>Differently Imported v4.2.4 *<a href='support.html#ls' target='_blank'><span style='color:#cdcdcd; text-decoration: underline;'>Last.fm</span></a>*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
     $.cookie("diChTn", motd, {
         expires: 365
     });
@@ -419,7 +419,7 @@ function doCallbackJS(data, method) {
     if (datafornow["error"] == 9) {
         console.log('autherror');
         alert('Last.FM has been disconnected from Differently Imported. Please reconnect through \'Settings\'');
-        $.cookie("lastSK", '', {
+        $.cookie("lastSKey", '', {
             expires: 0
         });
         $.cookie("lastToken", '', {
@@ -427,12 +427,16 @@ function doCallbackJS(data, method) {
         });
     }
     if (method == 'auth.getSession') {
-        $.cookie("lastSK", datafornow['session']['key'], {
+        $.cookie("lastSKey", datafornow['session']['key'], {
             expires: 365
         });
         $.cookie("lastToken", last_response['lt'], {
             expires: 365
         });
+        $.cookie("lastUsername", datafornow['session']['name'], {
+            expires: 365
+        });
+        
     }
 
     /*
@@ -442,7 +446,21 @@ function doCallbackJS(data, method) {
     */
     else if (method == 'track.updateNowPlaying') {
         console.log('Now Playing Captured');
-    } else if (method == 'track.getInfo') {
+    } 
+    else if (method =='track.love' || method =='track.unlove'){
+        trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
+        
+    }
+
+    else if (method == 'track.getInfo') {
+        
+        if (typeof datafornow['track']['userloved'] !== 'undefined'){
+             $.cookie('lastLiked', datafornow['track']['userloved'],{
+                 'expires': 1
+             });
+        }
+       
+        
         if (last_response['nextFunc'] == 'track.scrobble') {
             last_response['nextFunc'] = 0;
             params = {
@@ -451,22 +469,23 @@ function doCallbackJS(data, method) {
                 'track': datafornow['track']['name'],
                 'chosenByUser': '0',
                 'timestamp': Math.floor((new Date).getTime() / 1000),
-                'sk': $.cookie("lastSK")
+                'sk': $.cookie("lastSKey")
             }
             console.log(params);
             result = last_call('track.scrobble', params, true);
-        } else if (last_response['nextFunc'] == 'track.updateNowPlaying') {
+        } 
+        
+        else if (last_response['nextFunc'] == 'track.updateNowPlaying') {
             last_response['nextFunc'] = 0;
             params = {
                 'token': $.cookie("lastToken"),
                 'artist': datafornow['track']['artist']['name'],
                 'track': datafornow['track']['name'],
-                'sk': $.cookie("lastSK")
+                'sk': $.cookie("lastSKey")
             }
             console.log(params);
             result = last_call('track.updateNowPlaying', params, true);
         }
-
 
     } else if (method == 'track.scrobble') {
         console.log('Scrobbled');
@@ -491,6 +510,30 @@ last_response['last_np_artist'] = val.artist;
     trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
     last_response['nextFunc'] = 'track.scrobble';
 }
+function likeage() {
+    /*
+                            
+*/
+    
+   
+    if ($.cookie('lastLiked') == '1'){
+        
+       thefunk= 'track.unlove';
+    }
+    else{
+        
+        thefunk = 'track.love';
+    }
+      params = {
+                'token': $.cookie("lastToken"),
+                'artist': last_response['last_np_artist'],
+                'track': last_response['last_np_track'],
+                'sk': $.cookie("lastSKey")
+            }
+            console.log(params);
+            result = last_call(thefunk, params, true);
+   
+}
 var tl;
 var ts;
 var tp;
@@ -511,6 +554,10 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
                 if (key == chId) {
                     tl = val.duration;
                     ts = val.started;
+                    if (last_response['last_np_artist'] != val.artist){
+                        $.cookie('lastLiked', '0', {'expires': 365});
+                        
+                    }
                     tr = "<span title='" + val.track + "'>" + val.track + "</span>";
                     tp = val.art_url;
                     last_response['last_np_artist'] = val.artist;
@@ -560,14 +607,21 @@ track[i] (Required) : The track name.
 utocorrect[0|1] (Op
 api_key (Required) : A Last.fm API key.
 */
-
     params = {
         'artist': last_response['last_np_artist'],
         'track': last_response['last_np_track'],
-        'autocorrect': 1
+        'autocorrect': 1,
+        'username': $.cookie('lastUsername')
     }
-    method = 'track.getInfo';
-    result = last_call(method, params, false);
+
+      
+ method = 'track.getInfo';
+ result = last_call(method, params, false);
+      
+    
+
+ 
+
 
 }
 npt = "";
@@ -593,6 +647,9 @@ function nowplayLast() {
             npt = last_response['last_np_track'];
             trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
             last_response['nextFunc'] = 'track.updateNowPlaying';
+            setTimeout(function(){
+                scrobblage();
+            }, 1500);
         }
     }
 }

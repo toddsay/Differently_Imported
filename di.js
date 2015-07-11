@@ -66,11 +66,22 @@ $(document).ready(function () {
         //.popup_last,#doScrob
 
         if ($.cookie('lastSK') != null) {
+            $.cookie('lastSK', '', {
+                'expires':0
+            });
+            alert('Following feedback, the option to "love" and "unlove" tracks is here. However your last.fm account needs to be reconnected. Please head to settings and reconnect your account to continue Scrobbling. Check out "Help" -> "Last.fm setup" to read about the changes.');
+        }
+ 
+        if ($.cookie('lastSKey') != null) {
+             $('#doLike').css('display', 'block');
+             $('#track').css('width', '365px');
             $('.popup_last').css('display', 'none');
-            $('#doScrob').css('display', 'block');
             $('#npScrob').css('display', 'block');
             if ($.cookie('lastNP') == true) {
-                $('.lastNP').text('Turn off last.fm Now Playing');
+                $('.lastNP').text('Turn off AutoScrobbling');
+            }
+            else{
+                  $('#doScrob').css('display', 'block');
 
             }
 
@@ -172,16 +183,19 @@ $(document).ready(function () {
         }
         $('.lastNP').click(function () {
             if ($.cookie('lastNP') == '1') {
-                $('.lastNP').text('Turn on last.fm Now Playing');
+                $('.lastNP').text('Turn on Scrobbling');
                 $.cookie("lastNP", "0", {
                     expires: 365
                 });
+                  $('#doScrob').css('display', 'block');
 
             } else {
-                $('.lastNP').text('Turn off last.fm Now Playing');
+                $('.lastNP').text('Turn off AutoScrobbling');
                 $.cookie("lastNP", "1", {
                     expires: 365
                 });
+                  $('#doScrob').css('display', 'none');
+                
             }
         });
     });
@@ -241,7 +255,7 @@ $(document).ready(function () {
 
     $("#lC li").click(function () { // onClick for link to display key box
 
-
+        $.cookie('lastLiked','0',{'expires': 365})
         $.cookie("diChImage", $(this).attr("data-image"), {
             expires: 365
         }); // Store key for next time.
@@ -249,6 +263,7 @@ $(document).ready(function () {
         $.cookie("diChPt", $(this).text(), {
             expires: 365
         });
+        
         $("#miniChannel").text($(this).text());
         $.cookie("diChan", $(this).attr("data-trigger"), {
             expires: 365
@@ -299,6 +314,16 @@ $(document).ready(function () {
     }, 500);
 
     function getTn() {
+        if (typeof $.cookie('lastLiked') !== 'undefined'){
+            if ($.cookie('lastLiked') == '1'){
+                $('#doLike').css({'opacity': '1'});
+                $('#doLike').attr('title', 'Unlove this');
+            }
+            else{
+                $('#doLike').css({'opacity': '0.3'});
+                $('#doLike').attr('title', 'Last.fm: love this track');
+            }
+        }
         $('#vol').val($.cookie("diVol"));
         chrome.runtime.sendMessage({
             play: "3"
@@ -598,9 +623,18 @@ $(document).ready(function () {
         storedhtml = $("#track").html();
         setTimeout(function () {
             $("#track").html(storedhtml);
-        }, 150);
+        }, 250);
         $("#track").html('Scrobbled');
         bg.scrobblage();
+    });
+    
+    $("#doLike").click(function () {
+        storedhtml = $("#track").html();
+        setTimeout(function () {
+            $("#track").html(storedhtml);
+        }, 250);
+        $("#track").html('Liked');
+        bg.likeage();
     });
 
 
