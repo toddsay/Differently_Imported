@@ -93,7 +93,7 @@ $(document).ready(function () { //Set some vars
         });
     }
 
-    motd = "<span>Differently Imported v4.2.4 *<a href='support.html#ls' target='_blank'><span style='color:#cdcdcd; text-decoration: underline;'>Last.fm</span></a>*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+    motd = "<span>Differently Imported v4.2.5 *<a href='support.html#nch' target='_blank'><span style='color:#cdcdcd; text-decoration: underline;'>New Channels</span></a>*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
     $.cookie("diChTn", motd, {
         expires: 365
     });
