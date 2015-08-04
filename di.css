@@ -279,20 +279,25 @@ border-color: transparent transparent #30374D transparent;
 height:20px;
 }
 #popup_nowplay{
+pointer-events: visible;
 position:fixed;
-top:47px;
-left:18px;
 display:none;
+top:0px;
+left:0px;
+opacity:0;
+color:white;
 z-index:1000;
-background-image:url('bgGunM.png');
-background-color:#000;
-font-size:14px;
+background-color:#212737;
+margin-top:2px;
+font-size:16px;
 padding:5px;
-width:140px!important;
-height:143px !important;
-overflow:hidden;
-border:1px solid white;
+width:200px!important;
+height:310px !important;
 text-align:center;
+padding-top:40px;
+padding-right:10px;
+padding-left:10px;
+overflow:hidden;
 }
 .close{
 cursor:pointer;

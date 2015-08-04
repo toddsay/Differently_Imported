@@ -546,38 +546,156 @@ $(document).ready(function () {
         }
 
     });
-
-    $("#lC li").mouseover(function () {
+    
+    descriptions={
+        '324':'Your favorite dance tunes from the start of the decade. Familiar hits and overlooked classics in abundance.',
+        '12' :'Electronic sounds and atmospheric textures create a genre to enhance your state of mind and take you deeper.',
+        '290':'From the funkiest grooves to the dirtiest beats. Hard-hitting, high energy 4/4 club cuts to move the masses.',
+        '289':'Blending together elements of house music, speed garage, and techno – it’s all about the low end frequencies.',
+        '325':'Heavily focused on breakbeats and dusty samples. A defining 90s musical movement still going strong today.',
+        '209':'Fusing together house elements from the past and the present - prime time music full of uplifting high energy.',
+        '15':'Inspired by hip hop and UK rave music, breaks features broken up drum loops and creative samples, synths and fx.',
+        '400':'The sounds of Chill & Tropical House are expertly made for lounging and dancing alike with it\'s deeper house vibes.',
+        '224':'Hip hop, trip hop, downtempo beats and jazz, blended together in a mellow, laid back style for perfect listening.',
+        '3':'Electronic sounds, mellow mid-tempo rhythms, and a groove meant to calm the senses and ease the mind.',
+        '68':'The perfect musical soundtrack for when you want to close your eyes, get truly comfortable, and drift away.',
+        '275':'The brilliant combination of dubstep rhythms with the mellow grooves of chillout. A unique sound all its own.',
+        '69':'European pop music born in the 90s full of high energy sounds and big hooks – now heard in gyms and malls worldwide.',
+        '183':'Conceived in the European discos in the 70s, evolving through the decades into modern electronic masterpieces.',
+        '90':'The classic melodies, the epic breakdowns and gigantic builds. Re-experience Trance music in her prime.',
+        '125': 'Classic sounds of Vocal Trance',
+        '177':'The bassbin rattling, speaker-freaking hits of Dubstep – all tried, tested and approved to work in the clubs. ',
+        '70':'The music heard in the biggest venues worldwide. From prime time pushers to deeper house shakers - the sounds of now. ',
+         '181':'Evil, gritty and twisted Drum & Bass. at 160+ BPM, hear the darkest basslines and the hardest hitting percussion.',
+        '346':'The darker form of PsyTrance, which is a sound all its own – direct from Goa to your headphones.',
+        '174':'House music crafted for the smaller and mid-sized rooms - deeper tracks full of silky, smooth grooves.',
+        '137':'Elements of house, funk, and disco. Mid-tempo beats, soulful grooves and head nodding selections.',
+        '182':'A fusion of deep house & techno. Punchy grooves, spaced out sounds and forward thinking productions.',
+        '353':'Where would dance music be without Detroit? The city that started it all continues to inspire and educate. ',
+        '92':'The feel good sound inspired from 70s disco combined with the warm kick drum of modern house music.',
+        '10':'From techno, deep house, progressive and trance – check out the sounds of the DJ deep in the mix.',
+        '180':'Head nodding beats, chilled vocals, and lush soundscapes to bring down the sun and start the night.',
+        '13':'Born in the mid 90s, drum & bass is all about fast breakbeats, urban vibes, and rib rattling basslines.',
+        '291':'A hybrid of half-time dubstep and intense drum \'n bass.',
+        '348':'An emphasis on the bass and drums, delayed effects, sampled vocals and smokey Reggae inspired vibes.',
+        '91':'The wobbles of the bass, the party rocking beats, and the biggest crowd destroying drops.',
+        '355':'The beloved sounds of deep techno saturated with tape delays, heavy reverb and ice cold atmospherics.',
+        '326':'Originating in the early 80s as a mix of industrial, punk and electropop, EBM changed the landscape of dance music and is still going strong today. ',
+        '208':'Creative music influenced from techno to chill out, indie to IDM – a unique and undefinable listening experience.',
+        '56':'Buzzing basslines, huge kicks, party rocking drops. House music packed full of gigantic bass and massive synths.',
+        '280':'The trailblazers, the renegades and the experimental musicians who gave early inspiration with electronic instruments.',
+        '347':'30+ years of open-genre electronic music. From spatial ambient sounds to experimental techno and more. ',
+        '286':'Catchy pop music blended together with vintage synthesizers and electronic instrumentation. ',
+        '327':'The combination of 1920s-1940s jazz and swing music, big band horns and modern day electro house. ',
+        '175':'Trance in its most boisterous form. Uplifting melodies on top of high energy beats create these euphoric anthems.',
+        '6':'Pop music infused with a high energy 4/4 pulse. Heavy on the synthesizers, the melodies and the vocals.',
+        '58':'Focused on the funkiest grooves, with plenty of the guitar licks and clever samples placed around a 4/4 swing.',
+        '401':'Gritty, off-kilter and typically instrumental, the Future Beats sound is perfectly married with modern technology and hip hop idealism.',
+        '292':'2step Garage rhythms, chunky bass line driven grooves and plenty of forward thinking innovation.',
+        '53':'Finest selection of futurepop and synthpop.',
+        '16':'The hardest form of techno with punishing tracks designed to drive the crowds into a sweaty frenzy.',
+        '198':'The sound of digital malfunctions, electric hum and bit rate distortions perfectly placed alongside laid-back hip hop beats.',
+        '8':'A very psychedelic form of trance, Goa-Psy Trance is a sound full of arpeggiated synths and trippy effects.',
+        '176':'A channel showcasing everything from hard dance, trance and happy hardcore to lift the spirits (and the arms).',
+        '9':'Strictly for the hardcore. These are the biggest and boldest bangers, and the hardest hitting tracks.',
+        '5':'Concrete kicks and punching rhythms, hard dance is a tougher side of music with sharp edges and aggressive power.',
+        '60':'Hard techno & hardcore. A global phenomenon with powerful kicks, distorted effects and infectious melodies.',
+        '276':'Tough as nails warehouse jams full of cold aggression, sinister structures and pounding rhythms that hit hard.',
+        '4':'Born in Chicago and now global, house music is always evolving but remains true to it’s pure 4/4 structure.',
+        '350':'Experimental, influential and pushing the boundaries of electronic music. Truly a sound to experience. ',
+        '351':'The spirit of Rock & Roll with an electronic soul. Club culture and live music combined.',
+        '349':'One of the biggest cultural soundtracks with the infectious thump of house music. Expect sultry saxophones, trumpets, and finger snapping grooves.',
+        '293':'Jungle keeps the breakbeat tempos high and celebrates the diverse ideas found within urban and rave music.',
+        '117':'The sounds of Salsa, Brazilian beats and Latin Jazz with the steady grooves of modern East Coast dance music.',
+        '105':'Smooth as water, with the fast paced rhythms, liquid DNB flows with rolling ease without losing momentum.',
+        '184':'Smooth, rolling and steady – this fresh formation of Dubstep keeps the sounds you love with a flowing groove.',
+        '352':'The smoother side of Trap but still packed with mechanical grooves and hip hop moods. ',
+        '11':'Music to chill to. Music made for when it’s all about kicking off your shoes, laying back, and totally relaxing.',
+        '210':'The sound of the largest events. From the gargantuan festivals, the huge main rooms and the biggest DJs.',
+        '402':'The melodic side of progressive house, packed with driving rhythms and forward thinking sounds.',
+        '59':'Minimal fuses elements of house, techno and electronica and strips it back to focus on the spaces between the sound.',
+        '294':'Pitched up vocals, happy hardcore beats, and high energy music non-stop.',
+        '295':'Modern disco music blending the familiar funk of the 70s and 80s with futuristic beats and up to date grooves.',
+        '124':'Acid, one of the characteristics of the TB-303, is celebrated here with the best tracks from house, techno and trance.',
+        '104':'The biggest classics and secret weapons – this is a true treasure chest of house tracks from back in the day.',
+        '296':'Grab your whistles, white gloves and reach for the laser beams. This is the sound of raving when raving was new.',
+        '7':'Always moving forward, progressive continues to reinvent itself into new sounds and styles made for the floor.',
+        '178':'Progress your mind to undiscovered psychedelic dimensions.',
+        '285':'The psychedelic side of ambient.',
+        '67':'Downtempo psychedelic dub grooves, goa ambient, and world beats.',
+        '213':'Russia\'s hottest club hits.',
+        '47':'House music saturated with feeling – full of melodies, vocals and true soul. Steady warm 4/4 vibes.',
+        '64':'Ambient space music for expanding minds.',
+        '66':'Blending the warmth of house music with the cold structural precision of techno, tech house bridges the divide.',
+        '36':'Techno is a true musical force full of structure and style. Robotic, mechanical and full of soul, always facing the future.',
+        '1':'Emotive high energy dance music which embraces melodies, vocals and a true journey of dance music songwriting.',
+        '230':'Born out of Southern Hip-Hop and influenced by techno, trap is analogue drum machines with hip-hop aesthetics.',
+        '57':'The percussive side of the house and tech house scene, tribal house takes drums and puts them in the forefront.',
+        '215':'UMF Radio 24/7',
+        '288':'From gritty Berlin streets to dark corners of Brooklyn, this is techno made by artists pushing the genre further.',
+        '142':'Relaxing vibes and a collection of vocal songs providing the laid back soundtrack to your day.',
+        '278':'Laid back grooves and a collection of smooth vocals soothe the ears and relax the mind.',
+        '2':'Lush vocals paired together with emotive dance music. Beautiful melodies and endless energy.'    
+    }
+    var tn_timer;
+    
+    $("#lC li").mousemove(function () {
         channel_stuff = $(this).attr("data-trigger");
         channel_name = $(this).text();
-        tn_timer = setTimeout(function () {
-            x = ":(";
-            dP = channel_stuff.indexOf("_"); //parse the value. need both bits. 
-            channel_Id = channel_stuff.substring(0, (dP)); // channel id for the trackname
-            $.getJSON(bg.apiUrl, function (data) {
-                $.each(data, function (key, val) {
-                    if (key == channel_Id) {
-                        $('#popup_nowplay').css({
-                            'display': 'block'
+        clearTimeout(tn_timer);
+        tn_timer = setInterval(function () {
+             if ($("#lC").is(':hover')) {
+                    x = ":(";
+                    
+                       $( "#popup_nowplay" ).css({"display":"block"});      
+                                $( "#popup_nowplay" ).animate({
+                                    opacity: 0.85
+                                                     
+                            }, 125);
+                    dP = channel_stuff.indexOf("_"); //parse the value. need both bits. 
+                    channel_Id = channel_stuff.substring(0, (dP)); // channel id for the trackname
+                    $.getJSON(bg.apiUrl, function (data) {
+                        $.each(data, function (key, val) {
+                            if (key == channel_Id) {
+                                $('#popup_nowplay').html(`
+                                <span style='font-weight:bold; font-size:14px;'> ${channel_name} </span>
+                                <br /> <br /> 
+                                ${descriptions[channel_Id]} 
+                                <br /> <br /> 
+                                Now Playing:<br>
+                                <span style='font-weight:bold; font-size:14px;'> ${val.track} </span>
+                                `);
+                             
+                            } 
                         });
-                        $('#popup_nowplay').html("<span style='font-size:12px;'>Now playing on</span><br/><span style='font-weight:bold; font-size:14px;'> " + channel_name + "</span><br /> <br /> " + val.track);
-                    }
-                });
-            });
-
+                    });
+             } 
+             
+             else{
+                    $( "#popup_nowplay" ).animate({
+                        opacity: 0
+                    },125, function()
+                    {
+                        $( "#popup_nowplay" ).css({display:"none"});
+                    });     
+                 
+             }
 
 
         }, 155);
     });
+     $("#popup_nowplay").mouseover(function () {
+                     clearTimeout(tn_timer);
+                    $( "#popup_nowplay" ).animate({
+                        opacity: 0
+                    },125, function()
+                    {
+                        $( "#popup_nowplay" ).css({display:"none"});
+                    });     
+                    
+                    
+     });
 
-
-
-    $("#lC li").mouseout(function () {
-        clearTimeout(tn_timer);
-        $('#popup_nowplay').css({
-            'display': 'none'
-        });
-    });
     scroll_x = 0; // swap for cookie
 
     $("#down_pad").mouseover(function () {
