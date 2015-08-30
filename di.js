@@ -254,30 +254,37 @@ $(document).ready(function () {
     });
 
     $("#lC li").click(function () { // onClick for link to display key box
-
-        $.cookie('lastLiked','0',{'expires': 365})
-        $.cookie("diChImage", $(this).attr("data-image"), {
-            expires: 365
-        }); // Store key for next time.
-
-        $.cookie("diChPt", $(this).text(), {
-            expires: 365
-        });
-        
-        $("#miniChannel").text($(this).text());
-        $.cookie("diChan", $(this).attr("data-trigger"), {
-            expires: 365
-        }); // Store key for next time.
-
-        if (bg.playing) {
-            clearInterval(disTimer);
-            setTimeout(function () {
-                disTimer = setInterval(function () {
-                    getTn();
-                }, 500);
-            }, 750);
-            doPlay();
+	
+	  if (ctrlPressed) {
+		  mkdownload($("#server").val(), $(this).attr("data-trigger"), $(this).text(), $.cookie("premium"));
         }
+		else{
+		
+			
+			$.cookie('lastLiked','0',{'expires': 365})
+			$.cookie("diChImage", $(this).attr("data-image"), {
+				expires: 365
+			}); // Store key for next time.
+
+			$.cookie("diChPt", $(this).text(), {
+				expires: 365
+			});
+			
+			$("#miniChannel").text($(this).text());
+			$.cookie("diChan", $(this).attr("data-trigger"), {
+				expires: 365
+			}); // Store key for next time.
+
+			if (bg.playing) {
+				clearInterval(disTimer);
+				setTimeout(function () {
+					disTimer = setInterval(function () {
+						getTn();
+					}, 500);
+				}, 750);
+				doPlay();
+			}
+		}
     });
 
 
@@ -422,7 +429,7 @@ function doPlay() {
     });
 }
 
-maxYLen = 2600;
+maxYLen = 3000;
 scrollStep = 9;
 //jQuery ismouseover  method
 //This isn't a licenced method but it saved me ages messing (after a lot of messing around anyway :( ) 
@@ -810,3 +817,44 @@ function go() {
     drawContext.restore();
 
 }
+
+function mkdownload(serverNumber, channelNameID, is_p){
+	chNm = channelNameID.split("_")[1];
+	channelNameWord = chNm;
+	listenerKey = $.cookie('diKeys');
+	isHiQ = "";
+	if ($.cookie('premium') == 1){
+		isHiQ = "_hi";
+	}
+	if (is_p == 0){
+		chStthing = `http://pub${serverNumber}.di.fm/di_${chNm}_aac?type=.mp3`;
+	}
+	else{
+		chStthing = `http://prem${serverNumber}.di.fm/${chNm}${isHiQ}?${listenerKey}`;
+	}
+	
+thingString = `[playlist]
+NumberOfEntries=1
+File1=${chStthing}
+Title1=Digitally Imported - ${channelNameWord} - assisted by Differently Imported
+Length1=-1
+Version=2`;
+	
+	pls_download('DI.fm -- '+channelNameWord+' -- By Differently Imported.pls', thingString);
+	
+}
+
+
+function pls_download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:pls/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+  /*Hackety security override Win*/
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+

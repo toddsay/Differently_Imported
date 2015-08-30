@@ -35,7 +35,7 @@ body{
 	background-color:#555;
 	color: rgb(230, 230, 230);
 	font-size:20px;
-	font-family:verdana;
+	font-family:verdana, sans-serif;
 	height:100%;
 	width:100%;
 	overflow:hidden;
