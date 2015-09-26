@@ -256,7 +256,7 @@ $(document).ready(function () {
     $("#lC li").click(function () { // onClick for link to display key box
 	
 	  if (ctrlPressed) {
-		  mkdownload($("#server").val(), $(this).attr("data-trigger"), $(this).text(), $.cookie("premium"));
+		  mkdownload($("#server").val(), $(this).attr("data-trigger"), $.cookie("premium"));
         }
 		else{
 		
@@ -823,15 +823,18 @@ function mkdownload(serverNumber, channelNameID, is_p){
 	channelNameWord = chNm;
 	listenerKey = $.cookie('diKeys');
 	isHiQ = "";
-	if ($.cookie('premium') == 1){
+	if ($.cookie('diHq') == 1){
 		isHiQ = "_hi";
 	}
-	if (is_p == 0){
-		chStthing = `http://pub${serverNumber}.di.fm/di_${chNm}_aac?type=.mp3`;
+	
+	if (is_p == 1){
+		chStthing = `http://prem${serverNumber}.di.fm/${chNm}${isHiQ}?${listenerKey}`;
+
 	}
 	else{
-		chStthing = `http://prem${serverNumber}.di.fm/${chNm}${isHiQ}?${listenerKey}`;
-	}
+		chStthing = `http://pub${serverNumber}.di.fm/di_${chNm}_aac?type=.mp3`;
+
+		}
 	
 thingString = `[playlist]
 NumberOfEntries=1
