@@ -642,7 +642,9 @@ $(document).ready(function () {
         '288':'From gritty Berlin streets to dark corners of Brooklyn, this is techno made by artists pushing the genre further.',
         '142':'Relaxing vibes and a collection of vocal songs providing the laid back soundtrack to your day.',
         '278':'Laid back grooves and a collection of smooth vocals soothe the ears and relax the mind.',
-        '2':'Lush vocals paired together with emotive dance music. Beautiful melodies and endless energy.'    
+        '2':'Lush vocals paired together with emotive dance music. Beautiful melodies and endless energy.',
+        '403': 'Atmospheric Breaks takes the best elements of breakbeat and saturates the music with a heavy heaping of spaced out melodies, laid back synths, and out-of-this-world warm bass frequencies.',
+        '404': 'Indie Beats is a wicked blending of laid back rhythms with cutting edge idealism. Smooth vocals round out the sound and make this the perfect indie music for head nodding, and chilling out.'
     }
     var tn_timer;
     
@@ -861,3 +863,32 @@ function pls_download(filename, text) {
   document.body.removeChild(element);
 }
 
+$(document).ready(function(){
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth();
+    var yyyy = today.getFullYear();
+    if(dd<10) {
+        dd='0'+dd
+    } 
+    if(mm<10) {
+        mm='0'+mm
+    } 
+    var xmasfrom = new Date(2015, 11, 19); 
+    var nyfrom = new Date(2015, 11, 31);  
+    var xmasto   = new Date(2015, 11, 31);
+    var nyto   = new Date(2016, 0, 2);
+    var check = new Date(yyyy, mm, dd);
+
+    if(check >= xmasfrom && check < nyto){
+       var fileref=document.createElement('script')
+        fileref.setAttribute("type","text/javascript")
+        fileref.setAttribute("src", 'snowstorm.js')        
+        document.getElementsByTagName("head")[0].appendChild(fileref)
+        if (!playing){
+        $('#imageContainer img').attr('src', 'DiffXmas.png');
+        }
+    }   
+
+    
+});

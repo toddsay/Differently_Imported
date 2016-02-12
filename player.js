@@ -92,8 +92,34 @@ $(document).ready(function () { //Set some vars
             expires: 365
         });
     }
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth();
+    var yyyy = today.getFullYear();
+    if(dd<10) {
+        dd='0'+dd
+    } 
+    if(mm<10) {
+        mm='0'+mm
+    } 
+    var xmasfrom = new Date(2015, 11, 19); 
+    var nyfrom = new Date(2015, 11, 31);  
+    var xmasto   = new Date(2015, 11, 31);
+    var nyto   = new Date(2016, 0, 2);
+    var check = new Date(yyyy, mm, dd);
 
-    motd = "<span>Differently Imported v4.2.57 *<a href='support.html#pls' target='_blank'><span style='color:#cdcdcd; text-decoration: underline;'>PLS download</span></a>*<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+    if(check >= xmasfrom && check < xmasto){
+     motd = "<span>Happy Holidays from Phil @ Differently Imported<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+     diIMG = "<img src='diffXmas.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
+    } else if(check >= nyfrom && check <= nyto){
+     motd = "<span>Happy New Year from Phil @ Differently Imported<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+     diIMG = "<img src='diffXmas.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
+     
+    }
+    else{
+    motd = "<span>Differently Imported. <a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>2 new channels!</span> <br><a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>Free Users, Sorry for your loss!</span></a><br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+    
+    }
     $.cookie("diChTn", motd, {
         expires: 365
     });
@@ -171,7 +197,7 @@ $(document).ready(function () { //Set some vars
             }
             url = "http://prem" + server + ".di.fm:80/" + chUrl + "?" + ky;
         } else {
-            url = "http://pub" + server + ".di.fm/di_" + chUrl + "_aac?type=.mp3";
+            url = "http://pub" + server + ".di.fm/di_" + chUrl + "_aac?type=.flv";
         }
         $.cookie("diChId", channelId, {
             expires: 365
