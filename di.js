@@ -785,8 +785,8 @@ function analyseThis() {
 
 function go() {
     requestAnimationFrame(go);
-    drawContext.save();
     drawContext.clearRect(0, 0, canvasX, canvasY);
+    try{
     bg.analyser.getByteFrequencyData(freqDomain);
     for (i = 0; i < bg.analyser.frequencyBinCount; i++) {
         value = freqDomain[i];
@@ -816,7 +816,9 @@ function go() {
     }
     drawContext.lineTo(canvas.width, canvas.height / 2);
     drawContext.stroke();
-    drawContext.restore();
+    } catch(e){
+        drawContext.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
 }
 

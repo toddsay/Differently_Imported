@@ -63,12 +63,6 @@ $(document).ready(function () { //Set some vars
     }, 2000);
 
     capAudio = document.getElementById('diPlyr');
-    audioContext = new AudioContext();
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 2048;
-    source = audioContext.createMediaElementSource(capAudio);
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
     pollFlag = 1;
     pollTime = 0;
     playing = false;
@@ -176,6 +170,10 @@ $(document).ready(function () { //Set some vars
         scrollIcon(false); // disable the play badge on the icon
         $("#diPlyr").attr("src", "");
         $("#diPlyr").remove();
+        try{
+        audioContext.close();
+        }
+        catch(e){}
         if (playing == "false") {
             $.cookie("diChTn", motd, {
                 expires: 365
@@ -222,9 +220,13 @@ $(document).ready(function () { //Set some vars
             });
             audio.appendTo('body');
             capAudio = document.getElementById('diPlyr');
+            audioContext = new AudioContext();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
             source = audioContext.createMediaElementSource(capAudio);
             source.connect(analyser);
             analyser.connect(audioContext.destination);
+
         }
         playing = true;
         showTrack(); // and kick off tracklist API
