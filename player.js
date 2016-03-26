@@ -111,12 +111,14 @@ $(document).ready(function () { //Set some vars
      
     }
     else{
-    motd = "<span>Differently Imported. <a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>2 new channels!</span> <br><a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>Free Users, Sorry for your loss!</span></a><br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+    motd = "<span>Differently Imported. <a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>All User Requested features.</span></a> Thanks for your input. V4.3.70 <br><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
     
     }
     $.cookie("diChTn", motd, {
         expires: 365
     });
+    $.cookie('ctractlen', 0, {'expires': 365});
+    $.cookie('ctractstart', 0, {'expires': 365});
 
     $.cookie("newT", "1", {
         expires: 365
@@ -156,6 +158,8 @@ $(document).ready(function () { //Set some vars
                 $.cookie("diChTn", motd, {
                     expires: 365
                 });
+                $.cookie('ctractlen', 0, {'expires': 365});
+                $.cookie('ctractstart', 0, {'expires': 365});                
                 $.cookie("newT", "1", {
                     expires: 365
                 });
@@ -178,6 +182,8 @@ $(document).ready(function () { //Set some vars
             $.cookie("diChTn", motd, {
                 expires: 365
             });
+            $.cookie('ctractlen', 0, {'expires': 365});
+            $.cookie('ctractstart', 0, {'expires': 365});            
             $.cookie("newT", "1", {
                 expires: 365
             });
@@ -285,6 +291,8 @@ $(document).ready(function () { //Set some vars
             $.cookie("diChTn", motd, {
                 expires: 365
             });
+            $.cookie('ctractlen', 0, {'expires': 365});
+            $.cookie('ctractstart', 0, {'expires': 365});            
             $.cookie("newT", "1", {
                 expires: 365
             });
@@ -567,21 +575,38 @@ var ts;
 var tp;
 var tr;
 
+function get_time(){
+        time_ping_url ="http://api.audioaddict.com/v1/ping.json" ;
+        $.get(time_ping_url, function (timeinfo) {
+             server_time = timeinfo['time'];
+             server_time = new Date(server_time).getTime() / 1000;
+             local_time = new Date().getTime() / 1000;
+             time_offset = (~~local_time - server_time);
+             $.cookie('servertimeoffset', time_offset, {'expires': 365});
+        });
+}
+
 //var nexttime = (2000 + (Math.round(+new Date()/1000)));
 function showTrack() { // tracklist api call. timed with flags to stop server hammerage. 
     unix = Math.round(+new Date() / 1000);
     if (unix >= $.cookie("diPt")) {
+        console.log('need new track');
         pollFlag = 1;
     }
     /* 	if (unix <= nexttime){pollflag = 0;}
 		else {nexttime = (2000 + (Math.round(+new Date()/1000)));} */
     if (pollFlag == 1) {
         chId = $.cookie("diChId");
+        
+       get_time();
+
         $.getJSON(apiUrl, function (data) {
             $.each(data, function (key, val) {
                 if (key == chId) {
                     tl = val.duration;
                     ts = val.started;
+                    $.cookie('ctractlen', tl, {'expires': 365});
+                    $.cookie('ctractstart', ts, {'expires': 365});
                     if (last_response['last_np_artist'] != val.artist){
                         $.cookie('lastLiked', '0', {'expires': 365});
                         

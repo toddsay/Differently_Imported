@@ -39,12 +39,14 @@ $(document).ready(function () {
         $('#lK').val($.cookie("diKeys"));
         $('#lC').val($.cookie("diChan"));
         $('#server').val($.cookie("Diserver"));
-        scrolCh();
+        swap_lists($("." + $.cookie("Dilistview")));
+        show_stars();
+        
         $('#vol').val($.cookie("diVol"));
         hQ = $.cookie("dihQ");
 
         $('#hQ').val($.cookie("diHq"));
-        $("#miniChannel").text($.cookie("diChPt"));
+        $("#mini_tn").text($.cookie("diChPt"));
         if ($.cookie("diOnTrig") == "1") {
             $('#playAlarm').prop('checked', true);
         }
@@ -253,8 +255,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#lC li").click(function () { // onClick for link to display key box
-	
+	$('body').on('click', '#lC li', function() {
 	  if (ctrlPressed) {
 		  mkdownload($("#server").val(), $(this).attr("data-trigger"), $.cookie("premium"));
         }
@@ -270,7 +271,7 @@ $(document).ready(function () {
 				expires: 365
 			});
 			
-			$("#miniChannel").text($(this).text());
+			$("#mini_tn").text($(this).text());
 			$.cookie("diChan", $(this).attr("data-trigger"), {
 				expires: 365
 			}); // Store key for next time.
@@ -284,6 +285,7 @@ $(document).ready(function () {
 				}, 750);
 				doPlay();
 			}
+            show_stars();
 		}
     });
 
@@ -360,11 +362,14 @@ $(document).ready(function () {
 function scrolCh() {
     setTimeout(function () {
         trappedC = 0;
-        $(".channel li").each(function () {
+        $(".channel.active li").each(function () {
             if ($.cookie("diChPt") == $(this).text()) {
+                $(".channel.active").scrollTop(0);
                 newX = $(this).position().top;
                 newX = newX - 155;
-                $(".channel").scrollTop(newX);
+
+                $(".channel.active").scrollTop(newX);
+
                 trappedC = 1;
             }
 
@@ -647,13 +652,12 @@ $(document).ready(function () {
         '404': 'Indie Beats is a wicked blending of laid back rhythms with cutting edge idealism. Smooth vocals round out the sound and make this the perfect indie music for head nodding, and chilling out.'
     }
     var tn_timer;
-    
-    $("#lC li").mousemove(function () {
+    $('body').on('mousemove', '#lC li', function() {
         channel_stuff = $(this).attr("data-trigger");
         channel_name = $(this).text();
         clearTimeout(tn_timer);
         tn_timer = setInterval(function () {
-             if ($("#lC").is(':hover')) {
+             if ($("#lC.active").is(':hover')) {
                     x = ":(";
                     
                        $( "#popup_nowplay" ).css({"display":"block"});      
@@ -711,12 +715,12 @@ $(document).ready(function () {
 
         scr_timer = setInterval(function () {
             if ($("#down_pad").ismouseover()) {
-                scroll_x = $(".select").scrollTop();
+                scroll_x = $(".select.active").scrollTop();
                 scroll_x = scroll_x + scrollStep;
                 if (scroll_x >= maxYLen) {
                     scroll_x = maxYLen;
                 }
-                $(".select").scrollTop(scroll_x);
+                $(".select.active").scrollTop(scroll_x);
             }
         }, 23);
 
@@ -730,12 +734,12 @@ $(document).ready(function () {
     $("#up_pad").mouseover(function () {
         scr_timer = setInterval(function () {
             if ($("#up_pad").ismouseover()) {
-                scroll_x = $(".select").scrollTop();
+                scroll_x = $(".select.active").scrollTop();
                 scroll_x = scroll_x - scrollStep;
                 if (scroll_x <= 0) {
                     scroll_x = 0;
                 }
-                $(".select").scrollTop(scroll_x);
+                $(".select.active").scrollTop(scroll_x);
             }
         }, 23);
 
@@ -876,10 +880,10 @@ $(document).ready(function(){
     if(mm<10) {
         mm='0'+mm
     } 
-    var xmasfrom = new Date(2015, 11, 19); 
-    var nyfrom = new Date(2015, 11, 31);  
-    var xmasto   = new Date(2015, 11, 31);
-    var nyto   = new Date(2016, 0, 2);
+    var xmasfrom = new Date(2016, 11, 19); 
+    var nyfrom = new Date(2016, 11, 31);  
+    var xmasto   = new Date(2016, 11, 31);
+    var nyto   = new Date(2017, 0, 2);
     var check = new Date(yyyy, mm, dd);
 
     if(check >= xmasfrom && check < nyto){
@@ -894,3 +898,124 @@ $(document).ready(function(){
 
     
 });
+
+function swap_lists(element){
+            if ($(element).hasClass('all_channels')){
+            $('.faves_list').css({'display': 'none'});
+            $('.all_channels').addClass('active_list');
+            $('.faves').removeClass('active_list');
+            $('.master_list').css({'display': 'block'});    
+            $('.master_list').addClass('active');
+            $('.faves_list').removeClass('active');
+
+            newlist = 'all_channels';
+        }
+        else{
+            $('.faves_list').css({'display': 'block'});
+            $('.master_list').css({'display': 'none'});
+            $('.faves_list').addClass('active');
+            $('.faves').addClass('active_list');
+            $('.all_channels').removeClass('active_list');
+            $('.master_list').removeClass('active');
+            newlist = 'faves';
+        }
+        $.cookie("Dilistview",newlist , {
+            expires: 365
+        });
+        
+        scrolCh();
+}
+function show_stars(){
+        if ($.cookie("Difaves") !== 'undefined'){
+            try{
+                fav_list =  JSON.parse($.cookie("Difaves"))['faves'];
+            }catch(e){
+                fav_list = []
+            }
+            if (fav_list.indexOf($.cookie('diChan')) >= 0){
+                $('.add_to_fav').attr('src', 'fav_filled.png');
+            }
+            else{
+                $('.add_to_fav').attr('src', 'fav_hollow.png');
+            }
+        }
+        
+        build_favlist();
+}
+
+function build_favlist(){
+    if ($.cookie("Difaves") !== 'undefined'){
+        try{
+            fav_list =  JSON.parse($.cookie("Difaves"))['faves'];
+        }catch(e){
+            fav_list = [];
+        }
+    }
+    else{
+        fav_list = [];
+    }
+    $('.faves_list').html('');
+    
+    if (fav_list.length == 0){
+        $('.faves_list').html('You have not added any favourites yet. Click the <img src ="fav_hollow.png"> by the player controls to start adding favourites.');
+    }
+    else{
+        fav_list.forEach(function(fave){
+            $( '.master_list *[data-trigger="'+fave+'"]' ).clone().appendTo( ".faves_list" );
+        });
+        
+    }
+    
+}
+$(document).ready(function(){
+    $('.list_selector').click(function(){
+        swap_lists(this);
+    });    
+    $('.add_to_fav').click(function(){
+        if ($.cookie("Difaves") !== 'undefined'){
+            try{
+                fav_list =  JSON.parse($.cookie("Difaves"))['faves'];
+            }catch(e){
+                fav_list = []
+            }
+            if (fav_list.indexOf($.cookie('diChan')) >= 0){
+                fav_list.splice(fav_list.indexOf($.cookie('diChan')), 1);
+            }
+            else{
+                fav_list.push($.cookie('diChan'));
+            }
+        }
+        else{
+            fav_list = [];
+            fav_list.push($.cookie('diChan'));
+        }
+        newfaves = JSON.stringify({'faves': fav_list});
+          $.cookie("Difaves",newfaves , {
+            expires: 365
+        });
+        show_stars();
+
+    });
+    start_track_duration();
+    
+});
+
+function start_track_duration(){
+    setInterval(function(){
+        if ($.cookie('ctractlen') != 0 &&  $.cookie('ctractstart') != 0){
+            offset = $.cookie('servertimeoffset');
+            seconds = new Date().getTime() / 1000;
+            t_len = $.cookie('ctractlen');
+            t_start = $.cookie('ctractstart');
+            // t_pos is pixels across the duration bar.
+            t_pos = ($('#trackline').width() / t_len ) * (~~seconds - offset - t_start);
+            if (t_pos > $('#trackline').width()){
+                t_pos = $('#trackline').width();
+            }
+            $('.trackpointer').width(t_pos);
+        }
+        else{
+            $('.trackpointer').width($('#trackline').width());
+        }
+    }, 10);
+}

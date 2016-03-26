@@ -146,7 +146,7 @@ Stop in <select id="sleepBox" class="" style = "width:70px;">
      
 		<span class="sm_but mouselight" id="stBut" title="Stop">
 <img src="stopRound.png">		</span>
-<span id="miniChannel"></span>
+<span id="miniChannel"><img class="add_to_fav" src="fav_hollow.png" style="height:10px; width:10px;" title="Add Channel to Favourites"><span id="mini_tn"></span></span>
 	</div>
 
 	</div>
@@ -154,12 +154,13 @@ Stop in <select id="sleepBox" class="" style = "width:70px;">
 
 </div>
 	<div id="right">
-			
 						<div id="scroll_box_box">
 							<div id="up_pad" class="mouselight">
 
 							</div>
-							<div class="select channel" id="lC" title="Pick a channel.">
+                            <div class="select channel faves_list" id="lC" title="Pick a channel." style="display:none">
+                            </div>
+							<div class="select channel master_list" id="lC" title="Pick a channel.">
 								<!-- Channel selector -->
 								<li data-image = "http://api.audioaddict.com/v1/assets/image/1f2189badb0bb9ccba20e54163afff69.png?size=145x145" title="00's Club Hits  - Ctrl+Click for PLS" data-trigger="324_00sclubhits">
 									00's Club Hits
@@ -520,10 +521,12 @@ Stop in <select id="sleepBox" class="" style = "width:70px;">
 							</div>
 
 						</div>				
-	</div>	
+                        <div id="list_selector"><span class="all_channels list_selector">All</span><span class="faves list_selector">Favourites</span></div>
+
+                        </div>	
 
 
-
+    <div id = "trackline"><span class="trackpointer"></span></div>
 	<div id ="track">
 	</div>
      <div title="Last.fm: Love this track" id = "doLike" style="display:none; position:fixed; height:20px; width:18px; left:387px; top:380px; background:url('heart_32.png'); background-size: 100%;opacity:0.3;  background-repeat:no-repeat; cursor:pointer; background-color:#212737" class="mouselight"></div>
