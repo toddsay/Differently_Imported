@@ -4,27 +4,27 @@
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
- * 
- 
-	This library is free to use, and always will be however the source is the property of the original developer. 
-	
-	You may make any modifications to the source for your own personal use, but you may not release or offer a 
-	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+ *
+
+	This library is free to use, and always will be however the source is the property of the original developer.
+
+	You may make any modifications to the source for your own personal use, but you may not release or offer a
+	modified copy of this software under any terms of any licence. Modified source code must not be made public.
 	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
-	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
-	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
-	(Fork Milkshake on Github) 
-	
-	Any components listed specifically as being under the terms of a different License will fall under the  
-	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author.
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :)
+	(Fork Milkshake on Github)
+
+	Any components listed specifically as being under the terms of a different License will fall under the
+	terms of that Licence and no other. These components will be clearly commented within the source code along
 	with any acknowledgements to original authors.
-	
-    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+
+    This library is distributed and free to be modified with the ideal that openness and honesty with code
 	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-	
-	More importantly I hope you enjoy using the App. 
-	
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	More importantly I hope you enjoy using the App.
+
  *
  * Date: 3rd March 2015. 16.33 GMT
 */
@@ -131,7 +131,7 @@ $(document).ready(function() {
             play: "2", //Send method play:2 == Change player parameter
             vol: vol
         }); // player.js receives message and volume. does the doo.
-        // Store volume for next time. 
+        // Store volume for next time.
     });
 
     $('.popup_last').click(function() {
@@ -201,10 +201,10 @@ $(document).ready(function() {
         if (!bg.playing) {
             $.cookie("diHq", $('#hQ').val(), {
                 expires: 365
-            }); // Store key for next time. 
+            }); // Store key for next time.
             $.cookie("diKeys", $('#lK').val(), {
                 expires: 365
-            }); // Store key for next time. 
+            }); // Store key for next time.
             volm = $.cookie("diVol"); // Store key for n
         } else {
             doPlay();
@@ -251,11 +251,12 @@ $(document).ready(function() {
                 expires: 365
             }); // Store key for next time.
 
-            $.cookie("diChPt", $(this).text(), {
+            var channelName = $(this).contents().get(0).nodeValue;
+            $.cookie("diChPt", channelName, {
                 expires: 365
             });
 
-            $("#mini_tn").text($(this).text());
+            $("#mini_tn").text(channelName);
             $.cookie("diChan", $(this).attr("data-trigger"), {
                 expires: 365
             }); // Store key for next time.
@@ -317,7 +318,7 @@ $(document).ready(function() {
         chrome.runtime.sendMessage({
             play: "3"
         });
-        if ($.cookie("newT") == "1") { //////change only if needs it.	
+        if ($.cookie("newT") == "1") { //////change only if needs it.
             $("#track").html($.cookie("diChTn"));
             $("#imageContainer").html($.cookie("diChPic"));
             $.cookie("newT", "0", {
@@ -370,13 +371,13 @@ function doPlay() {
                 });
                 $.cookie("diHq", $('#hQ').val(), {
                     expires: 365
-                }); // Store key for next time. 
+                }); // Store key for next time.
                 $.cookie("diKeys", $('#lK').val(), {
                     expires: 365
-                }); // Store key for next time. 
+                }); // Store key for next time.
                 $.cookie("premium", "1", {
                     expires: 365
-                }); // Store key for next time. 
+                }); // Store key for next time.
                 volm = $.cookie("diVol"); // Store key for next time.
                 chrome.runtime.sendMessage({
                     key: $('#lK').val(), //Send key to background player
@@ -392,13 +393,13 @@ function doPlay() {
                 });
                 $.cookie("diHq", "0", {
                     expires: 365
-                }); // Store key for next time. 
+                }); // Store key for next time.
                 $.cookie("diKeys", "", {
                     expires: 365
-                }); // Store key for next time. 
+                }); // Store key for next time.
                 $.cookie("premium", "0", {
                     expires: 365
-                }); // Store key for next time. 
+                }); // Store key for next time.
                 volm = $.cookie("diVol"); // Store key for next time.
                 chrome.runtime.sendMessage({
                     key: $('#lK').val(), //Send key to background player
@@ -415,7 +416,7 @@ function doPlay() {
 maxYLen = 3000;
 scrollStep = 9;
 //jQuery ismouseover  method
-//This isn't a licenced method but it saved me ages messing (after a lot of messing around anyway :( ) 
+//This isn't a licenced method but it saved me ages messing (after a lot of messing around anyway :( )
 //so all credit to Ivan Castellanos - http://stackoverflow.com/questions/1273566/how-do-i-check-if-the-mouse-is-over-an-element-in-jquery
 (function($) {
     $.mlp = {
@@ -450,52 +451,52 @@ $(document).ready(function() {
         if ($('#playAlarm').attr('checked')) {
             $.cookie("diOnTrig", "1", {
                 expires: 365
-            }); // Store key for next time. 
+            }); // Store key for next time.
         } else {
             $.cookie("diOnTrig", "0", {
                 expires: 365
-            }); // Store key for next time. 	
+            }); // Store key for next time.
         }
         if ($('#stopAlarm').attr('checked')) {
             $.cookie("diOffTrig", "1", {
                 expires: 365
-            }); // Store key for next time. 
+            }); // Store key for next time.
         } else {
             $.cookie("diOffTrig", "0", {
                 expires: 365
-            }); // Store key for next time. 	
+            }); // Store key for next time.
         }
         if ($('#dailyPlay').attr('checked')) {
             $.cookie("dailyPlay", "1", {
                 expires: 365
-            }); // Store key for next time. 
+            }); // Store key for next time.
         } else {
             $.cookie("dailyPlay", "0", {
                 expires: 365
-            }); // Store key for next time. 	
+            }); // Store key for next time.
         }
 
         if ($('#dailyStop').attr('checked')) {
             $.cookie("dailyStop", "1", {
                 expires: 365
-            }); // Store key for next time. 
+            }); // Store key for next time.
         } else {
             $.cookie("dailyStop", "0", {
                 expires: 365
-            }); // Store key for next time. 	
+            }); // Store key for next time.
         }
         $.cookie("diOffTH", $('#offAH').val(), {
             expires: 365
-        }); // Store key for next time. 
+        }); // Store key for next time.
         $.cookie("diOffTM", $('#offAM').val(), {
             expires: 365
-        }); // Store key for next time. 
+        }); // Store key for next time.
         $.cookie("diOnTH", $('#onAH').val(), {
             expires: 365
-        }); // Store key for next time. 
+        }); // Store key for next time.
         $.cookie("diOnTM", $('#onAM').val(), {
             expires: 365
-        }); // Store key for next time. 				
+        }); // Store key for next time.
 
         bg.makeTS();
         if (!t_out) {
@@ -630,21 +631,20 @@ $(document).ready(function() {
                 $("#popup_nowplay").animate({
                     opacity: 0.85
                 }, 125);
-                dP = channel_stuff.indexOf("_"); //parse the value. need both bits. 
+                dP = channel_stuff.indexOf("_"); //parse the value. need both bits.
                 channel_Id = channel_stuff.substring(0, (dP)); // channel id for the trackname
                 $.getJSON(bg.apiUrl, function(data) {
                     $.each(data, function(key, val) {
-                        //setCurrentTrack(key, val);
-                        // if (key == channel_Id) {
-                        //     $('#popup_nowplay').html(`
-                        //     <span style='font-weight:bold; font-size:14px;'> ${channel_name} </span>
-                        //     <br /> <br /> 
-                        //     ${descriptions[channel_Id]} 
-                        //     <br /> <br /> 
-                        //     Now Playing:<br>
-                        //     <span style='font-weight:bold; font-size:14px;'> ${val.track} </span>
-                        //     `);                             
-                        // } 
+                        if (key == channel_Id) {
+                            $('#popup_nowplay').html(`
+                            <span style='font-weight:bold; font-size:14px;'> ${channel_name} </span>
+                            <br /> <br />
+                            ${descriptions[channel_Id]}
+                            <br /> <br />
+                            Now Playing:<br>
+                            <span style='font-weight:bold; font-size:14px;'> ${val.track} </span>
+                            `);
+                        }
                     });
                 });
             } else {
