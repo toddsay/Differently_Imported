@@ -4,27 +4,27 @@
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
- * 
- 
-	This library is free to use, and always will be however the source is the property of the original developer. 
-	
-	You may make any modifications to the source for your own personal use, but you may not release or offer a 
-	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+ *
+
+	This library is free to use, and always will be however the source is the property of the original developer.
+
+	You may make any modifications to the source for your own personal use, but you may not release or offer a
+	modified copy of this software under any terms of any licence. Modified source code must not be made public.
 	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
-	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
-	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
-	(Fork Milkshake on Github) 
-	
-	Any components listed specifically as being under the terms of a different License will fall under the  
-	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author.
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :)
+	(Fork Milkshake on Github)
+
+	Any components listed specifically as being under the terms of a different License will fall under the
+	terms of that Licence and no other. These components will be clearly commented within the source code along
 	with any acknowledgements to original authors.
-	
-    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+
+    This library is distributed and free to be modified with the ideal that openness and honesty with code
 	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-	
-	More importantly I hope you enjoy using the App. 
-	
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	More importantly I hope you enjoy using the App.
+
  * Date: 3rd March 2015. 16.33 GMT
 */
 
@@ -246,7 +246,7 @@ body {
 }
 
 .list_selector {
-    margin-left: 30px;
+    margin-left: 1px;
     cursor: pointer;
     font-size: 12px;
 }

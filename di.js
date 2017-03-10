@@ -159,6 +159,7 @@ $(document).ready(function() {
             t_out = true;
         }
     });
+
     $('.settings').click(function() {
         if (!t_out) {
             $('.floatytimings').animate({
@@ -197,6 +198,7 @@ $(document).ready(function() {
     function doFlash() {
         $("#saveS").fadeOut(30).fadeIn(30);
     }
+
     $("#saveS").click(function() {
         if (!bg.playing) {
             $.cookie("diHq", $('#hQ').val(), {
@@ -274,6 +276,9 @@ $(document).ready(function() {
         }
     });
 
+    $('body').on('selectstart', '#lC li', function() {
+        return false;
+    });
 
     document.getElementById("stBut").addEventListener('click', function() { // On Stop Click
         chrome.runtime.sendMessage({
@@ -292,13 +297,14 @@ $(document).ready(function() {
             });
         }, 500);
     });
+
     document.getElementById("plBut").addEventListener('click', function() { // on Play click
         doPlay();
     });
+
     $(".full_screen").click(function() { // on Play click
         window.open("fullpage.html");
     });
-
 
     disTimer = setInterval(function() {
         getTn();
@@ -349,13 +355,11 @@ function scrolCh() {
                 newX = newX - 155;
 
                 $(".channel.active").scrollTop(newX);
-
                 trappedC = 1;
             }
         });
         if (trappedC != 1) {
             scrolCh();
-
         }
     }, 50);
 }
@@ -619,6 +623,7 @@ $(document).ready(function() {
         '403': 'Atmospheric Breaks takes the best elements of breakbeat and saturates the music with a heavy heaping of spaced out melodies, laid back synths, and out-of-this-world warm bass frequencies.',
         '404': 'Indie Beats is a wicked blending of laid back rhythms with cutting edge idealism. Smooth vocals round out the sound and make this the perfect indie music for head nodding, and chilling out.'
     }
+
     var tn_timer;
     $('body').on('mousemove', '#lC li', function() {
         channel_stuff = $(this).attr("data-trigger");
@@ -626,7 +631,6 @@ $(document).ready(function() {
         clearTimeout(tn_timer);
         tn_timer = setInterval(function() {
             if ($("#lC.active").is(':hover')) {
-                //x = ":(";
                 $("#popup_nowplay").css({ "display": "block" });
                 $("#popup_nowplay").animate({
                     opacity: 0.85
@@ -656,6 +660,7 @@ $(document).ready(function() {
             }
         }, 155);
     });
+
     $("#popup_nowplay").mouseover(function() {
         clearTimeout(tn_timer);
         $("#popup_nowplay").animate({
@@ -730,20 +735,6 @@ var canvasY = 80;
 var canvas;
 var drawContext;
 
-function setCurrentTrack(key, val) {
-    var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "_']");
-    if (liChannel) {
-        var titleDiv = null;
-        if (liChannel.children().length == 0) {
-            titleDiv = $('<div></div>');
-            liChannel.append(titleDiv);
-        } else {
-            titleDiv = liChannel.children('div');
-        }
-        titleDiv.text(val.track);
-    }
-}
-
 function analyseThis() {
     canvas = document.getElementById("visualise_screen");
     drawContext = canvas.getContext("2d");
@@ -813,7 +804,6 @@ Version=2`;
     pls_download('DI.fm -- ' + channelNameWord + ' -- By Differently Imported.pls', thingString);
 }
 
-
 function pls_download(filename, text) {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:pls/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -857,35 +847,56 @@ function loadCurrentTracks() {
     // Load current track titles for each channel
     $.getJSON(bg.apiUrl, function(data) {
         $.each(data, function(key, val) {
-            setCurrentTrack(key, val);
+            var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "_']");
+            if (liChannel) {
+                var titleDiv = null;
+                if (liChannel.children().length == 0) {
+                    titleDiv = $('<div></div>');
+                    liChannel.append(titleDiv);
+                } else {
+                    titleDiv = liChannel.children('div');
+                }
+                titleDiv.text(val.track);
+            }
         });
     });
 }
 
 function swap_lists(element) {
     if ($(element).hasClass('all_channels')) {
-        $('.faves_list').css({ 'display': 'none' });
-        $('.all_channels').addClass('active_list');
-        $('.faves').removeClass('active_list');
-        $('.master_list').css({ 'display': 'block' });
-        $('.master_list').addClass('active');
-        $('.faves_list').removeClass('active');
         newlist = 'all_channels';
-    } else {
-        $('.faves_list').css({ 'display': 'block' });
-        $('.master_list').css({ 'display': 'none' });
-        $('.faves_list').addClass('active');
-        $('.faves').addClass('active_list');
-        $('.all_channels').removeClass('active_list');
-        $('.master_list').removeClass('active');
+        loadCurrentTracks();
+    } else if ($(element).hasClass('faves')) {
         newlist = 'faves';
+        loadCurrentTracks();
+    } else if ($(element).hasClass('shows')) {
+        newlist = 'shows';
+        build_showlist();
+    } else if ($(element).hasClass('fave_shows')) {
+        newlist = 'fave_shows';
     }
+
+    $('.master_list').toggle(newlist == 'all_channels');
+    $('.master_list').toggleClass('active', newlist == 'all_channels');
+    $('.all_channels').toggleClass('active_list', newlist == 'all_channels');
+
+    $('.faves_list').toggle(newlist == 'faves');
+    $('.faves_list').toggleClass('active', newlist == 'faves');
+    $('.faves').toggleClass('active_list', newlist == 'faves');
+
+    $('.shows_list').toggle(newlist == 'shows');
+    $('.shows_list').toggleClass('active', newlist == 'shows');
+    $('.shows').toggleClass('active_list', newlist == 'shows');
+
+    $('.fave_shows_list').toggle(newlist == 'fave_shows');
+    $('.fave_shows_list').toggleClass('active', newlist == 'fave_shows');
+    $('.fave_shows').toggleClass('active_list', newlist == 'fave_shows');
+
     $.cookie("Dilistview", newlist, {
         expires: 365
     });
 
     scrolCh();
-    loadCurrentTracks();
 }
 
 function show_stars() {
@@ -923,7 +934,21 @@ function build_favlist() {
         fav_list.forEach(function(fave) {
             $('.master_list *[data-trigger="' + fave + '"]').clone().appendTo(".faves_list");
         });
+        loadCurrentTracks();
     }
+}
+
+function build_showlist() {
+    var showsHtml = "";
+    var showsUrl = "http://www.di.fm/_papi/v1/di/shows?page=1&per_page=500&facets[channel_name][]=DJ+Mixes"
+    $.getJSON(showsUrl, function(data) {
+        if (data && data.results) {
+            $.each(data.results, function(key, val) {
+                showsHtml += '<li data-image="' + val.images.compact + '" title="' + val.name + '" data-trigger="' + val.slug + '">' + val.name + '</li>';
+            });
+        }
+        $('.shows_list').html(showsHtml);
+    });
 }
 
 $(document).ready(function() {
