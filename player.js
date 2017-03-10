@@ -5,27 +5,27 @@
  *
  * phil / @ / pbarton / .co / .uk
  * Copyright 2014, Phil Barton
- * 
- 
-	This library is free to use, and always will be however the source is the property of the original developer. 
-	
-	You may make any modifications to the source for your own personal use, but you may not release or offer a 
-	modified copy of this software under any terms of any licence. Modified source code must not be made public. 
+ *
+
+	This library is free to use, and always will be however the source is the property of the original developer.
+
+	You may make any modifications to the source for your own personal use, but you may not release or offer a
+	modified copy of this software under any terms of any licence. Modified source code must not be made public.
 	Any modifications that may be seen as useful or an improvement may be sent to the author for review.
-	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author. 
-	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :) 
-	(Fork Milkshake on Github) 
-	
-	Any components listed specifically as being under the terms of a different License will fall under the  
-	terms of that Licence and no other. These components will be clearly commented within the source code along 
+	Any inclusion will be made with full credit however inclusion is solely at the discretion of the author.
+	Who knows, enough mods offered and I can throw a plugin library together. Feel free to code Mlkdrop for me! :)
+	(Fork Milkshake on Github)
+
+	Any components listed specifically as being under the terms of a different License will fall under the
+	terms of that Licence and no other. These components will be clearly commented within the source code along
 	with any acknowledgements to original authors.
-	
-    This library is distributed and free to be modified with the ideal that openness and honesty with code 
+
+    This library is distributed and free to be modified with the ideal that openness and honesty with code
 	is the key to security and trust, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-	
-	More importantly I hope you enjoy using the App. 
-	
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	More importantly I hope you enjoy using the App.
+
  * Date: 3rd March 2015. 16.33 GMT
 */
 var context;
@@ -36,7 +36,7 @@ var last_response = {};
 var apiUrl = "http://api.audioaddict.com/v1/di/track_history";
 var diIMG = "<img src='diffI.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
 var playing = false;
-$(document).ready(function () { //Set some vars 
+$(document).ready(function () { //Set some vars
     chrome.commands.onCommand.addListener(function (command) {
         if (command == "toggle-play") {
             if (!playing) {
@@ -90,35 +90,35 @@ $(document).ready(function () { //Set some vars
     var dd = today.getDate();
     var mm = today.getMonth();
     var yyyy = today.getFullYear();
-    if(dd<10) {
-        dd='0'+dd
-    } 
-    if(mm<10) {
-        mm='0'+mm
-    } 
-    var xmasfrom = new Date(2015, 11, 19); 
-    var nyfrom = new Date(2015, 11, 31);  
-    var xmasto   = new Date(2015, 11, 31);
-    var nyto   = new Date(2016, 0, 2);
+    if (dd < 10) {
+        dd = '0' + dd
+    }
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+    var xmasfrom = new Date(2015, 11, 19);
+    var nyfrom = new Date(2015, 11, 31);
+    var xmasto = new Date(2015, 11, 31);
+    var nyto = new Date(2016, 0, 2);
     var check = new Date(yyyy, mm, dd);
 
-    if(check >= xmasfrom && check < xmasto){
-     motd = "<span>Happy Holidays from Phil @ Differently Imported<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
-     diIMG = "<img src='diffXmas.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
-    } else if(check >= nyfrom && check <= nyto){
-     motd = "<span>Happy New Year from Phil @ Differently Imported<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
-     diIMG = "<img src='diffXmas.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
-     
+    if (check >= xmasfrom && check < xmasto) {
+        motd = "<span>Happy Holidays from Phil @ Differently Imported<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+        diIMG = "<img src='diffXmas.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
+    } else if (check >= nyfrom && check <= nyto) {
+        motd = "<span>Happy New Year from Phil @ Differently Imported<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+        diIMG = "<img src='diffXmas.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
+
     }
-    else{
-    motd = "<span>Differently Imported. <a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>All User Requested features.</span></a> Thanks for your input. V4.3.70 <br><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
-    
+    else {
+        motd = "<span>Differently Imported. <a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>All User Requested features.</span></a> Thanks for your input. V4.3.70 <br><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
+
     }
     $.cookie("diChTn", motd, {
         expires: 365
     });
-    $.cookie('ctractlen', 0, {'expires': 365});
-    $.cookie('ctractstart', 0, {'expires': 365});
+    $.cookie('ctractlen', 0, { 'expires': 365 });
+    $.cookie('ctractstart', 0, { 'expires': 365 });
 
     $.cookie("newT", "1", {
         expires: 365
@@ -130,7 +130,7 @@ $(document).ready(function () { //Set some vars
         text: " "
     });
     chrome.runtime.onMessage.addListener(function (action) { //Start the message listener and set some actions
-        if (action.play == "0") { // Play is a flag to control the player. 
+        if (action.play == "0") { // Play is a flag to control the player.
             playing = false;
             stop();
         }
@@ -158,8 +158,8 @@ $(document).ready(function () { //Set some vars
                 $.cookie("diChTn", motd, {
                     expires: 365
                 });
-                $.cookie('ctractlen', 0, {'expires': 365});
-                $.cookie('ctractstart', 0, {'expires': 365});                
+                $.cookie('ctractlen', 0, { 'expires': 365 });
+                $.cookie('ctractstart', 0, { 'expires': 365 });
                 $.cookie("newT", "1", {
                     expires: 365
                 });
@@ -174,24 +174,24 @@ $(document).ready(function () { //Set some vars
         scrollIcon(false); // disable the play badge on the icon
         $("#diPlyr").attr("src", "");
         $("#diPlyr").remove();
-        try{
-        audioContext.close();
+        try {
+            audioContext.close();
         }
-        catch(e){}
+        catch (e) { }
         if (playing == "false") {
             $.cookie("diChTn", motd, {
                 expires: 365
             });
-            $.cookie('ctractlen', 0, {'expires': 365});
-            $.cookie('ctractstart', 0, {'expires': 365});            
+            $.cookie('ctractlen', 0, { 'expires': 365 });
+            $.cookie('ctractstart', 0, { 'expires': 365 });
             $.cookie("newT", "1", {
                 expires: 365
             });
-        } else {}
+        } else { }
     }
 
     function play(ch, ky, vol, server) {
-        delimitPos = ch.indexOf("_"); //parse the value. need both bits. 
+        delimitPos = ch.indexOf("_"); //parse the value. need both bits.
         chLength = ch.length;
         channelId = ch.substring(0, (delimitPos)); // channel id for the trackname
         chUrl = ch.substring(delimitPos + 1, chLength); //channel name for the url
@@ -209,15 +209,15 @@ $(document).ready(function () { //Set some vars
         $.cookie("Diserver", server, {
             expires: 365
         });
-        if ($('#diPlyr').attr('src') != url) { //if something changed  
+        if ($('#diPlyr').attr('src') != url) { //if something changed
             playing = false;
             stop(); // kill the player thats happening now.
             pollFlag = 1;
         }
         vol = vol / 100;
-        if ($('#diPlyr').length != 1) { // if there is already a player and nothing changed do nothing. 
+        if ($('#diPlyr').length != 1) { // if there is already a player and nothing changed do nothing.
             scrollIcon(true); // enable the play badge on the icon
-            audio = $('<audio />', { // otherwise build a player 
+            audio = $('<audio />', { // otherwise build a player
                 controls: 'controls',
                 id: 'diPlyr',
                 autoPlay: 'autoplay',
@@ -291,8 +291,8 @@ $(document).ready(function () { //Set some vars
             $.cookie("diChTn", motd, {
                 expires: 365
             });
-            $.cookie('ctractlen', 0, {'expires': 365});
-            $.cookie('ctractstart', 0, {'expires': 365});            
+            $.cookie('ctractlen', 0, { 'expires': 365 });
+            $.cookie('ctractstart', 0, { 'expires': 365 });
             $.cookie("newT", "1", {
                 expires: 365
             });
@@ -396,8 +396,6 @@ function stopSleep() {
 
 }
 
-
-
 var last_fm_key = 'a215d8f01fed30fa10b7fb9c2e82a54d';
 var last_url = "http://ws.audioscrobbler.com/2.0/";
 var tokenUrl = 'http://ws.audioscrobbler.com/2.0/?method=auth.gettoken&api_key=a215d8f01fed30fa10b7fb9c2e82a54d&format=json';
@@ -419,10 +417,7 @@ function get_token() {
         },
         dataType: 'json'
     });
-
-
 }
-
 
 function last_call(method, data, sign) {
     last_response[method] = false;
@@ -441,12 +436,12 @@ function last_call(method, data, sign) {
         success: function (res) {
             last_response[method] = JSON.stringify(res);
             doCallbackJS(JSON.stringify(res), method);
-            // Do something with response. 
+            // Do something with response.
         },
         dataType: 'json'
     });
-
 }
+
 //-***************************************--------------------------------
 function doCallbackJS(data, method) {
     console.log("LC: " + JSON.parse(last_response[method]));
@@ -472,31 +467,31 @@ function doCallbackJS(data, method) {
         $.cookie("lastUsername", datafornow['session']['name'], {
             expires: 365
         });
-        
+
     }
 
     /*
     elif (method== ''){
-        
+
     }
     */
     else if (method == 'track.updateNowPlaying') {
         console.log('Now Playing Captured');
-    } 
-    else if (method =='track.love' || method =='track.unlove'){
+    }
+    else if (method == 'track.love' || method == 'track.unlove') {
         trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
-        
+
     }
 
     else if (method == 'track.getInfo') {
-        
-        if (typeof datafornow['track']['userloved'] !== 'undefined'){
-             $.cookie('lastLiked', datafornow['track']['userloved'],{
-                 'expires': 1
-             });
+
+        if (typeof datafornow['track']['userloved'] !== 'undefined') {
+            $.cookie('lastLiked', datafornow['track']['userloved'], {
+                'expires': 1
+            });
         }
-       
-        
+
+
         if (last_response['nextFunc'] == 'track.scrobble') {
             last_response['nextFunc'] = 0;
             params = {
@@ -509,8 +504,8 @@ function doCallbackJS(data, method) {
             }
             console.log(params);
             result = last_call('track.scrobble', params, true);
-        } 
-        
+        }
+
         else if (last_response['nextFunc'] == 'track.updateNowPlaying') {
             last_response['nextFunc'] = 0;
             params = {
@@ -541,53 +536,53 @@ sk (Required) : A session key generated
 
 last_response['last_np_artist'] = val.artist;
                             last_response['last_np_track'] = val.title;
-                            
+
 */
     trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
     last_response['nextFunc'] = 'track.scrobble';
 }
 function likeage() {
     /*
-                            
+
 */
-    
-   
-    if ($.cookie('lastLiked') == '1'){
-        
-       thefunk= 'track.unlove';
+
+
+    if ($.cookie('lastLiked') == '1') {
+
+        thefunk = 'track.unlove';
     }
-    else{
-        
+    else {
+
         thefunk = 'track.love';
     }
-      params = {
-                'token': $.cookie("lastToken"),
-                'artist': last_response['last_np_artist'],
-                'track': last_response['last_np_track'],
-                'sk': $.cookie("lastSKey")
-            }
-            console.log(params);
-            result = last_call(thefunk, params, true);
-   
+    params = {
+        'token': $.cookie("lastToken"),
+        'artist': last_response['last_np_artist'],
+        'track': last_response['last_np_track'],
+        'sk': $.cookie("lastSKey")
+    }
+    console.log(params);
+    result = last_call(thefunk, params, true);
+
 }
 var tl;
 var ts;
 var tp;
 var tr;
 
-function get_time(){
-        time_ping_url ="http://api.audioaddict.com/v1/ping.json" ;
-        $.get(time_ping_url, function (timeinfo) {
-             server_time = timeinfo['time'];
-             server_time = new Date(server_time).getTime() / 1000;
-             local_time = new Date().getTime() / 1000;
-             time_offset = (~~local_time - server_time);
-             $.cookie('servertimeoffset', time_offset, {'expires': 365});
-        });
+function get_time() {
+    time_ping_url = "http://api.audioaddict.com/v1/ping.json";
+    $.get(time_ping_url, function (timeinfo) {
+        server_time = timeinfo['time'];
+        server_time = new Date(server_time).getTime() / 1000;
+        local_time = new Date().getTime() / 1000;
+        time_offset = (~~local_time - server_time);
+        $.cookie('servertimeoffset', time_offset, { 'expires': 365 });
+    });
 }
 
 //var nexttime = (2000 + (Math.round(+new Date()/1000)));
-function showTrack() { // tracklist api call. timed with flags to stop server hammerage. 
+function showTrack() { // tracklist api call. timed with flags to stop server hammerage.
     unix = Math.round(+new Date() / 1000);
     if (unix >= $.cookie("diPt")) {
         console.log('need new track');
@@ -597,19 +592,25 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
 		else {nexttime = (2000 + (Math.round(+new Date()/1000)));} */
     if (pollFlag == 1) {
         chId = $.cookie("diChId");
-        
-       get_time();
 
-        $.getJSON(apiUrl, function (data) {
+        get_time();
+
+        var url = apiUrl;
+        var site = $.cookie("diSite");
+        if (site && site.length > 0) {
+            url = url.replace("/di", "/" + site);
+        }
+
+        $.getJSON(url, function (data) {
             $.each(data, function (key, val) {
                 if (key == chId) {
                     tl = val.duration;
                     ts = val.started;
-                    $.cookie('ctractlen', tl, {'expires': 365});
-                    $.cookie('ctractstart', ts, {'expires': 365});
-                    if (last_response['last_np_artist'] != val.artist){
-                        $.cookie('lastLiked', '0', {'expires': 365});
-                        
+                    $.cookie('ctractlen', tl, { 'expires': 365 });
+                    $.cookie('ctractstart', ts, { 'expires': 365 });
+                    if (last_response['last_np_artist'] != val.artist) {
+                        $.cookie('lastLiked', '0', { 'expires': 365 });
+
                     }
                     tr = "<span title='" + val.track + "'>" + val.track + "</span>";
                     tp = val.art_url;
@@ -667,13 +668,13 @@ api_key (Required) : A Last.fm API key.
         'username': $.cookie('lastUsername')
     }
 
-      
- method = 'track.getInfo';
- result = last_call(method, params, false);
-      
-    
 
- 
+    method = 'track.getInfo';
+    result = last_call(method, params, false);
+
+
+
+
 
 
 }
@@ -682,7 +683,7 @@ npa = "";
 nptimer = false;
 
 function nowplayLast() {
-    // returns session key. 
+    // returns session key.
     //      artist (Required) : The artist name.
     //track (Required) : The track name.//
     //api_key (Required) : A Last.fm API key.
@@ -700,7 +701,7 @@ function nowplayLast() {
             npt = last_response['last_np_track'];
             trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
             last_response['nextFunc'] = 'track.updateNowPlaying';
-            setTimeout(function(){
+            setTimeout(function () {
                 scrobblage();
             }, 1500);
         }
@@ -708,9 +709,9 @@ function nowplayLast() {
 }
 
 function last_get_token(token) {
-    // returns session key. 
+    // returns session key.
     // api_key: Your 32-character API Key.
-    // token: The authentication token received at your callback url as a GET variable.    
+    // token: The authentication token received at your callback url as a GET variable.
     // api_sig: Your 32-character API method signature, as explained in Section 6
     var method = 'auth.getSession';
     result = last_call(method, {

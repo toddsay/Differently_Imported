@@ -262,6 +262,9 @@ $(document).ready(function() {
             $.cookie("diChan", $(this).attr("data-trigger"), {
                 expires: 365
             }); // Store key for next time.
+            $.cookie("diSite", $(this).attr("data-site") || 'di', {
+                expires: 365
+            });
 
             if (bg.playing) {
                 clearInterval(disTimer);
@@ -843,21 +846,33 @@ $(document).ready(function() {
     }
 });
 
+function appendTrackInfoToChannel(key, data) {
+    var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "_']");
+    if (liChannel) {
+        var titleDiv = null;
+        if (liChannel.children().length == 0) {
+            titleDiv = $('<div></div>');
+            liChannel.append(titleDiv);
+        } else {
+            titleDiv = liChannel.children('div');
+        }
+        titleDiv.text(data.track);
+    }
+}
+
 function loadCurrentTracks() {
     // Load current track titles for each channel
     $.getJSON(bg.apiUrl, function(data) {
         $.each(data, function(key, val) {
-            var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "_']");
-            if (liChannel) {
-                var titleDiv = null;
-                if (liChannel.children().length == 0) {
-                    titleDiv = $('<div></div>');
-                    liChannel.append(titleDiv);
-                } else {
-                    titleDiv = liChannel.children('div');
-                }
-                titleDiv.text(val.track);
-            }
+            appendTrackInfoToChannel(key, val);
+        });
+    });
+
+    // TODO: just load other sites if the current list contains channels from those sites
+    var apiUrl = bg.apiUrl.replace("/di", "/radiotunes");
+    $.getJSON(apiUrl, function(data) {
+        $.each(data, function(key, val) {
+            appendTrackInfoToChannel(key, val);
         });
     });
 }
