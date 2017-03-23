@@ -273,8 +273,8 @@ $(document).ready(function() {
                         getTn();
                     }, 500);
                 }, 750);
-                doPlay();
             }
+            doPlay();
             show_stars();
         }
     });
@@ -629,6 +629,8 @@ $(document).ready(function() {
 
     var tn_timer;
     $('body').on('mousemove', '#lC li', function() {
+        return;
+
         channel_stuff = $(this).attr("data-trigger");
         channel_name = $(this).text();
         clearTimeout(tn_timer);
@@ -749,12 +751,15 @@ function go() {
     drawContext.clearRect(0, 0, canvasX, canvasY);
     try {
         bg.analyser.getByteFrequencyData(freqDomain);
-        for (i = 0; i < bg.analyser.frequencyBinCount; i++) {
+        var frequencyCap = 18000;
+        var frequencyRange = (bg.analyser.context.sampleRate / bg.analyser.fftSize) * bg.analyser.frequencyBinCount;
+        var binsToUse = bg.analyser.frequencyBinCount * (frequencyCap / frequencyRange);
+        for (i = 0; i < binsToUse; i++) {
             value = freqDomain[i];
             percent = value / 256;
             height = canvasY * percent;
             offset = canvasY - height - 1;
-            barWidth = canvasX / bg.analyser.frequencyBinCount;
+            barWidth = canvasX / binsToUse;
             scalec = (25 / (canvasX / barWidth) * i) + 75;
             drawContext.fillStyle = "hsla(0.5, 0%, " + scalec + "%, 1)";
             drawContext.fillRect(i * barWidth, offset, barWidth, height);
