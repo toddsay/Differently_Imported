@@ -3,9 +3,9 @@
 
  "manifest_version": 2,
 
-  "name": "Differently Imported for di.fm",
-  "description": "Differently Imported: addictive electronic music player for Di.Fm",
-  "version": "4.3.70",
+  "name": "Differently Imported+ for di.fm",
+  "description": "Differently Imported+: addictive electronic music player for Di.Fm",
+  "version": "4.3.70.2",
   "permissions": [
 	"http://prem1.di.fm:80/*",
 	"http://prem2.di.fm:80/*",
