@@ -368,9 +368,10 @@ function scrolCh() {
 }
 
 function doPlay() {
+    var testUrl = "http://listen.di.fm/premium/00sclubhits.pls?listen_key="; // was http://listen.di.fm/public3/favorites?
     var checkKey = $.ajax({
         type: "get",
-        url: 'http://listen.di.fm/public3/favorites?' + $('#lK').val(),
+        url: testUrl + $('#lK').val(),
         statusCode: {
             200: function() {
                 $("#nag").css({
