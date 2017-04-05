@@ -33,597 +33,137 @@
 -->
 
 <head>
-	<script src="jquery.js"></script>
-	<script src="di.js"></script>
-	<script src="cookie.js"></script>
-	<link href="di.css" rel="stylesheet" type="text/css">
+    <script src="jquery.js"></script>
+    <script src="di.js"></script>
+    <script src="cookie.js"></script>
+    <link href="di.css" rel="stylesheet" type="text/css">
 
-	<title></title>
+    <title></title>
 </head>
 
 <body>
-	<div class="floatysettings ">
-		<div id="fsclose" class="settings mouselight close">X</div>
-		Settings
-		<hr> Choose a Server near you:
-		<select class="setWide" id="server" title="Pick a server close to you.">
-            <option title="Europe" value="2">
-                Europe
-            </option>
-
-            <option title="US 1" value="1">
-                US 1
-            </option>
-
-            <option title="US 2" value="4">
-                US 2
-            </option>
-
-            <option title="Asia" value="3">
-                Asia
-            </option>
+    <div class="floatysettings ">
+        <div id="fsclose" class="settings mouselight close">X</div>
+        Settings
+        <hr> Choose a Server near you:
+        <select class="setWide" id="server" title="Pick a server close to you.">
+            <option title="Europe" value="2">Europe</option>
+            <option title="US 1" value="1">US 1</option>
+            <option title="US 2" value="4">US 2</option>
+            <option title="Asia" value="3">Asia</option>
         </select>
 
-		<br /> Premium? Enter your listen key:
-		<input id="lK" type="text" value="" class="setWide">
-		<br /> Audio Quality:
-		<select class="setWide" id="hQ" title="Enjoy DI.fm's new HQ audio stream!">
-            <option title="High Quality" value="1">
-                High Quality(320k Premium)
-            </option>
-            <option title="Low Quality" selected value="0">
-                Low Quality (Quicker)
-            </option>
-
+        <br /> Premium? Enter your listen key:
+        <input id="lK" type="text" value="" class="setWide">
+        <br /> Audio Quality:
+        <select class="setWide" id="hQ" title="Enjoy DI.fm's new HQ audio stream!">
+            <option title="High Quality" value="1">High Quality(320k Premium)</option>
+            <option title="Low Quality" selected value="0">Medium Quality (Quicker)</option>
         </select>
 
-		<br />
+        <br />
 
-		<div id="nag" style="display:none">You are using DI.fm Free. <a href="http://di.fm/premium" target="_blank">Get Premium now. </a></div>
-		<button title="Connect last.fm" class="popup_last save">Connect last.fm</button>
-		<button title="Enable/ Disable Automatic Scrobbling" id='npScrob' style="display:none;" class="lastNP save">Turn on Scrobbling</button>
+        <div id="nag" style="display:none">You are using DI.fm Free. <a href="http://di.fm/premium" target="_blank">Get Premium now. </a></div>
+        <button title="Connect last.fm" class="popup_last save">Connect last.fm</button>
+        <button title="Enable/ Disable Automatic Scrobbling" id='npScrob' style="display:none;" class="lastNP save">Turn on Scrobbling</button>
 
-		<button id="saveS" class="mouselight save">Save</button>
-	</div>
+        <button id="saveS" class="mouselight save">Save</button>
+    </div>
 
-	<div class="floatytimings">
-		<div id="ftclose" class="close mouselight timings">X</div>
-		Alarm and Sleep
-		<hr /> Play Music at
-		<input type="number" class="tText" placeholder="0-23" min="0" max="23" id="onAH" />:<input placeholder="0-59" min="0" max="59"
-			id="onAM" type="number" class="tText" />
-		<br /> Enabled?
-		<input class="" type="checkbox" id="playAlarm"> Daily?
+    <div class="floatytimings">
+        <div id="ftclose" class="close mouselight timings">X</div>
+        Alarm and Sleep
+        <hr /> Play Music at
+        <input type="number" class="tText" placeholder="0-23" min="0" max="23" id="onAH" />:<input placeholder="0-59" min="0" max="59" id="onAM" type="number" class="tText" />
+        <br /> Enabled?
+        <input class="" type="checkbox" id="playAlarm"> Daily?
 
-		<input class="" type="checkbox" id="dailyPlay"><br>
-		<hr> Stop Music at <input placeholder="0-23" min="0" max="23" type="number" class="tText" id="offAH" />:<input placeholder="0-59"
-			min="0" max="59" type="number" id="offAM" class="tText" />
-		<br /> Enabled?
-		<input class="" type="checkbox" id="stopAlarm"> Daily?
+        <input class="" type="checkbox" id="dailyPlay"><br>
+        <hr> Stop Music at <input placeholder="0-23" min="0" max="23" type="number" class="tText" id="offAH" />:<input placeholder="0-59" min="0" max="59" type="number" id="offAM" class="tText" />
+        <br /> Enabled?
+        <input class="" type="checkbox" id="stopAlarm"> Daily?
 
-		<input class="" type="checkbox" id="dailyStop"><br/>
-		<button id="tSave" class="mouselight save">Save</button>
-		<hr /> Stop in <select id="sleepBox" class="" style="width:70px;">
+        <input class="" type="checkbox" id="dailyStop"><br/>
+        <button id="tSave" class="mouselight save">Save</button>
+        <hr /> Stop in <select id="sleepBox" class="" style="width:70px;">
 				<option value="15">15mins</option>
 				<option value="30">30mins</option>
 				<option value="45">45mins</option>
 				<option value="60">1Hour</option>
 				<option value="120">2Hours</option>
 			</select>
-		<button style="width:60px;" id="goSleep">Go/Stop</button>
+        <button style="width:60px;" id="goSleep">Go/Stop</button>
+    </div>
 
-	</div>
-
-	<div id="container">
-		<div id="left">
-			<div class="buttonBar">
-				<span class="full_screen  lilButton mouselight" title="Pop out Player"><img style="height:13px; width:13px;" src="fs.png"></span>
-				<span class="timings lilButton mouselight" title="Alarm and Sleep Timer"><img style="height:13px; width:13px;" src="clock.png"></img></span>
-				<span class="settings lilButton mouselight" title="Settings"><img style="height:13px; width:13px;" src="spanner.png"></span>
-				<span class="help lilButton mouselight" title="Help">?</span>
-			</div>
-			<!-- magic here -->
-			<div id="popup_nowplay"></div>
-			<div id="imageContainer"></div>
-			<div id="miniSettings">
-				<div id="canvas_box">
-					<canvas height="80" id="visualise_screen" width="155"></canvas>
-				</div>
-
-				<span class="sm_but mouselight" id="plBut" title="Play">
+    <div id="container">
+        <div id="left">
+            <div class="buttonBar">
+                <span class="full_screen  lilButton mouselight" title="Pop out Player"><img style="height:13px; width:13px;" src="fs.png"></span>
+                <span class="timings lilButton mouselight" title="Alarm and Sleep Timer"><img style="height:13px; width:13px;" src="clock.png"></img></span>
+                <span class="settings lilButton mouselight" title="Settings"><img style="height:13px; width:13px;" src="spanner.png"></span>
+                <span class="help lilButton mouselight" title="Help">?</span>
+            </div>
+            <!-- magic here -->
+            <div id="popup_nowplay"></div>
+            <div id="imageContainer"></div>
+            <div id="miniSettings">
+                <div id="canvas_box">
+                    <canvas height="80" id="visualise_screen" width="155"></canvas>
+                </div>
+                <span class="sm_but mouselight" id="plBut" title="Play">
 					<img src="playRound.png">
 				</span>
-				<input id="vol" title="volume" type="range" class="">
+                <input id="vol" title="volume" type="range" class="">
 
-				<span class="sm_but mouselight" id="stBut" title="Stop">
+                <span class="sm_but mouselight" id="stBut" title="Stop">
 					<img src="stopRound.png">
 				</span>
-				<span id="miniChannel"><img class="add_to_fav" src="fav_hollow.png" style="height:10px; width:10px;" title="Add Channel to Favourites"><span id="mini_tn"></span></span>
-			</div>
-
-		</div>
-		<div id="centreColumn">
-
-		</div>
-		<div id="right">
-			<div id="scroll_box_box">
-				<div id="up_pad" class="mouselight">
-				</div>
-				<div class="select channel faves_list" id="lC" title="Pick a channel." style="display:none">
-				</div>
-				<div class="select channel shows_list" id="lC" title="Pick a show." style="display:none">
-				</div>
-				<div class="select channel fave_shows_list" id="lC" title="Pick a show." style="display:none">
-				</div>
-				<div class="select channel master_list" id="lC" title="Pick a channel.">
-					<!-- Channel selector -->
-					<li data-image="http://api.audioaddict.com/v1/assets/image/799616ab3c59f7008573c2de097aa731.png?size=145x145" title="80s Alt & New Wave - Ctrl+Click for PLS"
-						data-trigger="354_80saltnnewwave" data-site="radiotunes">
-						80s Alt & New Wave
-					</li>
-					<li data-image="http://api.audioaddict.com/v1/assets/image/1f2189badb0bb9ccba20e54163afff69.png?size=145x145" title="00's Club Hits - Ctrl+Click for PLS"
-						data-trigger="324_00sclubhits">
-						00's Club Hits
-					</li>
-
-					<li data-image="http://cdn-images.audioaddict.com/6/5/1/d/8/3/651d83ed94a48972295b4f17b0a00720.png?size=200x200" title="Atmospheric Breaks - Ctrl+Click for PLS"
-						data-trigger="403_atmosphericbreaks">
-						Atmospheric Breaks
-					</li>
-					<li data-image="http://api.audioaddict.com/v1/assets/image/9760862fcf5601c05c3581d6c0984128.png?size=145x145" title="Ambient - Ctrl+Click for PLS"
-						data-trigger="12_ambient">
-						Ambient
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/89b0dfb93cb7eba4d345d116f7fc00e7.png?size=145x145" title="Bass & Jackin' House  - Ctrl+Click for PLS"
-						data-trigger="290_bassnjackinhouse">
-						Bass & Jackin' House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/98bbdb73486e5c0431a44117af617576.png?size=145x145" title="Bassline - Ctrl+Click for PLS"
-						data-trigger="289_bassline">
-						Bassline
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/949efba54329d6d9264dfd54eeebbc31.png?size=145x145" title="Big Beat - Ctrl+Click for PLS"
-						data-trigger="325_bigbeat">
-						Big Beat
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5b7f5db07bd3bc6e8097ea33bbea7552.png?size=145x145" title="Big Room House - Ctrl+Click for PLS"
-						data-trigger="209_bigroomhouse">
-						Big Room House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5fe8da68c08afeba771f1c0a5ba6bc2f.png?size=145x145" title="Breaks - Ctrl+Click for PLS"
-						data-trigger="15_breaks">
-						Breaks
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/48c55f45921a5ba9671612172dce8f38.png?size=145x145" title="Chill & Tropical House - Ctrl+Click for PLS"
-						data-trigger="400_chillntropicalhouse">
-						Chill & Tropical House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/2bca153955723e44b5ef9ab9e9fcba8d.png?size=145x145" title="ChillHop - Ctrl+Click for PLS"
-						data-trigger="224_chillhop">
-						ChillHop
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/8f7ce44aa749a97563c98dc5b69053aa.png?size=145x145" title="Chillout - Ctrl+Click for PLS"
-						data-trigger="3_chillout">
-						Chillout
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/7a0a070cca01976ea62c9e1c5a19e9b1.png?size=145x145" title="Chillout Dreams - Ctrl+Click for PLS"
-						data-trigger="68_chilloutdreams">
-						Chillout Dreams
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/7251688497a15b6a27a8e6952a3318fc.png?size=145x145" title="Chillstep - Ctrl+Click for PLS"
-						data-trigger="275_chillstep">
-						Chillstep
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/a272766a55dc1d3c5b63e688d7a3d0de.png?size=145x145" title="Classic EuroDance - Ctrl+Click for PLS"
-						data-trigger="69_classiceurodance">
-						Classic EuroDance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/f9c6cdb880da74aa74ec581dc3f09dbd.png?size=145x145" title="Classic EuroDisco - Ctrl+Click for PLS"
-						data-trigger="183_classiceurodisco">
-						Classic EuroDisco
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/53906dc786e7f3d55536defca56a4b5f.png?size=145x145" title="Classic Trance - Ctrl+Click for PLS"
-						data-trigger="90_classictrance">
-						Classic Trance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/6c59bb5709a2e2ecae99765d64ce57e6.png?size=145x145" title="Classic Vocal Trance - Ctrl+Click for PLS"
-						data-trigger="125_classicvocaltrance">
-						Classic Vocal Trance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/29b1b727e81f9dc1c6ca40926ac8ae34.jpg?size=145x145" title="Club Dubstep - Ctrl+Click for PLS"
-						data-trigger="177_clubdubstep">
-						Club Dubstep
-					</li>
-					<li data-image="http://api.audioaddict.com/v1/assets/image/6620a82bb6a6d0bc281260645b996b0a.png?size=145x145" title="Club Sounds - Ctrl+Click for PLS"
-						data-trigger="70_club">
-						Club Sounds
-					</li>
-					<li data-image="http://api.audioaddict.com/v1/assets/image/1561ba009eb79c68b9de141f8685c927.png?size=145x145" title="Dark DnB - Ctrl+Click for PLS"
-						data-trigger="181_darkdnb">
-						Dark DnB
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/7addf6ec30967ceec317dc46c861f0d1.png?size=145x145" title="Dark PsyTrance - Ctrl+Click for PLS"
-						data-trigger="346_darkpsytrance">
-						Dark PsyTrance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/8dd90c88b4ee5399e6182204a2ede8ed.jpg?size=145x145" title="Deep House - Ctrl+Click for PLS"
-						data-trigger="174_deephouse">
-						Deep House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/3896ecff86795302304c64386ff2c5db.png?size=145x145" title="Deep Nu-Disco - Ctrl+Click for PLS"
-						data-trigger="137_deepnudisco">
-						Deep Nu-Disco
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/87d3b2ee913e6ac75882329971d58be4.png?size=145x145" title="Deep Tech - Ctrl+Click for PLS"
-						data-trigger="182_deeptech">
-						Deep Tech
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5d086388aca22629f80ba7c65bd4a163.png?size=145x145" title="Detroit House & Techno - Ctrl+Click for PLS"
-						data-trigger="353_detroithousentechno">
-						Detroit House & Techno
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/0ea9396414430256ffb76cd6148bf88a.png?size=145x145" title="Disco House - Ctrl+Click for PLS"
-						data-trigger="92_discohouse">
-						Disco House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5a0a6603d9a3f151b9eced1629e77d66.png?size=145x145" title="DJ Mixes - Ctrl+Click for PLS"
-						data-trigger="10_djmixes">
-						DJ Mixes
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/6da83f72080cb225acf608e54f992cf2.png?size=145x145" title="Downtempo Lounge - Ctrl+Click for PLS"
-						data-trigger="180_downtempolounge">
-						Downtempo Lounge
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/f2ed26a932bdb5cd0a0eac576aebfa3f.png?size=145x145" title="Drum and Bass - Ctrl+Click for PLS"
-						data-trigger="13_drumandbass">
-						Drum and Bass
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/ed6a072e2ee5db23ceed7136fa2db72b.png?size=145x145" title="Drumstep - Ctrl+Click for PLS"
-						data-trigger="291_drumstep">
-						DrumStep
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/e4b346b193c1adec01f8489b98a2bf3f.png?size=145x145" title="Dub - Ctrl+Click for PLS"
-						data-trigger="348_dub">
-						Dub
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/e0614d304c8fd5879a1278dd626d8769.png?size=145x145" title="Dubstep - Ctrl+Click for PLS"
-						data-trigger="91_dubstep">
-						Dubstep
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/4677d19284fdb4522cd9e60ec4244686.png?size=145x145" title="Dub Techno - Ctrl+Click for PLS"
-						data-trigger="355_dubtechno">
-						Dub Techno
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/969d1a4840606786752ebb02bad71a8a.png?size=145x145" title="EBM - Ctrl+Click for PLS"
-						data-trigger="326_ebm">
-						EBM
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/25f559a97855d8107e7cdc63f2acb345.png?size=145x145" title="EcLectronica - Ctrl+Click for PLS"
-						data-trigger="208_eclectronica">
-						EcLectronica
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/387bfe3c7d50b4edd1408135596a03df.png?size=145x145" title="Electro House - Ctrl+Click for PLS"
-						data-trigger="56_electrohouse">
-						Electro House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/6cc168f2893ea542fc02fa32e32dd27a.png?size=145x145" title="Electronic Pioneers - Ctrl+Click for PLS"
-						data-trigger="280_electronicpioneers">
-						Electronic Pioneers
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/469edf6810765faa963eda29c02a787f.jpg?size=145x145" title="Electronics - Ctrl+Click for PLS"
-						data-trigger="347_electronics">
-						Electronics
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/72852e54a50b903aa0a726f87c0050c2.jpg?size=145x145" title="Electropop - Ctrl+Click for PLS"
-						data-trigger="286_electropop">
-						Electropop
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/f37dde025f56dee1631102fc3ad9d2b0.png?size=145x145" title="Electro Swing - Ctrl+Click for PLS"
-						data-trigger="327_electroswing">
-						Electro Swing
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5a76739725cd2106a3e2f30a1461a9bd.jpg?size=145x145" title="Epic Trance - Ctrl+Click for PLS"
-						data-trigger="175_epictrance">
-						Epic Trance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/a42ae2b9810acb81c6003915113c7d9d.png?size=145x145" title="EuroDance - Ctrl+Click for PLS"
-						data-trigger="6_eurodance">
-						EuroDance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/45d5aa9e246fd59fe03e601171059581.png?size=145x145" title="Funky House - Ctrl+Click for PLS"
-						data-trigger="58_funkyhouse">
-						Funky House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/560659bc59ac29cd9a4eb8a63a469267.png?size=145x145" title="Future Beats - Ctrl+Click for PLS"
-						data-trigger="401_futurebeats">
-						Future Beats
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/d6aa1e9b4c48141fa573d498eba41a2a.png?size=145x145" title="Future Garage - Ctrl+Click for PLS"
-						data-trigger="292_futuregarage">
-						Future Garage
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/f4b0f3c30b34cf76de0955652ae5664a.png?size=145x145" title="Future Synthpop - Ctrl+Click for PLS"
-						data-trigger="53_futuresynthpop">
-						Future Synthpop
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/83b92cbe5cdc692fb0c8871135e98c55.png?size=145x145" title="Gabber - Ctrl+Click for PLS"
-						data-trigger="16_gabber">
-						Gabber
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/0bc13f8e582c332b0e359df84c3df441.png?size=145x145" title="Glitch Hop - Ctrl+Click for PLS"
-						data-trigger="198_glitchhop">
-						Glitch Hop
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/b5b22bf5232f246bf63b25914bd369e3.png?size=145x145" title="Goa &amp; Psy - Ctrl+Click for PLS"
-						data-trigger="8_goapsy">
-						Goa &amp; Psy
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/9d04d9b20de5378994fa8653a1dc69f3.jpg?size=145x145" title="Hands Up - Ctrl+Click for PLS"
-						data-trigger="176_handsup">
-						Hands Up
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/14f1a4484dc88e0df006e9cd71407bcb.png?size=145x145" title="Hardcore - Ctrl+Click for PLS"
-						data-trigger="9_hardcore">
-						Hardcore
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/a67b19cab6cdb97ec77f8264f9c4c562.png?size=145x145" title="Hard Dance - Ctrl+Click for PLS"
-						data-trigger="5_harddance">
-						Hard Dance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/b27a7b020806ce4428307b30b44734ec.png?size=145x145" title="Hardstyle - Ctrl+Click for PLS"
-						data-trigger="60_hardstyle">
-						Hardstyle
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/64249abcb7fcfb5b790953632dc6c779.png?size=145x145" title="Hard Techno - Ctrl+Click for PLS"
-						data-trigger="276_hardtechno">
-						Hard Techno
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/6f8a0b3279c24b1c5fa1c6c1397b9b56.png?size=145x145" title="House - Ctrl+Click for PLS"
-						data-trigger="4_house">
-						House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/966d955e9ffc6124be1d185703a436c4.png?size=145x145" title="IDM - Ctrl+Click for PLS"
-						data-trigger="350_idm">
-						IDM
-					</li>
-
-					<li data-image="http://cdn-images.audioaddict.com/c/8/c/f/5/a/c8cf5a00b59eb7c36e5b772479920483.png?size=200x200" title="Indie Beats - Ctrl+Click for PLS"
-						data-trigger="404_indiebeats">
-						Indie Beats
-					</li>
-					<li data-image="http://api.audioaddict.com/v1/assets/image/2425f3532b9f9e0c2c32ab13889a9aba.png?size=145x145" title="Indie Dance - Ctrl+Click for PLS"
-						data-trigger="351_indiedance">
-						Indie Dance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/49e159ac3b8473eac86af4cc1e24ffd3.png?size=145x145" title="Jazz House - Ctrl+Click for PLS"
-						data-trigger="349_jazzhouse">
-						Jazz House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/1551288819231087619e6e659f122830.png?size=145x145" title="Jungle - Ctrl+Click for PLS"
-						data-trigger="293_jungle">
-						Jungle
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/fb8908953ab95d2f01402660e2cc0883.png?size=145x145" title="Latin House - Ctrl+Click for PLS"
-						data-trigger="117_latinhouse">
-						Latin House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/75b2b5e697e7948f5fcd64a1c54f3f72.png?size=145x145" title="Liquid DnB - Ctrl+Click for PLS"
-						data-trigger="105_liquiddnb">
-						Liquid DnB
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/df258a92e9d5152cb182b439f1d0eb2b.png?size=145x145" title="Liquid Dubstep - Ctrl+Click for PLS"
-						data-trigger="184_liquiddubstep">
-						Liquid Dubstep
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/f350f444c8d87b080c08a2abe9b6106f.png?size=145x145" title="Liquid Trap - Ctrl+Click for PLS"
-						data-trigger="352_liquidtrap">
-						Liquid Trap
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/58f7afca5a6883c063f8642bfd2cef80.png?size=145x145" title="Lounge - Ctrl+Click for PLS"
-						data-trigger="11_lounge">
-						Lounge
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5bafe3802484d479d77b21aa34f537fe.png?size=145x145" title="Mainstage - Ctrl+Click for PLS"
-						data-trigger="210_mainstage">
-						Mainstage
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/3d8eb1823a29d891b516cc3bf2f539c9.png?size=145x145" title="Melodic Progressive - Ctrl+Click for PLS"
-						data-trigger="402_melodicprogressive">
-						Melodic Progressive
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5c29e3063f748d156260fb874634b602.png?size=145x145" title="Minimal - Ctrl+Click for PLS"
-						data-trigger="59_minimal">
-						Minimal
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/2200134b0c655a3cd40e0fbf7380c9a0.png?size=145x145" title="Nightcore - Ctrl+Click for PLS"
-						data-trigger="294_nightcore">
-						Nightcore
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/4ba0684daed5c3c422b8ad3aa59c7eaf.png?size=145x145" title="Nu Disco House - Ctrl+Click for PLS"
-						data-trigger="295_nudisco">
-						Nu Disco House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/7edf76e784f740c1a20904309bbc7080.png?size=145x145" title="Oldschool Acid - Ctrl+Click for PLS"
-						data-trigger="124_oldschoolacid">
-						Oldschool Acid
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/503959f01400b6ecf59379d9c6844d11.png?size=145x145" title="Oldschool House - Ctrl+Click for PLS"
-						data-trigger="104_oldschoolhouse">
-						Oldschool House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/8c4ec9353361ef5fd6c9cbc4999e2fd1.png?size=145x145" title="Oldschool Rave - Ctrl+Click for PLS"
-						data-trigger="296_oldschoolrave">
-						Oldschool Rave
-					</li>
-					<li data-image="http://api.audioaddict.com/v1/assets/image/fcea7c9d9a16314103a41f66bd6dfd15.png?size=145x145" title="Progressive - Ctrl+Click for PLS"
-						data-trigger="7_progressive">
-						Progressive
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/4aeae25360c3792e8e9fd6f2e5cdf39e.jpg?size=145x145" title="Progressive Psy - Ctrl+Click for PLS"
-						data-trigger="178_progressivepsy">
-						Progressive Psy
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/178802e0d43b3d42f2476a183541d652.jpg?size=145x145" title="Psybient - Ctrl+Click for PLS"
-						data-trigger="285_psybient">
-						Psybient
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/f301e3e597472b3edbf50a770a52c087.png?size=145x145" title="PsyChill - Ctrl+Click for PLS"
-						data-trigger="67_psychill">
-						PsyChill
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/3b2e1348eb2ded04b1b97e1791001bf8.png?size=145x145" title="Russian Club Hits - Ctrl+Click for PLS"
-						data-trigger="213_russianclubhits">
-						Russian Club Hits
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/950ff823b9989f18f19ba65fb149fcad.png?size=145x145" title="Soulful House - Ctrl+Click for PLS"
-						data-trigger="47_soulfulhouse">
-						Soulful House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/4531d1656bc302d4f1898f779a988c17.png?size=145x145" title="Space Dreams - Ctrl+Click for PLS"
-						data-trigger="64_spacemusic">
-						Space Dreams
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/a1cb226c2170a74ed0fdb4839dafe869.png?size=145x145" title="Tech House - Ctrl+Click for PLS"
-						data-trigger="66_techhouse">
-						Tech House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/cedaa3b495a451bdd6ee4b21311e155c.png?size=145x145" title="Techno - Ctrl+Click for PLS"
-						data-trigger="36_techno">
-						Techno
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/befc1043f0a216128f8570d3664856f7.png?size=145x145" title="Trance Channel - Ctrl+Click for PLS"
-						data-trigger="1_trance">
-						Trance
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/a79fc1acd04100c12f7b55c17c72a23e.png?size=145x145" title="Trap - Ctrl+Click for PLS"
-						data-trigger="230_trap">
-						Trap
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/4af36061eb3e97a0aa21b746b51317dd.png?size=145x145" title="Tribal House - Ctrl+Click for PLS"
-						data-trigger="57_tribalhouse">
-						Tribal House
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/2c91e9bbb77821106c9905653a5ade9e.png?size=145x145" title="UMF Radio - Ctrl+Click for PLS"
-						data-trigger="215_umfradio">
-						UMF Radio
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/de8a86031fd9b112ca9ace584bc98e7f.jpg?size=145x145" title="Underground Techno - Ctrl+Click for PLS"
-						data-trigger="288_undergroundtechno">
-						Underground Techno
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/a5b0bd27de43d04e1da9acf5b8883e85.png?size=145x145" title="Vocal Chillout - Ctrl+Click for PLS"
-						data-trigger="142_vocalchillout">
-						Vocal Chillout
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/5381371e7ebab35aaa3b8f3f290f31ca.png?size=145x145" title="Vocal Lounge - Ctrl+Click for PLS"
-						data-trigger="278_vocallounge">
-						Vocal Lounge
-					</li>
-
-					<li data-image="http://api.audioaddict.com/v1/assets/image/009b4fcdb032cceee6f3da5efd4a86e9.png?size=145x145" title="Vocal Trance - Ctrl+Click for PLS"
-						data-trigger="2_vocaltrance">
-						Vocal Trance
-					</li>
-				</div>
-				<div id="down_pad" class="mouselight">
-				</div>
-			</div>
-			<div id="list_selector">
-				<span class="all_channels list_selector">All</span>
-				<span class="faves list_selector">Faves</span>
-				<span class="shows list_selector">Shows</span>
-				<span class="fave_shows list_selector">FaveShows</span>
-			</div>
-		</div>
-
-		<div id="trackline"><span class="trackpointer"></span></div>
-		<div id="track">
-		</div>
-		<div title="Last.fm: Love this track" id="doLike" style="display:none; position:fixed; height:20px; width:18px; left:387px; top:380px; background:url('heart_32.png'); background-size: 100%;opacity:0.3;  background-repeat:no-repeat; cursor:pointer; background-color:#212737"
-			class="mouselight"></div>
-
-		<div title="Last.fm: Scrobble this track" id="doScrob" style="display:none; position:fixed; height:20px; width:23px; left:385px; top:400px; background:url('last.png'); background-size: 100%; cursor:pointer; opacity:0.9; background-color:#212737; background-repeat:no-repeat;"
-			class="mouselight"></div>
-	</div>
+                <span id="miniChannel"><img class="add_to_fav" src="fav_hollow.png" style="height:10px; width:10px;" title="Add Channel to Favourites"><span id="mini_tn"></span></span>
+            </div>
+        </div>
+        <div id="centreColumn">
+
+        </div>
+        <div id="right">
+            <div id="scroll_box_box">
+                <div id="up_pad" class="mouselight">
+                </div>
+                <div class="select channel faves_list" id="lC" title="Pick a channel." style="display:none">
+                </div>
+                <div class="select channel shows_list" id="lC" title="Pick a show." style="display:none">
+                </div>
+                <div class="select channel fave_shows_list" id="lC" title="Pick a show." style="display:none">
+                </div>
+                <div class="select channel master_list" id="lC" title="Pick a channel.">
+                    <div class="site_selector">
+                        <div class="site_left"></div>
+                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/di-825c83af566b394c18cc132ec2c7132a.png'></img>
+                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/radiotunes-8f6b58a3539aae382863302c1ae8fe5b.png'></img>
+                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/rockradio-1323bbe051c0d79ec49de6e9e37e73cb.png'></img>
+                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/jazzradio-8866b0d7ef949f7ef6f0c39c73cca097.png'></img>
+                        <!--<img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/classicalradio-f46ea4db6ead9edf082f6b0e6ec8d72b.png'></img>-->
+                        <div class="site_right"></div>
+                    </div>
+                    <div class="channel_list"></div>
+                </div>
+                <div id="down_pad" class="mouselight">
+                </div>
+            </div>
+            <div id="list_selector">
+                <span class="all_channels list_selector">All</span>
+                <span class="faves list_selector">Faves</span>
+                <span class="shows list_selector">Shows</span>
+                <span class="fave_shows list_selector">FaveShows</span>
+            </div>
+        </div>
+
+        <div id="trackline"><span class="trackpointer"></span></div>
+        <div id="track">
+        </div>
+        <div title="Last.fm: Love this track" id="doLike" style="display:none; position:fixed; height:20px; width:18px; left:387px; top:380px; background:url('heart_32.png'); background-size: 100%;opacity:0.3;  background-repeat:no-repeat; cursor:pointer; background-color:#212737"
+            class="mouselight"></div>
+
+        <div title="Last.fm: Scrobble this track" id="doScrob" style="display:none; position:fixed; height:20px; width:23px; left:385px; top:400px; background:url('last.png'); background-size: 100%; cursor:pointer; opacity:0.9; background-color:#212737; background-repeat:no-repeat;"
+            class="mouselight"></div>
+    </div>
 </body>

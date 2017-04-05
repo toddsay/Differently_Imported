@@ -28,11 +28,13 @@
  *
  * Date: 3rd March 2015. 16.33 GMT
 */
+
 var frameLength = 5; //ms to display
 var bg = chrome.extension.getBackgroundPage();
 
 var s_out = true;
 var t_out = true;
+
 $(document).ready(function() {
     analyseThis();
     if ($.cookie('diChan') != null) {
@@ -266,6 +268,13 @@ $(document).ready(function() {
                 expires: 365
             });
 
+            //todo: support multiple show children, better split shows from channels
+            var showId = $(this).find('div').attr("data-id");
+            if (showId) {
+                playShow(showId);
+                return;
+            }
+
             if (bg.playing) {
                 clearInterval(disTimer);
                 setTimeout(function() {
@@ -278,6 +287,23 @@ $(document).ready(function() {
             show_stars();
         }
     });
+
+    function playShow(showId) {
+        var showUrl = "http://www.di.fm/_papi/v1/di/tracks/" + showId;
+        $.ajax({
+            url: showUrl,
+            type: 'GET',
+            dataType: 'json',
+            headers: { 'X-Api-Key': 'cc04dc88c7d8dce5c8dcad19c152b194' },
+            success: function(data) {
+                var contentUrl = 'http:' + data.content.assets[0].url;
+                var artist = data.display_artist;
+                var title = data.display_title;
+                doPlay(contentUrl, artist, title);
+            },
+            error: function() {}
+        });
+    }
 
     $('body').on('selectstart', '#lC li', function() {
         return false;
@@ -367,8 +393,13 @@ function scrolCh() {
     }, 50);
 }
 
-function doPlay() {
+//TODO: Second doPlay-type method with a different message, for playing a specific url instead of a channel
+
+// Play the currently selected channel, or optionally load a specific url (show)
+function doPlay(directUrl, directArtist, directTitle) {
+    // Just to test that the listen_key is valid (note that the URL changed)
     var testUrl = "http://listen.di.fm/premium/00sclubhits.pls?listen_key="; // was http://listen.di.fm/public3/favorites?
+
     var checkKey = $.ajax({
         type: "get",
         url: testUrl + $('#lK').val(),
@@ -390,6 +421,9 @@ function doPlay() {
                 chrome.runtime.sendMessage({
                     key: $('#lK').val(), //Send key to background player
                     channel: $.cookie("diChan"),
+                    directUrl: directUrl,
+                    directArtist: directArtist,
+                    directTitle: directTitle,
                     vol: volm,
                     server: $('#server').val(),
                     play: "1"
@@ -643,7 +677,8 @@ $(document).ready(function() {
                 }, 125);
                 dP = channel_stuff.indexOf("_"); //parse the value. need both bits.
                 channel_Id = channel_stuff.substring(0, (dP)); // channel id for the trackname
-                $.getJSON(bg.apiUrl, function(data) {
+                var url = buildApiUrl() + '/track_history';
+                $.getJSON(url, function(data) {
                     $.each(data, function(key, val) {
                         if (key == channel_Id) {
                             $('#popup_nowplay').html(`
@@ -729,6 +764,24 @@ $(document).ready(function() {
         $("#track").html('Liked');
         bg.likeage();
     });
+
+    $(".site_left,.site_right").click(function() {
+        var siteIndex = bg.currentSiteIndex;
+        if ($(this).hasClass('.site_left')) {
+            siteIndex--;
+        } else {
+            siteIndex++;
+        }
+        if (siteIndex >= bg.SiteList.length) {
+            siteIndex = 0;
+        }
+        if (siteIndex < 0) {
+            siteIndex = bg.SiteList.length - 1;
+        }
+
+        bg.currentSiteIndex = siteIndex;
+        loadChannelList();
+    });
 });
 
 var scalec;
@@ -750,6 +803,11 @@ function analyseThis() {
 function go() {
     requestAnimationFrame(go);
     drawContext.clearRect(0, 0, canvasX, canvasY);
+
+    if (bg.analyser == null || bg.analyser.context == null || bg.analyser.context.sampleRate == 0) {
+        return; // nothing to see here        
+    }
+
     try {
         bg.analyser.getByteFrequencyData(freqDomain);
         var frequencyCap = 18000;
@@ -852,25 +910,80 @@ $(document).ready(function() {
     }
 });
 
-function appendTrackInfoToChannel(key, data) {
-    var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "_']");
+function fillChannelList(data, site) {
+    $('.master_list .channel_list').empty();
+
+    /*<li data-image="http://api.audioaddict.com/v1/assets/image/799616ab3c59f7008573c2de097aa731.png?size=145x145" title="80s Alt & New Wave - Ctrl+Click for PLS"
+        data-trigger="354_80saltnnewwave" data-site="radiotunes">
+        80s Alt & New Wave
+    </li>*/
+    $.each(data, function(key, data) {
+        channel = $('<li data-image="' + data.asset_url + '" title="' + data.name + ' - ' + data.description + ' (Ctrl+Click for PLS)" data-trigger="' +
+            data.id + '_' + data.key + '" data-site="' + site + '">' + data.name + '</li>');
+        $('.master_list .channel_list').append(channel);
+    });
+
+    loadCurrentTracks();
+}
+
+function loadChannelList(siteIndex) {
+    var siteIndex = bg.currentSiteIndex;
+    var currentSite = bg.getCurrentSite();
+    var site = currentSite.url;
+    $('.site_selector img').hide();
+    $('.site_selector img').eq(siteIndex).show();
+
+    chrome.storage.local.get(site, function(data) {
+        if (data[site] === undefined || data[site].expiration == null || data[site].expiration < new Date()) {
+            var configUrl = 'http://www.' + site + '/webplayer3/config';
+            $.getJSON(configUrl, function(data) {
+                var channelData = {};
+                // Extract the channel list and sort by name
+                channelData.channels = data.API.Config.channels.sort(function(a, b) {
+                    if (a.name > b.name) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+
+                var expirationDate = new Date();
+                expirationDate.setDate(new Date().getDate() + 1);
+                channelData.expiration = expirationDate;
+
+                var cacheData = {};
+                cacheData[site] = channelData;
+                chrome.storage.local.set(cacheData, function() {});
+                fillChannelList(channelData.channels, site);
+            });
+        } else {
+            fillChannelList(data[site].channels, site);
+        }
+    });
+}
+
+function appendTrackInfoToChannel(key, info, id) {
+    var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "']");
+    var dataId = id ? ' data-id="' + id + '"' : '';
+
     if (liChannel) {
         var titleDiv = null;
         if (liChannel.children().length == 0) {
-            titleDiv = $('<div></div>');
+            titleDiv = $('<div' + dataId + '></div>');
             liChannel.append(titleDiv);
         } else {
             titleDiv = liChannel.children('div');
         }
-        titleDiv.text(data.track);
+        titleDiv.text(info);
     }
 }
 
 function loadCurrentTracks() {
+    var apiUrl = bg.buildApiUrl() + '/track_history';
     // Load current track titles for each channel
-    $.getJSON(bg.apiUrl, function(data) {
+    $.getJSON(apiUrl, function(data) {
         $.each(data, function(key, val) {
-            appendTrackInfoToChannel(key, val);
+            appendTrackInfoToChannel(key + '_', val.track);
         });
     });
 
@@ -878,7 +991,7 @@ function loadCurrentTracks() {
     var apiUrl = bg.apiUrl.replace("/di", "/radiotunes");
     $.getJSON(apiUrl, function(data) {
         $.each(data, function(key, val) {
-            appendTrackInfoToChannel(key, val);
+            appendTrackInfoToChannel(key + '_', val.track);
         });
     });
 }
@@ -886,13 +999,13 @@ function loadCurrentTracks() {
 function swap_lists(element) {
     if ($(element).hasClass('all_channels')) {
         newlist = 'all_channels';
-        loadCurrentTracks();
+        loadChannelList();
     } else if ($(element).hasClass('faves')) {
         newlist = 'faves';
         loadCurrentTracks();
     } else if ($(element).hasClass('shows')) {
         newlist = 'shows';
-        build_showlist();
+        buildShowlist();
     } else if ($(element).hasClass('fave_shows')) {
         newlist = 'fave_shows';
     }
@@ -934,10 +1047,10 @@ function show_stars() {
         }
     }
 
-    build_favlist();
+    buildFavlist();
 }
 
-function build_favlist() {
+function buildFavlist() {
     if ($.cookie("Difaves") !== 'undefined') {
         try {
             fav_list = JSON.parse($.cookie("Difaves"))['faves'];
@@ -959,13 +1072,23 @@ function build_favlist() {
     }
 }
 
-function build_showlist() {
+function buildShowlist() {
     var showsHtml = "";
-    var showsUrl = "http://www.di.fm/_papi/v1/di/shows?page=1&per_page=500&facets[channel_name][]=DJ+Mixes"
+    var apiUrl = bg.buildApiUrl();
+    var showsUrl = apiUrl + "/shows?page=1&per_page=500&facets[channel_name][]=Epic+Trance"
+
     $.getJSON(showsUrl, function(data) {
         if (data && data.results) {
             $.each(data.results, function(key, val) {
                 showsHtml += '<li data-image="' + val.images.compact + '" title="' + val.name + '" data-trigger="' + val.slug + '">' + val.name + '</li>';
+                var episodesUrl = apiUrl + '/shows/' + val.slug + '/episodes?page=1&per_page=10';
+                $.getJSON(episodesUrl, function(data) {
+                    var firstEpId = data[0].tracks[0].id;
+                    var firstEpTitle = data[0].tracks[0].display_title; //data.most_recent_events[0];
+                    //var desc = val.artists_tagline + '\nEpisode ' + firstEp.name;
+                    appendTrackInfoToChannel(val.slug, firstEpTitle, firstEpId);
+                    //http://content.audioaddict.com/prd/6f50aea1e62c444db5d874def8c2f3c5c3b5bddb3a60811048f120da7cee59a2.mp4?audio_token=0d1e1d58c0c53715cd0ade09642afa24&purpose=playback&exp=2017-03-16T10:36:51Z&auth=5c36a267972c6180ff1cf2e7887bffea50b17447
+                });
             });
         }
         $('.shows_list').html(showsHtml);

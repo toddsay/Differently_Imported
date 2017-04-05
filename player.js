@@ -36,8 +36,29 @@ var last_response = {};
 var apiUrl = "http://api.audioaddict.com/v1/di/track_history";
 var diIMG = "<img src='diffI.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
 var playing = false;
-$(document).ready(function () { //Set some vars
-    chrome.commands.onCommand.addListener(function (command) {
+
+var currentSiteIndex = 0;
+var SiteList = [
+    { site: 'di', url: 'di.fm', desc: 'Digitally Imported' },
+    { site: 'radiotunes', url: 'radiotunes.com', desc: 'RadioTunes' },
+    { site: 'rockradio', url: 'rockradio.com', desc: 'ROCKRADIO' },
+    { site: 'jazzradio', url: 'jazzradio.com', desc: 'JAZZRADIO' },
+    //{ site: 'classicalradio', url: 'classicalradio.com', desc: 'ClassicalRadio' }, // Channel list doesn't seem to work here
+];
+
+function getCurrentSite() {
+    var site = SiteList[currentSiteIndex];
+    return site;
+}
+
+function buildApiUrl() {
+    var currentSite = getCurrentSite();
+    //return 'http://www.' + currentSite.url + '/_papi/v1/' + currentSite.site;
+    return 'http://api.audioaddict.com/v1/' + currentSite.site;
+}
+
+$(document).ready(function() { //Set some vars
+    chrome.commands.onCommand.addListener(function(command) {
         if (command == "toggle-play") {
             if (!playing) {
                 playing = true;
@@ -49,15 +70,13 @@ $(document).ready(function () { //Set some vars
                 pollFlag = 1;
                 var audio = document.getElementById('diPlyr');
                 audio.volume = $.cookie("diVol") / 100;
-
             } else {
                 playing = false;
                 stop();
             }
         }
-
     });
-    setTimeout(function () {
+    setTimeout(function() {
         makeTS();
         timeEngine();
     }, 2000);
@@ -108,12 +127,10 @@ $(document).ready(function () { //Set some vars
     } else if (check >= nyfrom && check <= nyto) {
         motd = "<span>Happy New Year from Phil @ Differently Imported<br /><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
         diIMG = "<img src='diffXmas.png' style='border:1px solid white; margin-top:20px; margin-left:15px; height:155px; width:155px;'>";
-
-    }
-    else {
+    } else {
         motd = "<span>Differently Imported. <a href='support.html' target='_blank'><span style='color:#cdcdcd;  text-decoration: underline;'>All User Requested features.</span></a> Thanks for your input. V4.3.70 <br><a href ='https://www.facebook.com/DifferentlyImported' target='_blank'> <span style='color:#cdcdcd;  text-decoration: underline;'>Facebook</span></a> / <a href='https://chrome.google.com/webstore/detail/differently-imported-for/bnihjdccalbcoienhgcjjlilfdhacdkf' target='_blank'> <span style='color:#cdcdcd; text-decoration: underline;'>Feedback</span></a></span>";
-
     }
+
     $.cookie("diChTn", motd, {
         expires: 365
     });
@@ -129,7 +146,8 @@ $(document).ready(function () { //Set some vars
     chrome.browserAction.setBadgeText({
         text: " "
     });
-    chrome.runtime.onMessage.addListener(function (action) { //Start the message listener and set some actions
+
+    chrome.runtime.onMessage.addListener(function(action) { //Start the message listener and set some actions
         if (action.play == "0") { // Play is a flag to control the player.
             playing = false;
             stop();
@@ -139,8 +157,11 @@ $(document).ready(function () { //Set some vars
             server = action.server;
             key = action.key;
             channel = action.channel;
+            directUrl = action.directUrl;
+            directArtist = action.directArtist;
+            directTitle = action.directTitle;
             vol = 0.5;
-            play(channel, key, vol, server);
+            play(channel, key, vol, server, directUrl, directArtist, directTitle);
             pollFlag = 1;
             var audio = document.getElementById('diPlyr');
             audio.volume = action.vol / 100;
@@ -163,9 +184,10 @@ $(document).ready(function () { //Set some vars
                 $.cookie("newT", "1", {
                     expires: 365
                 });
-                $.cookie("diHq", "1", {
-                    expires: 365
-                });
+                // Not sure if this is ever needed but it is resetting my configured value
+                // $.cookie("diHq", "1", {
+                //     expires: 365
+                // });
             }
         }
     });
@@ -176,8 +198,7 @@ $(document).ready(function () { //Set some vars
         $("#diPlyr").remove();
         try {
             audioContext.close();
-        }
-        catch (e) { }
+        } catch (e) {}
         if (playing == "false") {
             $.cookie("diChTn", motd, {
                 expires: 365
@@ -187,26 +208,38 @@ $(document).ready(function () { //Set some vars
             $.cookie("newT", "1", {
                 expires: 365
             });
-        } else { }
+        }
     }
 
-    function play(ch, ky, vol, server) {
+    // Play the specified channel. Optionally if directUrl is specified, play a specific url (show).
+    function play(ch, ky, vol, server, directUrl, directArtist, directTitle) {
         delimitPos = ch.indexOf("_"); //parse the value. need both bits.
         chLength = ch.length;
         channelId = ch.substring(0, (delimitPos)); // channel id for the trackname
-        chUrl = ch.substring(delimitPos + 1, chLength); //channel name for the url
-        if ($.cookie("premium") == "1") {
-            if ($.cookie("diHq") == "1") {
-                chUrl = chUrl + "_hi"; // high or low quality stream
-            }
-            url = "http://prem" + server + ".di.fm:80/" + chUrl + "?" + ky;
+
+        if (directUrl) {
+            url = directUrl;
+            last_response['last_np_artist'] = directArtist;
+            last_response['last_np_track'] = directTitle;
         } else {
-            url = "http://pub" + server + ".di.fm/di_" + chUrl + "_aac?type=.flv";
+            chUrl = ch.substring(delimitPos + 1, chLength); //channel name for the url
+            if ($.cookie("premium") == "1") {
+                if ($.cookie("diHq") == "1") {
+                    chUrl = chUrl + "_hi"; // high or low quality stream
+                }
+                url = "http://prem" + server + ".di.fm:80/" + chUrl + "?" + ky;
+            } else {
+                url = "http://pub" + server + ".di.fm/di_" + chUrl + "_aac?type=.flv";
+            }
         }
+
         $.cookie("diChId", channelId, {
             expires: 365
         }); // save em for later
         $.cookie("Diserver", server, {
+            expires: 365
+        });
+        $.cookie("diDirectUrl", directUrl, {
             expires: 365
         });
         if ($('#diPlyr').attr('src') != url) { //if something changed
@@ -232,7 +265,6 @@ $(document).ready(function () { //Set some vars
             source = audioContext.createMediaElementSource(capAudio);
             source.connect(analyser);
             analyser.connect(audioContext.destination);
-
         }
         playing = true;
         showTrack(); // and kick off tracklist API
@@ -240,6 +272,7 @@ $(document).ready(function () { //Set some vars
         document.getElementById('diPlyr').addEventListener("error", showErr, false);
         //document.getElementById('diPlyr').addEventListener("emptied", showErr, false);
     }
+
     var anim = [". . . . ", "> . . .", ">> . .", ">>> .", ">>>>", ". >>>", ". . >>", ". . . >", ". . . . "];
     var ts = 0;
     var txTim;
@@ -247,7 +280,7 @@ $(document).ready(function () { //Set some vars
     function scrollIcon(flag) {
         if (flag) {
             if (!txTim) {
-                txTim = setInterval(function () {
+                txTim = setInterval(function() {
                     if (playing) {
                         txtAnim = anim[ts];
                         ts++;
@@ -278,7 +311,6 @@ $(document).ready(function () { //Set some vars
 
     //-----------------------------------------------
 
-
     function showErr(event) {
         if (playing == true) {
             $.cookie("diChTn", "Network Error! Check Server; Lower Quality; Remove non-premium Keys", {
@@ -298,15 +330,14 @@ $(document).ready(function () { //Set some vars
             });
         }
     }
-    //-----------------------------------------------
 
+    //-----------------------------------------------
 
     function timeEngine() {
 
         if ($.cookie('lastNP') == '1') {
             nowplayLast();
         }
-
 
         var currentD = new Date();
         if (($.cookie("diOnTrig") == "1") && (alOn <= currentD.getTime())) {
@@ -340,15 +371,13 @@ $(document).ready(function () { //Set some vars
             } else {
                 makeTS();
             }
-
         }
-        setTimeout(function () {
+        setTimeout(function() {
             timeEngine();
         }, 1000);
-
     }
-
 });
+
 var alOff;
 var alOn;
 
@@ -373,16 +402,17 @@ function makeTS() {
     alOn = alOn.getTime();
     alOff = alOff.getTime();
 }
+
 var sleepyTime = -1;
 var sleepNumber;
 var sleepyTimer;
 
 function setSleep(inSleeps) {
     sleepyTime = inSleeps;
-    sleepNumber = setInterval(function () {
+    sleepNumber = setInterval(function() {
         sleepyTime = sleepyTime - 1;
     }, 1000);
-    sleepyTimer = setTimeout(function () {
+    sleepyTimer = setTimeout(function() {
         stopSleep();
         playing = false;
         stop();
@@ -393,7 +423,6 @@ function stopSleep() {
     sleepyTime = -1;
     clearInterval(sleepNumber);
     clearTimeout(sleepyTimer);
-
 }
 
 var last_fm_key = 'a215d8f01fed30fa10b7fb9c2e82a54d';
@@ -405,10 +434,10 @@ function get_token() {
         type: "POST",
         url: tokenUrl,
         data: {},
-        success: function (res) {
+        success: function(res) {
             last_response['lt'] = res['token'];
             var lastwin = window.open('http://www.last.fm/api/auth/?api_key=a215d8f01fed30fa10b7fb9c2e82a54d&token=' + last_response['lt']);
-            var last_tmer = setInterval(function () {
+            var last_tmer = setInterval(function() {
                 if (lastwin.closed) {
                     clearInterval(last_tmer);
                     last_get_token(last_response['lt']);
@@ -433,7 +462,7 @@ function last_call(method, data, sign) {
         type: "post",
         url: last_url,
         data: post_data,
-        success: function (res) {
+        success: function(res) {
             last_response[method] = JSON.stringify(res);
             doCallbackJS(JSON.stringify(res), method);
             // Do something with response.
@@ -467,30 +496,16 @@ function doCallbackJS(data, method) {
         $.cookie("lastUsername", datafornow['session']['name'], {
             expires: 365
         });
-
-    }
-
-    /*
-    elif (method== ''){
-
-    }
-    */
-    else if (method == 'track.updateNowPlaying') {
+    } else if (method == 'track.updateNowPlaying') {
         console.log('Now Playing Captured');
-    }
-    else if (method == 'track.love' || method == 'track.unlove') {
+    } else if (method == 'track.love' || method == 'track.unlove') {
         trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
-
-    }
-
-    else if (method == 'track.getInfo') {
-
+    } else if (method == 'track.getInfo') {
         if (typeof datafornow['track']['userloved'] !== 'undefined') {
             $.cookie('lastLiked', datafornow['track']['userloved'], {
                 'expires': 1
             });
         }
-
 
         if (last_response['nextFunc'] == 'track.scrobble') {
             last_response['nextFunc'] = 0;
@@ -504,9 +519,7 @@ function doCallbackJS(data, method) {
             }
             console.log(params);
             result = last_call('track.scrobble', params, true);
-        }
-
-        else if (last_response['nextFunc'] == 'track.updateNowPlaying') {
+        } else if (last_response['nextFunc'] == 'track.updateNowPlaying') {
             last_response['nextFunc'] = 0;
             params = {
                 'token': $.cookie("lastToken"),
@@ -517,41 +530,34 @@ function doCallbackJS(data, method) {
             console.log(params);
             result = last_call('track.updateNowPlaying', params, true);
         }
-
     } else if (method == 'track.scrobble') {
         console.log('Scrobbled');
     }
-
-
 }
+
 //-***************************************--------------------------------
 function scrobblage() {
     /*
-artist[i] (Required) : The artist name.
-track[i] (Required) : The track name.
-timestamp[i] (Required) : The time the track started playing, in UNIX timestamp format (integer number of seconds since 00:00:00, January 1st 1970 UTC). This must be in the UTC time zone.
-api_key (Required) : A Last.fm API key.
-api_sig (Required) : A Last.fm method signature. See authentication for more information.
-sk (Required) : A session key generated
+    artist[i] (Required) : The artist name.
+    track[i] (Required) : The track name.
+    timestamp[i] (Required) : The time the track started playing, in UNIX timestamp format (integer number of seconds since 00:00:00, January 1st 1970 UTC). This must be in the UTC time zone.
+    api_key (Required) : A Last.fm API key.
+    api_sig (Required) : A Last.fm method signature. See authentication for more information.
+    sk (Required) : A session key generated
 
-last_response['last_np_artist'] = val.artist;
-                            last_response['last_np_track'] = val.title;
+    last_response['last_np_artist'] = val.artist;
+                                last_response['last_np_track'] = val.title;
 
-*/
+    */
     trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
     last_response['nextFunc'] = 'track.scrobble';
 }
+
 function likeage() {
-    /*
-
-*/
-
-
     if ($.cookie('lastLiked') == '1') {
 
         thefunk = 'track.unlove';
-    }
-    else {
+    } else {
 
         thefunk = 'track.love';
     }
@@ -563,8 +569,8 @@ function likeage() {
     }
     console.log(params);
     result = last_call(thefunk, params, true);
-
 }
+
 var tl;
 var ts;
 var tp;
@@ -572,7 +578,7 @@ var tr;
 
 function get_time() {
     time_ping_url = "http://api.audioaddict.com/v1/ping.json";
-    $.get(time_ping_url, function (timeinfo) {
+    $.get(time_ping_url, function(timeinfo) {
         server_time = timeinfo['time'];
         server_time = new Date(server_time).getTime() / 1000;
         local_time = new Date().getTime() / 1000;
@@ -592,17 +598,21 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
 		else {nexttime = (2000 + (Math.round(+new Date()/1000)));} */
     if (pollFlag == 1) {
         chId = $.cookie("diChId");
+        directUrl = $.cookie("diDirectUrl");
+        if (directUrl) {
+            return; // no tracklist, just one show
+        }
 
         get_time();
 
-        var url = apiUrl;
+        var url = buildApiUrl() + '/track_history';
         var site = $.cookie("diSite");
         if (site && site.length > 0) {
             url = url.replace("/di", "/" + site);
         }
 
-        $.getJSON(url, function (data) {
-            $.each(data, function (key, val) {
+        $.getJSON(url, function(data) {
+            $.each(data, function(key, val) {
                 if (key == chId) {
                     tl = val.duration;
                     ts = val.started;
@@ -610,7 +620,6 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
                     $.cookie('ctractstart', ts, { 'expires': 365 });
                     if (last_response['last_np_artist'] != val.artist) {
                         $.cookie('lastLiked', '0', { 'expires': 365 });
-
                     }
                     tr = "<span title='" + val.track + "'>" + val.track + "</span>";
                     tp = val.art_url;
@@ -641,6 +650,7 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
         pollFlag = 0;
     }
 }
+
 //-----------------------------------------------
 
 function stripslashes(urlIn) {
@@ -656,11 +666,11 @@ function makeHtml(image) {
 
 function trackgetInfo(artist, track) {
     /*
-artist[i] (Required) : The artist name.
-track[i] (Required) : The track name.
-utocorrect[0|1] (Op
-api_key (Required) : A Last.fm API key.
-*/
+    artist[i] (Required) : The artist name.
+    track[i] (Required) : The track name.
+    utocorrect[0|1] (Op
+    api_key (Required) : A Last.fm API key.
+    */
     params = {
         'artist': last_response['last_np_artist'],
         'track': last_response['last_np_track'],
@@ -668,16 +678,10 @@ api_key (Required) : A Last.fm API key.
         'username': $.cookie('lastUsername')
     }
 
-
     method = 'track.getInfo';
     result = last_call(method, params, false);
-
-
-
-
-
-
 }
+
 npt = "";
 npa = "";
 nptimer = false;
@@ -691,7 +695,7 @@ function nowplayLast() {
     //sk (Required)
     if (playing) {
         if (nptimer == false) {
-            nptimer = setTimeout(function () {
+            nptimer = setTimeout(function() {
                 showTrack();
                 nptimer = false
             }, 5000);
@@ -701,7 +705,7 @@ function nowplayLast() {
             npt = last_response['last_np_track'];
             trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
             last_response['nextFunc'] = 'track.updateNowPlaying';
-            setTimeout(function () {
+            setTimeout(function() {
                 scrobblage();
             }, 1500);
         }
@@ -719,16 +723,15 @@ function last_get_token(token) {
     }, true);
 }
 
-
 function last_sign(params) {
     ss = "";
     st = []
     so = {}
-    Object.keys(params).forEach(function (key) {
+    Object.keys(params).forEach(function(key) {
         st.push(key);
     });
     st.sort();
-    st.forEach(function (std) {
+    st.forEach(function(std) {
         ss = ss + std + params[std];
         so[std] = params[std];
     });
@@ -737,5 +740,4 @@ function last_sign(params) {
     hashed_sec = unescape(encodeURIComponent($.md5(ss)));
     so['api_sig'] = hashed_sec;
     return so;
-
 }
