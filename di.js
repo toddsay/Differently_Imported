@@ -108,10 +108,10 @@ $(document).ready(function() {
     }
     if (bg.playing) {
         $("#track").html($.cookie("diChTn"));
-        $("#imageContainer").html($.cookie("diChPic"));
+        $("#trackImage").html($.cookie("diChPic"));
     } else {
         $("#track").html(bg.motd);
-        $("#imageContainer").html(bg.diIMG);
+        $("#trackImage").html(bg.diIMG);
         $.cookie("diChPic", bg.diIMG, {
             expires: 365
         });
@@ -767,7 +767,7 @@ $(document).ready(function() {
 
     $(".site_left,.site_right").click(function() {
         var siteIndex = bg.currentSiteIndex;
-        if ($(this).hasClass('.site_left')) {
+        if ($(this).hasClass('site_left')) {
             siteIndex--;
         } else {
             siteIndex++;
@@ -910,32 +910,48 @@ $(document).ready(function() {
     }
 });
 
-function fillChannelList(data, site) {
-    $('.master_list .channel_list').empty();
-
-    /*<li data-image="http://api.audioaddict.com/v1/assets/image/799616ab3c59f7008573c2de097aa731.png?size=145x145" title="80s Alt & New Wave - Ctrl+Click for PLS"
-        data-trigger="354_80saltnnewwave" data-site="radiotunes">
-        80s Alt & New Wave
-    </li>*/
-    $.each(data, function(key, data) {
-        channel = $('<li data-image="' + data.asset_url + '" title="' + data.name + ' - ' + data.description + ' (Ctrl+Click for PLS)" data-trigger="' +
-            data.id + '_' + data.key + '" data-site="' + site + '">' + data.name + '</li>');
-        $('.master_list .channel_list').append(channel);
-    });
-
-    loadCurrentTracks();
+function getCurrentChannelId() {
+    var channel_stuff = $.cookie("diChan");
+    dP = channel_stuff.indexOf("_"); //parse the value, need both bits
+    channel_Id = channel_stuff.substring(0, (dP)); // channel id for the trackname
+    return channel_Id;
 }
 
-function loadChannelList(siteIndex) {
-    var siteIndex = bg.currentSiteIndex;
-    var currentSite = bg.getCurrentSite();
-    var site = currentSite.url;
-    $('.site_selector img').hide();
-    $('.site_selector img').eq(siteIndex).show();
+function getFavorites(callback) {
+    chrome.storage.local.get('favorites', function(data) {
+        if (!data.favorites) {
+            data.favorites = {};
+        }
+        callback(data.favorites);
+    });
+}
 
-    chrome.storage.local.get(site, function(data) {
-        if (data[site] === undefined || data[site].expiration == null || data[site].expiration < new Date()) {
-            var configUrl = 'http://www.' + site + '/webplayer3/config';
+function addToFavorites() {
+    var siteUrl = bg.getCurrentSite().url;
+    var channelId = getCurrentChannelId();
+
+    getChannelInfo(siteUrl, channelId, function(channelData) {
+        getFavorites(function(favorites) {
+            if (favorites[channelId]) {
+                delete favorites[channelId];
+            } else {
+                favorites[channelId] = channelData;
+            }
+            chrome.storage.local.set({ 'favorites': favorites }, function() {});
+            show_stars();
+        });
+    });
+}
+
+function getSiteDetails(siteUrl, callback) {
+    if (!siteUrl) {
+        siteUrl = bg.getCurrentSite().url;
+    }
+    var site = bg.getSite(siteUrl).site;
+
+    chrome.storage.local.get(siteUrl, function(data) {
+        if (data[siteUrl] === undefined || data[siteUrl].expiration == null || data[siteUrl].expiration < new Date()) {
+            var configUrl = 'http://www.' + siteUrl + '/webplayer3/config';
             $.getJSON(configUrl, function(data) {
                 var channelData = {};
                 // Extract the channel list and sort by name
@@ -947,18 +963,57 @@ function loadChannelList(siteIndex) {
                     }
                 });
 
+                // populate each channel with site info for convenience
+                $.each(channelData.channels, function(key, val) {
+                    val.site = site;
+                    val.siteUrl = siteUrl;
+                });
+
                 var expirationDate = new Date();
-                expirationDate.setDate(new Date().getDate() + 1);
+                expirationDate.setDate(new Date().getDate() + 1); //todo: pick a number of days
                 channelData.expiration = expirationDate;
+                channelData.site = site;
 
                 var cacheData = {};
-                cacheData[site] = channelData;
+                cacheData[siteUrl] = channelData;
                 chrome.storage.local.set(cacheData, function() {});
-                fillChannelList(channelData.channels, site);
+                callback(channelData.channels);
             });
         } else {
-            fillChannelList(data[site].channels, site);
+            callback(data[siteUrl].channels);
         }
+    });
+}
+
+function getChannelInfo(siteUrl, channelId, callback) {
+    getSiteDetails(siteUrl, function(data) {
+        $.each(data, function(key, channelData) {
+            if (channelData.id == channelId) {
+                callback(channelData);
+            }
+        });
+    });
+}
+
+function loadChannelList(siteIndex) {
+    var site = bg.getCurrentSite().site;
+    var siteIndex = bg.currentSiteIndex;
+    $('.site_selector img').hide();
+    $('.site_selector img').eq(siteIndex).show();
+
+    getSiteDetails(null, function(data) {
+        $('.master_list .channel_list').empty();
+
+        /*<li data-image="http://api.audioaddict.com/v1/assets/image/799616ab3c59f7008573c2de097aa731.png?size=145x145" title="80s Alt & New Wave - Ctrl+Click for PLS"
+            data-trigger="354_80saltnnewwave" data-site="radiotunes">80s Alt & New Wave</li>*/
+        var channelHtml = "";
+        $.each(data, function(key, channelData) {
+            channelHtml += '<li data-image="' + data.asset_url + '" title="' + channelData.name + ' - ' + channelData.description + ' (Ctrl+Click for PLS)" data-trigger="' +
+                channelData.id + '_' + channelData.key + '" data-site="' + site + '">' + channelData.name + '</li>';
+        });
+
+        $('.master_list .channel_list').append($(channelHtml));
+        loadCurrentTracks();
     });
 }
 
@@ -978,21 +1033,29 @@ function appendTrackInfoToChannel(key, info, id) {
     }
 }
 
-function loadCurrentTracks() {
-    var apiUrl = bg.buildApiUrl() + '/track_history';
+function loadCurrentTracksForSite(site) {
+    var apiUrl = bg.buildApiUrl(site) + '/track_history';
     // Load current track titles for each channel
     $.getJSON(apiUrl, function(data) {
         $.each(data, function(key, val) {
             appendTrackInfoToChannel(key + '_', val.track);
         });
     });
+}
 
-    // TODO: just load other sites if the current list contains channels from those sites
-    var apiUrl = bg.apiUrl.replace("/di", "/radiotunes");
-    $.getJSON(apiUrl, function(data) {
-        $.each(data, function(key, val) {
-            appendTrackInfoToChannel(key + '_', val.track);
-        });
+function loadCurrentTracks() {
+    // Find all sites referenced by the current channels list
+    var siteList = {};
+    $('#lC.active li').each(function() {
+        var site = $(this).attr('data-site');
+        if (!siteList[site]) {
+            siteList[site] = 1;
+        }
+    });
+
+    // For each site, load track_history and apply
+    $.each(siteList, function(key, val) {
+        loadCurrentTracksForSite(key);
     });
 }
 
@@ -1002,7 +1065,7 @@ function swap_lists(element) {
         loadChannelList();
     } else if ($(element).hasClass('faves')) {
         newlist = 'faves';
-        loadCurrentTracks();
+        buildFavoritesList();
     } else if ($(element).hasClass('shows')) {
         newlist = 'shows';
         buildShowlist();
@@ -1034,46 +1097,38 @@ function swap_lists(element) {
 }
 
 function show_stars() {
-    if ($.cookie("Difaves") !== 'undefined') {
-        try {
-            fav_list = JSON.parse($.cookie("Difaves"))['faves'];
-        } catch (e) {
-            fav_list = []
-        }
-        if (fav_list.indexOf($.cookie('diChan')) >= 0) {
+    getFavorites(function(favorites) {
+        // Enable or disable the favorite 'star'
+        var channelId = getCurrentChannelId();
+        if (favorites[channelId]) {
             $('.add_to_fav').attr('src', 'fav_filled.png');
         } else {
             $('.add_to_fav').attr('src', 'fav_hollow.png');
         }
-    }
-
-    buildFavlist();
+    });
 }
 
-function buildFavlist() {
-    if ($.cookie("Difaves") !== 'undefined') {
-        try {
-            fav_list = JSON.parse($.cookie("Difaves"))['faves'];
-        } catch (e) {
-            fav_list = [];
+function buildFavoritesList() {
+    getFavorites(function(favorites) {
+        // Build the html for the favorites tab
+        var favesHtml = '';
+        $('.faves_list').html('');
+        if (favorites.length == 0) {
+            $('.faves_list').html('You have not added any favourites yet. Click the <img src ="fav_hollow.png"> by the player controls to start adding favourites.');
+        } else {
+            $.each(favorites, function(index, val) {
+                favesHtml += '<li data-image="' + val.images.compact + '" title="' + val.name +
+                    '" data-site="' + val.site +
+                    '" data-trigger="' + val.id + '_' + val.key + '">' + val.name + '</li>';
+            });
+            $('.faves_list').append($(favesHtml));
+            loadCurrentTracks();
         }
-    } else {
-        fav_list = [];
-    }
-    $('.faves_list').html('');
-
-    if (fav_list.length == 0) {
-        $('.faves_list').html('You have not added any favourites yet. Click the <img src ="fav_hollow.png"> by the player controls to start adding favourites.');
-    } else {
-        fav_list.forEach(function(fave) {
-            $('.master_list *[data-trigger="' + fave + '"]').clone().appendTo(".faves_list");
-        });
-        loadCurrentTracks();
-    }
+    });
 }
 
 function buildShowlist() {
-    var showsHtml = "";
+    var showsHtml = '';
     var apiUrl = bg.buildApiUrl();
     var showsUrl = apiUrl + "/shows?page=1&per_page=500&facets[channel_name][]=Epic+Trance"
 
@@ -1099,27 +1154,9 @@ $(document).ready(function() {
     $('.list_selector').click(function() {
         swap_lists(this);
     });
+
     $('.add_to_fav').click(function() {
-        if ($.cookie("Difaves") !== 'undefined') {
-            try {
-                fav_list = JSON.parse($.cookie("Difaves"))['faves'];
-            } catch (e) {
-                fav_list = []
-            }
-            if (fav_list.indexOf($.cookie('diChan')) >= 0) {
-                fav_list.splice(fav_list.indexOf($.cookie('diChan')), 1);
-            } else {
-                fav_list.push($.cookie('diChan'));
-            }
-        } else {
-            fav_list = [];
-            fav_list.push($.cookie('diChan'));
-        }
-        newfaves = JSON.stringify({ 'faves': fav_list });
-        $.cookie("Difaves", newfaves, {
-            expires: 365
-        });
-        show_stars();
+        addToFavorites();
     });
     start_track_duration();
 });

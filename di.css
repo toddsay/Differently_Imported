@@ -30,6 +30,8 @@
 
 html {
     background-color: #212737;
+    width: 400px;
+    height: 600px;
 }
 
 body {
@@ -37,8 +39,7 @@ body {
     color: #e6e6e6;
     font-size: 20px;
     font-family: verdana, sans-serif;
-    width: 400px;
-    height: 400px;
+    margin: 0;
 }
 
 #container {
@@ -70,7 +71,7 @@ body {
     width: 180px;
     float: left;
     position: relative;
-    height: 350px;
+    height: 550px;
 }
 
 #track {
@@ -209,7 +210,7 @@ body {
     margin-bottom: 5px;
 }
 
-#imageContainer {
+.imageContainer {
     margin-top: 10px;
     margin-left: 10px;
     height: 150px;
@@ -217,7 +218,7 @@ body {
     padding-bottom: 8px;
 }
 
-#imageContainer img {
+.imageContainer img {
     margin: 0 !important;
     height: 150px!important;
     width: 150px!important;
@@ -242,7 +243,7 @@ body {
 #list_selector {
     position: fixed;
     left: 230px;
-    top: 333px;
+    top: 523px;
 }
 
 .list_selector {
@@ -342,13 +343,13 @@ body {
     font-size: 11px;
     margin-left: 10px;
     color: gray;
-    height: 28px;
+    max-height: 28px;
     overflow: hidden;
     white-space: pre-wrap;
 }
 
 .select {
-    height: 270px;
+    height: 470px;
     background: #212737;
     color: grey;
     overflow-x: hidden;
@@ -359,7 +360,7 @@ body {
 
 #scroll_box_box {
     margin-top: 5px;
-    height: 275px;
+    height: 475px;
 }
 
 #down_pad {
@@ -495,7 +496,7 @@ select {
     cursor: pointer;
     background-color: #212737;
     font-family: Arial, sans-serif;
-    fint-weight: bold;
+    font-weight: bold;
     text-align: center;
     color: white;
 }

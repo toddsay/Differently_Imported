@@ -3,8 +3,8 @@
 
     "manifest_version": 2,
 
-    "name": "Differently Imported+ for di.fm",
-    "description": "Differently Imported+: addictive electronic music player for Di.Fm",
+    "name": "Differently Imported+",
+    "description": "Differently Imported+: addictive electronic music player for Di.Fm and sister stations",
     "version": "4.3.70.2",
     "permissions": [
         "storage",
