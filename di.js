@@ -108,11 +108,13 @@ $(document).ready(function() {
     }
     if (bg.playing) {
         $("#track").html($.cookie("diChTn"));
-        $("#trackImage").html($.cookie("diChPic"));
+        $("#trackImage").html($.cookie("diChImage"));
+        $("#channelImage").html($.cookie("diChImage"));
     } else {
         $("#track").html(bg.motd);
         $("#trackImage").html(bg.diIMG);
-        $.cookie("diChPic", bg.diIMG, {
+        $("#channelImage").html(bg.diIMG);
+        $.cookie("diChImage", bg.diIMG, {
             expires: 365
         });
     }
@@ -251,9 +253,19 @@ $(document).ready(function() {
             mkdownload($("#server").val(), $(this).attr("data-trigger"), $.cookie("premium"));
         } else {
             $.cookie('lastLiked', '0', { 'expires': 365 })
-            $.cookie("diChImage", $(this).attr("data-image"), {
+
+            // Set channel/track images
+            var image = $(this).attr("data-image");
+            $("#channelImage img").attr('src', image);
+            var childDiv = $(this).find('div').first();
+            if (childDiv) {
+                image = $(childDiv).attr("data-image");
+            }
+            $("#trackImage img").attr('src', image);
+
+            $.cookie("diChPic", image, {
                 expires: 365
-            }); // Store key for next time.
+            }); // Store key for next time
 
             var channelName = $(this).contents().get(0).nodeValue;
             $.cookie("diChPt", channelName, {
@@ -264,9 +276,6 @@ $(document).ready(function() {
             $.cookie("diChan", $(this).attr("data-trigger"), {
                 expires: 365
             }); // Store key for next time.
-            $.cookie("diSite", $(this).attr("data-site") || 'di', {
-                expires: 365
-            });
 
             //todo: support multiple show children, better split shows from channels
             var showId = $(this).find('div').attr("data-id");
@@ -315,12 +324,11 @@ $(document).ready(function() {
         }); //Send method play:0 == Stop.
         $("#track").text("Stopped");
         setTimeout(function() {
-            $.cookie("diChImg", bg.diIMG, {
+            $.cookie("diChImage", bg.diIMG, {
                 expires: 365
             });
 
-            $("#imageContainer").html(bg.diIMG);
-
+            $("#trackImage").html(bg.diIMG);
             $.cookie("diChTn", "Stopped", {
                 expires: 365
             });
@@ -355,12 +363,11 @@ $(document).ready(function() {
         });
         if ($.cookie("newT") == "1") { //////change only if needs it.
             $("#track").html($.cookie("diChTn"));
-            $("#imageContainer").html($.cookie("diChPic"));
+            $("#trackImage img").attr('src', $.cookie("diChPic"));
             $.cookie("newT", "0", {
                 expires: 365
             });
         }
-        //Label some variables
     }
 
     setInterval(function() {
@@ -905,7 +912,7 @@ $(document).ready(function() {
         fileref.setAttribute("src", 'snowstorm.js');
         document.getElementsByTagName("head")[0].appendChild(fileref)
         if (!playing) {
-            $('#imageContainer img').attr('src', 'DiffXmas.png');
+            $('#trackImage img').attr('src', 'DiffXmas.png');
         }
     }
 });
@@ -1008,7 +1015,7 @@ function loadChannelList(siteIndex) {
             data-trigger="354_80saltnnewwave" data-site="radiotunes">80s Alt & New Wave</li>*/
         var channelHtml = "";
         $.each(data, function(key, channelData) {
-            channelHtml += '<li data-image="' + data.asset_url + '" title="' + channelData.name + ' - ' + channelData.description + ' (Ctrl+Click for PLS)" data-trigger="' +
+            channelHtml += '<li data-image="' + bg.getChannelImage(channelData) + '" title="' + channelData.name + ' - ' + channelData.description + ' (Ctrl+Click for PLS)" data-trigger="' +
                 channelData.id + '_' + channelData.key + '" data-site="' + site + '">' + channelData.name + '</li>';
         });
 
@@ -1017,19 +1024,21 @@ function loadChannelList(siteIndex) {
     });
 }
 
-function appendTrackInfoToChannel(key, info, id) {
+function appendTrackInfoToChannel(key, info, image, id) {
     var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "']");
-    var dataId = id ? ' data-id="' + id + '"' : '';
+    if (!liChannel) {
+        return;
+    }
 
-    if (liChannel) {
-        var titleDiv = null;
-        if (liChannel.children().length == 0) {
-            titleDiv = $('<div' + dataId + '></div>');
-            liChannel.append(titleDiv);
-        } else {
-            titleDiv = liChannel.children('div');
+    if (liChannel.children().length == 0) {
+        liChannel.append($('<div></div>'));
+    }
+    var titleDiv = liChannel.children('div').first();
+    if (titleDiv) {
+        titleDiv.text(info).attr('data-image', image);
+        if (id) {
+            titleDiv.attr('data-id', id);
         }
-        titleDiv.text(info);
     }
 }
 
@@ -1038,7 +1047,7 @@ function loadCurrentTracksForSite(site) {
     // Load current track titles for each channel
     $.getJSON(apiUrl, function(data) {
         $.each(data, function(key, val) {
-            appendTrackInfoToChannel(key + '_', val.track);
+            appendTrackInfoToChannel(key + '_', val.track, bg.getChannelImage(val));
         });
     });
 }
@@ -1117,7 +1126,7 @@ function buildFavoritesList() {
             $('.faves_list').html('You have not added any favourites yet. Click the <img src ="fav_hollow.png"> by the player controls to start adding favourites.');
         } else {
             $.each(favorites, function(index, val) {
-                favesHtml += '<li data-image="' + val.images.compact + '" title="' + val.name +
+                favesHtml += '<li data-image="' + bg.getChannelImage(val) + '" title="' + val.name +
                     '" data-site="' + val.site +
                     '" data-trigger="' + val.id + '_' + val.key + '">' + val.name + '</li>';
             });
@@ -1135,14 +1144,17 @@ function buildShowlist() {
     $.getJSON(showsUrl, function(data) {
         if (data && data.results) {
             $.each(data.results, function(key, val) {
-                showsHtml += '<li data-image="' + val.images.compact + '" title="' + val.name + '" data-trigger="' + val.slug + '">' + val.name + '</li>';
+                showsHtml += '<li data-image="' + bg.getChannelImage(val) + '" title="' + val.name + '" data-trigger="' + val.slug + '">' + val.name + '</li>';
                 var episodesUrl = apiUrl + '/shows/' + val.slug + '/episodes?page=1&per_page=10';
                 $.getJSON(episodesUrl, function(data) {
-                    var firstEpId = data[0].tracks[0].id;
-                    var firstEpTitle = data[0].tracks[0].display_title; //data.most_recent_events[0];
-                    //var desc = val.artists_tagline + '\nEpisode ' + firstEp.name;
-                    appendTrackInfoToChannel(val.slug, firstEpTitle, firstEpId);
-                    //http://content.audioaddict.com/prd/6f50aea1e62c444db5d874def8c2f3c5c3b5bddb3a60811048f120da7cee59a2.mp4?audio_token=0d1e1d58c0c53715cd0ade09642afa24&purpose=playback&exp=2017-03-16T10:36:51Z&auth=5c36a267972c6180ff1cf2e7887bffea50b17447
+                    if (data.length > 0) {
+                        var firstEpId = data[0].tracks[0].id;
+                        var firstEpTitle = data[0].tracks[0].display_title; //data.most_recent_events[0];
+                        var showImage = bg.getChannelImage(data[0].show);
+                        //var desc = val.artists_tagline + '\nEpisode ' + firstEp.name;
+                        appendTrackInfoToChannel(val.slug, firstEpTitle, showImage, firstEpId);
+                        //http://content.audioaddict.com/prd/6f50aea1e62c444db5d874def8c2f3c5c3b5bddb3a60811048f120da7cee59a2.mp4?audio_token=0d1e1d58c0c53715cd0ade09642afa24&purpose=playback&exp=2017-03-16T10:36:51Z&auth=5c36a267972c6180ff1cf2e7887bffea50b17447
+                    }
                 });
             });
         }

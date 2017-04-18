@@ -18,6 +18,8 @@
         "http://pub4.di.fm:80/*",
         "http://api.audioaddict.com/*",
         "http://content.audioaddict.com/*",
+        "http://static.audioaddict.com/*",
+        "http://cdn-images.audioaddict.com/*",
         "http://listen.di.fm/*",
         "http://www.di.fm/*",
         "http://www.radiotunes.com/*",

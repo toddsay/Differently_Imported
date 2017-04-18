@@ -69,6 +69,19 @@ function buildApiUrl(site) {
     return 'http://api.audioaddict.com/v1/' + site;
 }
 
+function getChannelImage(channelData) {
+    if (channelData) {
+        if (channelData.images && channelData.images.compact) {
+            return 'http:' + channelData.images.compact.replace(/{.*/, '');
+        } else if (channelData.art_url) {
+            return 'http:' + channelData.art_url;
+        } else if (channelData.asset_url) {
+            return 'http:' + channelData.asset_url;
+        }
+    }
+    return 'diffI.png';
+}
+
 $(document).ready(function() { //Set some vars
     chrome.commands.onCommand.addListener(function(command) {
         if (command == "toggle-play") {
@@ -279,8 +292,10 @@ $(document).ready(function() { //Set some vars
             source.connect(analyser);
             analyser.connect(audioContext.destination);
         }
+
         playing = true;
         showTrack(); // and kick off tracklist API
+
         //document.getElementById('diPlyr').addEventListener("stalled", showErr, false);
         document.getElementById('diPlyr').addEventListener("error", showErr, false);
         //document.getElementById('diPlyr').addEventListener("emptied", showErr, false);
@@ -614,7 +629,6 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
         }
 
         get_time();
-
         var url = buildApiUrl() + '/track_history';
 
         $.getJSON(url, function(data) {
@@ -628,7 +642,7 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
                         $.cookie('lastLiked', '0', { 'expires': 365 });
                     }
                     tr = "<span title='" + val.track + "'>" + val.track + "</span>";
-                    tp = val.art_url;
+                    tp = getChannelImage(val); //val.art_url;
                     last_response['last_np_artist'] = val.artist;
                     last_response['last_np_track'] = val.title;
                     pollTime = parseInt(tl) + parseInt(ts);
@@ -648,7 +662,7 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
                     $.cookie("newT", "1", {
                         expires: 365
                     });
-                    $.cookie("diChPic", tp, {
+                    $.cookie("diChImage", tp, {
                         expires: 365
                     });
                 }
