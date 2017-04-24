@@ -39,11 +39,11 @@ var appTitle = 'Differently Imported+';
 
 var currentSiteIndex = 0;
 var SiteList = [
-    { site: 'di', url: 'di.fm', desc: 'Digitally Imported' },
-    { site: 'radiotunes', url: 'radiotunes.com', desc: 'RadioTunes' },
-    { site: 'rockradio', url: 'rockradio.com', desc: 'ROCKRADIO' },
-    { site: 'jazzradio', url: 'jazzradio.com', desc: 'JAZZRADIO' },
-    //{ site: 'classicalradio', url: 'classicalradio.com', desc: 'ClassicalRadio' }, // Channel list doesn't seem to work here
+    { site: 'di', url: 'di.fm', desc: 'Digitally Imported', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/di-825c83af566b394c18cc132ec2c7132a.png' },
+    { site: 'radiotunes', url: 'radiotunes.com', desc: 'RadioTunes', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/radiotunes-8f6b58a3539aae382863302c1ae8fe5b.png' },
+    { site: 'rockradio', url: 'rockradio.com', desc: 'ROCKRADIO', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/rockradio-1323bbe051c0d79ec49de6e9e37e73cb.png' },
+    { site: 'jazzradio', url: 'jazzradio.com', desc: 'JAZZRADIO', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/jazzradio-8866b0d7ef949f7ef6f0c39c73cca097.png' },
+    //{ site: 'classicalradio', url: 'classicalradio.com', desc: 'ClassicalRadio', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/classicalradio-f46ea4db6ead9edf082f6b0e6ec8d72b.png' }, // Channel list doesn't seem to work here
 ];
 
 function getCurrentSite() {
@@ -51,14 +51,24 @@ function getCurrentSite() {
     return site;
 }
 
+function setCurrentSite(site) {
+    if (isNaN(site)) {
+        var foundSite = getSite(site);
+        currentSiteIndex = SiteList.indexOf(foundSite);
+    } else {
+        currentSiteIndex = site;
+    }
+}
+
 function getSite(siteIdOrUtl) {
+    var foundSite = getCurrentSite();
     $.each(SiteList, function(key, data) {
         if (data.site == siteIdOrUtl || data.url == siteIdOrUtl) {
-            return SiteList[key];
+            foundSite = SiteList[key];
         }
     });
 
-    return getCurrentSite(); // didn't find it so return default
+    return foundSite;
 }
 
 function buildApiUrl(site) {
@@ -70,16 +80,17 @@ function buildApiUrl(site) {
 }
 
 function getChannelImage(channelData) {
+    var image = 'diffI.png';
     if (channelData) {
         if (channelData.images && channelData.images.compact) {
-            return 'http:' + channelData.images.compact.replace(/{.*/, '');
+            image = channelData.images.compact.replace(/{.*/, '');
         } else if (channelData.art_url) {
-            return 'http:' + channelData.art_url;
+            image = channelData.art_url;
         } else if (channelData.asset_url) {
-            return 'http:' + channelData.asset_url;
+            image = channelData.asset_url;
         }
     }
-    return 'diffI.png';
+    return image.replace(/^\/\//, 'http://');
 }
 
 $(document).ready(function() { //Set some vars
@@ -178,6 +189,9 @@ $(document).ready(function() { //Set some vars
             stop();
         }
         if (action.play == "1") {
+            if (playing) {
+                stop();
+            }
             playing = true;
             server = action.server;
             key = action.key;
@@ -223,7 +237,7 @@ $(document).ready(function() { //Set some vars
         $("#diPlyr").attr("src", "");
         $("#diPlyr").remove();
         try {
-            audioContext.close();
+            audioContext.close().then(function() {});
         } catch (e) {}
         if (playing == "false") {
             $.cookie("diChTn", motd, {
@@ -572,10 +586,8 @@ function scrobblage() {
     api_key (Required) : A Last.fm API key.
     api_sig (Required) : A Last.fm method signature. See authentication for more information.
     sk (Required) : A session key generated
-
     last_response['last_np_artist'] = val.artist;
                                 last_response['last_np_track'] = val.title;
-
     */
     trackgetInfo(last_response['last_np_artist'], last_response['last_np_track']);
     last_response['nextFunc'] = 'track.scrobble';
@@ -583,10 +595,8 @@ function scrobblage() {
 
 function likeage() {
     if ($.cookie('lastLiked') == '1') {
-
         thefunk = 'track.unlove';
     } else {
-
         thefunk = 'track.love';
     }
     params = {
@@ -616,7 +626,7 @@ function get_time() {
 }
 
 function showTrack() { // tracklist api call. timed with flags to stop server hammerage.
-    unix = Math.round(+new Date() / 3000);
+    unix = Math.round(+new Date() / 1000);
     if (unix >= $.cookie("diPt")) {
         console.log('need new track');
         pollFlag = 1;
@@ -651,7 +661,6 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
                         expires: 365
                     });
                     if (tp != null) {
-                        tp = stripslashes(tp);
                         tp = makeHtml(tp);
                     } else {
                         tp = makeHtml($.cookie("diChImage"));
@@ -662,7 +671,7 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
                     $.cookie("newT", "1", {
                         expires: 365
                     });
-                    $.cookie("diChImage", tp, {
+                    $.cookie("diChPic", tp, {
                         expires: 365
                     });
                 }

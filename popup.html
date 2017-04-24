@@ -34,6 +34,7 @@
 
 <head>
     <script src="jquery.js"></script>
+    <script src="jquery-ui.js"></script>
     <script src="di.js"></script>
     <script src="cookie.js"></script>
     <link href="di.css" rel="stylesheet" type="text/css">
@@ -126,26 +127,24 @@
 
         </div>
         <div id="right">
+            <div class="category_selector">
+                <div class="selector_wrapper">
+                    <div class="selector_left"></div>
+                    <div class="selector_choices">
+                    </div>
+                    <div class="selector_right"></div>
+                </div>
+            </div>
             <div id="scroll_box_box">
                 <div id="up_pad" class="mouselight">
                 </div>
                 <div class="select channel faves_list" id="lC" title="Pick a channel" style="display:none">
                 </div>
-                <div class="select channel shows_list" id="lC" title="Pick a show" style="display:none">
+                <div class="select show shows_list" id="lC" title="Pick a show" style="display:none">
                 </div>
-                <div class="select channel fave_shows_list" id="lC" title="Pick a show" style="display:none">
+                <div class="select show fave_shows_list" id="lC" title="Pick a show" style="display:none">
                 </div>
                 <div class="select channel master_list" id="lC" title="Pick a channel">
-                    <div class="site_selector">
-                        <div class="site_left"></div>
-                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/di-825c83af566b394c18cc132ec2c7132a.png'></img>
-                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/radiotunes-8f6b58a3539aae382863302c1ae8fe5b.png'></img>
-                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/rockradio-1323bbe051c0d79ec49de6e9e37e73cb.png'></img>
-                        <img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/jazzradio-8866b0d7ef949f7ef6f0c39c73cca097.png'></img>
-                        <!--<img src='http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/classicalradio-f46ea4db6ead9edf082f6b0e6ec8d72b.png'></img>-->
-                        <div class="site_right"></div>
-                    </div>
-                    <div class="channel_list"></div>
                 </div>
                 <div id="down_pad" class="mouselight">
                 </div>

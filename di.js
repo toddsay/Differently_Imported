@@ -24,12 +24,12 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 	More importantly I hope you enjoy using the App.
-
  *
  * Date: 3rd March 2015. 16.33 GMT
 */
 
-var frameLength = 5; //ms to display
+var frameLength = 5; // ms to display
+var daysToCache = 7; // days between loads of site/channel data
 var bg = chrome.extension.getBackgroundPage();
 
 var s_out = true;
@@ -62,12 +62,10 @@ $(document).ready(function() {
             $('#dailyStop').prop('checked', true);
         }
 
-        dailyStop
         $('#offAH').val($.cookie("diOffTH"));
         $('#offAM').val($.cookie("diOffTM"));
         $('#onAH').val($.cookie("diOnTH"));
         $('#onAM').val($.cookie("diOnTM"));
-        //.popup_last,#doScrob
 
         if ($.cookie('lastSK') != null) {
             $.cookie('lastSK', '', {
@@ -108,13 +106,13 @@ $(document).ready(function() {
     }
     if (bg.playing) {
         $("#track").html($.cookie("diChTn"));
-        $("#trackImage").html($.cookie("diChImage"));
-        $("#channelImage").html($.cookie("diChImage"));
+        $("#trackImage").html($.cookie("diChPic")); // diChPic is the html for the 'now playing' image square
+        $("#channelImage").html($.cookie("diChImage")); // diChImage is the html for the current channel
     } else {
         $("#track").html(bg.motd);
         $("#trackImage").html(bg.diIMG);
         $("#channelImage").html(bg.diIMG);
-        $.cookie("diChImage", bg.diIMG, {
+        $.cookie("diChPic", bg.diIMG, {
             expires: 365
         });
     }
@@ -248,24 +246,30 @@ $(document).ready(function() {
         }
     });
 
-    $('body').on('click', '#lC li', function() {
+    $('body').on('click', '#lC.channel li', function() {
         if (ctrlPressed) {
             mkdownload($("#server").val(), $(this).attr("data-trigger"), $.cookie("premium"));
         } else {
             $.cookie('lastLiked', '0', { 'expires': 365 })
 
             // Set channel/track images
-            var image = $(this).attr("data-image");
-            $("#channelImage img").attr('src', image);
+            var channelImageHtml = bg.makeHtml($(this).attr("data-image"));
+            $("#channelImage").html(channelImageHtml);
+            $.cookie("diChImage", channelImageHtml, {
+                expires: 365
+            });
+
+            var nowPlayingImageHtml = channelImageHtml;
             var childDiv = $(this).find('div').first();
             if (childDiv) {
-                image = $(childDiv).attr("data-image");
+                nowPlayingImageHtml = bg.makeHtml($(childDiv).attr("data-image"));
             }
-            $("#trackImage img").attr('src', image);
+            $("#trackImage").html(nowPlayingImageHtml);
 
-            $.cookie("diChPic", image, {
-                expires: 365
-            }); // Store key for next time
+            var site = $(this).attr("data-site");
+            if (site) {
+                bg.setCurrentSite(site);
+            }
 
             var channelName = $(this).contents().get(0).nodeValue;
             $.cookie("diChPt", channelName, {
@@ -275,7 +279,7 @@ $(document).ready(function() {
             $("#mini_tn").text(channelName);
             $.cookie("diChan", $(this).attr("data-trigger"), {
                 expires: 365
-            }); // Store key for next time.
+            }); // Store key for next time
 
             //todo: support multiple show children, better split shows from channels
             var showId = $(this).find('div').attr("data-id");
@@ -315,13 +319,13 @@ $(document).ready(function() {
     }
 
     $('body').on('selectstart', '#lC li', function() {
-        return false;
+        return false; // prevent accidental selection
     });
 
     document.getElementById("stBut").addEventListener('click', function() { // On Stop Click
         chrome.runtime.sendMessage({
             play: "0"
-        }); //Send method play:0 == Stop.
+        }); //Send method play:0 == Stop
         $("#track").text("Stopped");
         setTimeout(function() {
             $.cookie("diChImage", bg.diIMG, {
@@ -363,7 +367,7 @@ $(document).ready(function() {
         });
         if ($.cookie("newT") == "1") { //////change only if needs it.
             $("#track").html($.cookie("diChTn"));
-            $("#trackImage img").attr('src', $.cookie("diChPic"));
+            $("#trackImage").html($.cookie("diChPic"));
             $.cookie("newT", "0", {
                 expires: 365
             });
@@ -576,141 +580,46 @@ $(document).ready(function() {
         }
     });
 
-    descriptions = {
-        '324': 'Your favorite dance tunes from the start of the decade. Familiar hits and overlooked classics in abundance.',
-        '12': 'Electronic sounds and atmospheric textures create a genre to enhance your state of mind and take you deeper.',
-        '290': 'From the funkiest grooves to the dirtiest beats. Hard-hitting, high energy 4/4 club cuts to move the masses.',
-        '289': 'Blending together elements of house music, speed garage, and techno – it’s all about the low end frequencies.',
-        '325': 'Heavily focused on breakbeats and dusty samples. A defining 90s musical movement still going strong today.',
-        '209': 'Fusing together house elements from the past and the present - prime time music full of uplifting high energy.',
-        '15': 'Inspired by hip hop and UK rave music, breaks features broken up drum loops and creative samples, synths and fx.',
-        '400': 'The sounds of Chill & Tropical House are expertly made for lounging and dancing alike with it\'s deeper house vibes.',
-        '224': 'Hip hop, trip hop, downtempo beats and jazz, blended together in a mellow, laid back style for perfect listening.',
-        '3': 'Electronic sounds, mellow mid-tempo rhythms, and a groove meant to calm the senses and ease the mind.',
-        '68': 'The perfect musical soundtrack for when you want to close your eyes, get truly comfortable, and drift away.',
-        '275': 'The brilliant combination of dubstep rhythms with the mellow grooves of chillout. A unique sound all its own.',
-        '69': 'European pop music born in the 90s full of high energy sounds and big hooks – now heard in gyms and malls worldwide.',
-        '183': 'Conceived in the European discos in the 70s, evolving through the decades into modern electronic masterpieces.',
-        '90': 'The classic melodies, the epic breakdowns and gigantic builds. Re-experience Trance music in her prime.',
-        '125': 'Classic sounds of Vocal Trance',
-        '177': 'The bassbin rattling, speaker-freaking hits of Dubstep – all tried, tested and approved to work in the clubs. ',
-        '70': 'The music heard in the biggest venues worldwide. From prime time pushers to deeper house shakers - the sounds of now. ',
-        '181': 'Evil, gritty and twisted Drum & Bass. at 160+ BPM, hear the darkest basslines and the hardest hitting percussion.',
-        '346': 'The darker form of PsyTrance, which is a sound all its own – direct from Goa to your headphones.',
-        '174': 'House music crafted for the smaller and mid-sized rooms - deeper tracks full of silky, smooth grooves.',
-        '137': 'Elements of house, funk, and disco. Mid-tempo beats, soulful grooves and head nodding selections.',
-        '182': 'A fusion of deep house & techno. Punchy grooves, spaced out sounds and forward thinking productions.',
-        '353': 'Where would dance music be without Detroit? The city that started it all continues to inspire and educate. ',
-        '92': 'The feel good sound inspired from 70s disco combined with the warm kick drum of modern house music.',
-        '10': 'From techno, deep house, progressive and trance – check out the sounds of the DJ deep in the mix.',
-        '180': 'Head nodding beats, chilled vocals, and lush soundscapes to bring down the sun and start the night.',
-        '13': 'Born in the mid 90s, drum & bass is all about fast breakbeats, urban vibes, and rib rattling basslines.',
-        '291': 'A hybrid of half-time dubstep and intense drum \'n bass.',
-        '348': 'An emphasis on the bass and drums, delayed effects, sampled vocals and smokey Reggae inspired vibes.',
-        '91': 'The wobbles of the bass, the party rocking beats, and the biggest crowd destroying drops.',
-        '355': 'The beloved sounds of deep techno saturated with tape delays, heavy reverb and ice cold atmospherics.',
-        '326': 'Originating in the early 80s as a mix of industrial, punk and electropop, EBM changed the landscape of dance music and is still going strong today. ',
-        '208': 'Creative music influenced from techno to chill out, indie to IDM – a unique and undefinable listening experience.',
-        '56': 'Buzzing basslines, huge kicks, party rocking drops. House music packed full of gigantic bass and massive synths.',
-        '280': 'The trailblazers, the renegades and the experimental musicians who gave early inspiration with electronic instruments.',
-        '347': '30+ years of open-genre electronic music. From spatial ambient sounds to experimental techno and more. ',
-        '286': 'Catchy pop music blended together with vintage synthesizers and electronic instrumentation. ',
-        '327': 'The combination of 1920s-1940s jazz and swing music, big band horns and modern day electro house. ',
-        '175': 'Trance in its most boisterous form. Uplifting melodies on top of high energy beats create these euphoric anthems.',
-        '6': 'Pop music infused with a high energy 4/4 pulse. Heavy on the synthesizers, the melodies and the vocals.',
-        '58': 'Focused on the funkiest grooves, with plenty of the guitar licks and clever samples placed around a 4/4 swing.',
-        '401': 'Gritty, off-kilter and typically instrumental, the Future Beats sound is perfectly married with modern technology and hip hop idealism.',
-        '292': '2step Garage rhythms, chunky bass line driven grooves and plenty of forward thinking innovation.',
-        '53': 'Finest selection of futurepop and synthpop.',
-        '16': 'The hardest form of techno with punishing tracks designed to drive the crowds into a sweaty frenzy.',
-        '198': 'The sound of digital malfunctions, electric hum and bit rate distortions perfectly placed alongside laid-back hip hop beats.',
-        '8': 'A very psychedelic form of trance, Goa-Psy Trance is a sound full of arpeggiated synths and trippy effects.',
-        '176': 'A channel showcasing everything from hard dance, trance and happy hardcore to lift the spirits (and the arms).',
-        '9': 'Strictly for the hardcore. These are the biggest and boldest bangers, and the hardest hitting tracks.',
-        '5': 'Concrete kicks and punching rhythms, hard dance is a tougher side of music with sharp edges and aggressive power.',
-        '60': 'Hard techno & hardcore. A global phenomenon with powerful kicks, distorted effects and infectious melodies.',
-        '276': 'Tough as nails warehouse jams full of cold aggression, sinister structures and pounding rhythms that hit hard.',
-        '4': 'Born in Chicago and now global, house music is always evolving but remains true to it’s pure 4/4 structure.',
-        '350': 'Experimental, influential and pushing the boundaries of electronic music. Truly a sound to experience. ',
-        '351': 'The spirit of Rock & Roll with an electronic soul. Club culture and live music combined.',
-        '349': 'One of the biggest cultural soundtracks with the infectious thump of house music. Expect sultry saxophones, trumpets, and finger snapping grooves.',
-        '293': 'Jungle keeps the breakbeat tempos high and celebrates the diverse ideas found within urban and rave music.',
-        '117': 'The sounds of Salsa, Brazilian beats and Latin Jazz with the steady grooves of modern East Coast dance music.',
-        '105': 'Smooth as water, with the fast paced rhythms, liquid DNB flows with rolling ease without losing momentum.',
-        '184': 'Smooth, rolling and steady – this fresh formation of Dubstep keeps the sounds you love with a flowing groove.',
-        '352': 'The smoother side of Trap but still packed with mechanical grooves and hip hop moods. ',
-        '11': 'Music to chill to. Music made for when it’s all about kicking off your shoes, laying back, and totally relaxing.',
-        '210': 'The sound of the largest events. From the gargantuan festivals, the huge main rooms and the biggest DJs.',
-        '402': 'The melodic side of progressive house, packed with driving rhythms and forward thinking sounds.',
-        '59': 'Minimal fuses elements of house, techno and electronica and strips it back to focus on the spaces between the sound.',
-        '294': 'Pitched up vocals, happy hardcore beats, and high energy music non-stop.',
-        '295': 'Modern disco music blending the familiar funk of the 70s and 80s with futuristic beats and up to date grooves.',
-        '124': 'Acid, one of the characteristics of the TB-303, is celebrated here with the best tracks from house, techno and trance.',
-        '104': 'The biggest classics and secret weapons – this is a true treasure chest of house tracks from back in the day.',
-        '296': 'Grab your whistles, white gloves and reach for the laser beams. This is the sound of raving when raving was new.',
-        '7': 'Always moving forward, progressive continues to reinvent itself into new sounds and styles made for the floor.',
-        '178': 'Progress your mind to undiscovered psychedelic dimensions.',
-        '285': 'The psychedelic side of ambient.',
-        '67': 'Downtempo psychedelic dub grooves, goa ambient, and world beats.',
-        '213': 'Russia\'s hottest club hits.',
-        '47': 'House music saturated with feeling – full of melodies, vocals and true soul. Steady warm 4/4 vibes.',
-        '64': 'Ambient space music for expanding minds.',
-        '66': 'Blending the warmth of house music with the cold structural precision of techno, tech house bridges the divide.',
-        '36': 'Techno is a true musical force full of structure and style. Robotic, mechanical and full of soul, always facing the future.',
-        '1': 'Emotive high energy dance music which embraces melodies, vocals and a true journey of dance music songwriting.',
-        '230': 'Born out of Southern Hip-Hop and influenced by techno, trap is analogue drum machines with hip-hop aesthetics.',
-        '57': 'The percussive side of the house and tech house scene, tribal house takes drums and puts them in the forefront.',
-        '215': 'UMF Radio 24/7',
-        '288': 'From gritty Berlin streets to dark corners of Brooklyn, this is techno made by artists pushing the genre further.',
-        '142': 'Relaxing vibes and a collection of vocal songs providing the laid back soundtrack to your day.',
-        '278': 'Laid back grooves and a collection of smooth vocals soothe the ears and relax the mind.',
-        '2': 'Lush vocals paired together with emotive dance music. Beautiful melodies and endless energy.',
-        '403': 'Atmospheric Breaks takes the best elements of breakbeat and saturates the music with a heavy heaping of spaced out melodies, laid back synths, and out-of-this-world warm bass frequencies.',
-        '404': 'Indie Beats is a wicked blending of laid back rhythms with cutting edge idealism. Smooth vocals round out the sound and make this the perfect indie music for head nodding, and chilling out.'
-    }
-
-    var tn_timer;
-    $('body').on('mousemove', '#lC li', function() {
-        return;
-
-        channel_stuff = $(this).attr("data-trigger");
-        channel_name = $(this).text();
-        clearTimeout(tn_timer);
-        tn_timer = setInterval(function() {
-            if ($("#lC.active").is(':hover')) {
-                $("#popup_nowplay").css({ "display": "block" });
-                $("#popup_nowplay").animate({
-                    opacity: 0.85
-                }, 125);
-                dP = channel_stuff.indexOf("_"); //parse the value. need both bits.
-                channel_Id = channel_stuff.substring(0, (dP)); // channel id for the trackname
-                var url = buildApiUrl() + '/track_history';
-                $.getJSON(url, function(data) {
-                    $.each(data, function(key, val) {
-                        if (key == channel_Id) {
-                            $('#popup_nowplay').html(`
-                            <span style='font-weight:bold; font-size:14px;'> ${channel_name} </span>
-                            <br /> <br />
-                            ${descriptions[channel_Id]}
-                            <br /> <br />
-                            Now Playing:<br>
-                            <span style='font-weight:bold; font-size:14px;'> ${val.track} </span>
-                            `);
-                        }
-                    });
-                });
-            } else {
-                $("#popup_nowplay").animate({
-                    opacity: 0
-                }, 125, function() {
-                    $("#popup_nowplay").css({ display: "none" });
-                });
-            }
-        }, 155);
-    });
+    // var tn_timer;
+    // $('body').on('mousemove', '#lC li', function() {
+    //     channel_stuff = $(this).attr("data-trigger");
+    //     channel_name = $(this).text();
+    //     clearTimeout(tn_timer);
+    //     tn_timer = setInterval(function() {
+    //         if ($("#lC.active").is(':hover')) {
+    //             $("#popup_nowplay").css({ "display": "block" });
+    //             $("#popup_nowplay").animate({
+    //                 opacity: 0.85
+    //             }, 125);
+    //             dP = channel_stuff.indexOf("_"); //parse the value. need both bits.
+    //             channel_Id = channel_stuff.substring(0, (dP)); // channel id for the trackname
+    //             var url = buildApiUrl() + '/track_history';
+    //             $.getJSON(url, function(data) {
+    //                 $.each(data, function(key, val) {
+    //                     if (key == channel_Id) {
+    //                         $('#popup_nowplay').html(`
+    //                         <span style='font-weight:bold; font-size:14px;'> ${channel_name} </span>
+    //                         <br /> <br />
+    //                         ${descriptions[channel_Id]}
+    //                         <br /> <br />
+    //                         Now Playing:<br>
+    //                         <span style='font-weight:bold; font-size:14px;'> ${val.track} </span>
+    //                         `);
+    //                     }
+    //                 });
+    //             });
+    //         } else {
+    //             $("#popup_nowplay").animate({
+    //                 opacity: 0
+    //             }, 125, function() {
+    //                 $("#popup_nowplay").css({ display: "none" });
+    //             });
+    //         }
+    //     }, 155);
+    // });
 
     $("#popup_nowplay").mouseover(function() {
-        clearTimeout(tn_timer);
+        // clearTimeout(tn_timer);
         $("#popup_nowplay").animate({
             opacity: 0
         }, 125, function() {
@@ -772,9 +681,9 @@ $(document).ready(function() {
         bg.likeage();
     });
 
-    $(".site_left,.site_right").click(function() {
+    $(".selector_left, .selector_right").click(function() {
         var siteIndex = bg.currentSiteIndex;
-        if ($(this).hasClass('site_left')) {
+        if ($(this).hasClass('selector_left')) {
             siteIndex--;
         } else {
             siteIndex++;
@@ -786,9 +695,23 @@ $(document).ready(function() {
             siteIndex = bg.SiteList.length - 1;
         }
 
-        bg.currentSiteIndex = siteIndex;
-        loadChannelList();
+        bg.setCurrentSite(siteIndex);
+        buildChannelList();
     });
+
+    $('.list_selector').click(function() {
+        swap_lists(this);
+    });
+
+    $('body').on('click', '.shows_list li', function() {
+        var showSlug = $(this).attr("data-trigger");
+        buildEpisodeList(showSlug);
+    });
+
+    $('.add_to_fav').click(function() {
+        addToFavorites();
+    });
+    start_track_duration();
 });
 
 var scalec;
@@ -933,6 +856,10 @@ function getFavorites(callback) {
     });
 }
 
+function saveFavorites(favorites) {
+    chrome.storage.local.set({ 'favorites': favorites }, function() {});
+}
+
 function addToFavorites() {
     var siteUrl = bg.getCurrentSite().url;
     var channelId = getCurrentChannelId();
@@ -942,9 +869,10 @@ function addToFavorites() {
             if (favorites[channelId]) {
                 delete favorites[channelId];
             } else {
+                channelData.sortOrder = favorites.length;
                 favorites[channelId] = channelData;
             }
-            chrome.storage.local.set({ 'favorites': favorites }, function() {});
+            saveFavorites(favorites);
             show_stars();
         });
     });
@@ -977,7 +905,7 @@ function getSiteDetails(siteUrl, callback) {
                 });
 
                 var expirationDate = new Date();
-                expirationDate.setDate(new Date().getDate() + 1); //todo: pick a number of days
+                expirationDate.setDate(new Date().getDate() + daysToCache);
                 channelData.expiration = expirationDate;
                 channelData.site = site;
 
@@ -1002,43 +930,39 @@ function getChannelInfo(siteUrl, channelId, callback) {
     });
 }
 
-function loadChannelList(siteIndex) {
+function buildSiteSelector() {
+    var choices = '';
+    $.each(bg.SiteList, function(key, site) {
+        choices += '<img src="' + site.logo + '">';
+    });
+    $('.selector_choices').html(choices);
+}
+
+function buildChannelList(siteIndex) {
     var site = bg.getCurrentSite().site;
     var siteIndex = bg.currentSiteIndex;
-    $('.site_selector img').hide();
-    $('.site_selector img').eq(siteIndex).show();
+    $('.selector_choices img').hide();
+    $('.selector_choices img').eq(siteIndex).show();
 
     getSiteDetails(null, function(data) {
-        $('.master_list .channel_list').empty();
-
-        /*<li data-image="http://api.audioaddict.com/v1/assets/image/799616ab3c59f7008573c2de097aa731.png?size=145x145" title="80s Alt & New Wave - Ctrl+Click for PLS"
-            data-trigger="354_80saltnnewwave" data-site="radiotunes">80s Alt & New Wave</li>*/
+        $('.master_list').empty();
         var channelHtml = "";
         $.each(data, function(key, channelData) {
             channelHtml += '<li data-image="' + bg.getChannelImage(channelData) + '" title="' + channelData.name + ' - ' + channelData.description + ' (Ctrl+Click for PLS)" data-trigger="' +
                 channelData.id + '_' + channelData.key + '" data-site="' + site + '">' + channelData.name + '</li>';
         });
 
-        $('.master_list .channel_list').append($(channelHtml));
+        $('.master_list').append($(channelHtml));
         loadCurrentTracks();
+        $(".select.active").scrollTop(0);
     });
 }
 
 function appendTrackInfoToChannel(key, info, image, id) {
     var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "']");
-    if (!liChannel) {
-        return;
-    }
-
-    if (liChannel.children().length == 0) {
-        liChannel.append($('<div></div>'));
-    }
-    var titleDiv = liChannel.children('div').first();
-    if (titleDiv) {
-        titleDiv.text(info).attr('data-image', image);
-        if (id) {
-            titleDiv.attr('data-id', id);
-        }
+    trackHtml = '<div data-image="' + image + '" data-id="' + id + '"></div>';
+    if (liChannel) {
+        liChannel.append(trackHtml);
     }
 }
 
@@ -1071,7 +995,8 @@ function loadCurrentTracks() {
 function swap_lists(element) {
     if ($(element).hasClass('all_channels')) {
         newlist = 'all_channels';
-        loadChannelList();
+        buildSiteSelector();
+        buildChannelList();
     } else if ($(element).hasClass('faves')) {
         newlist = 'faves';
         buildFavoritesList();
@@ -1081,6 +1006,8 @@ function swap_lists(element) {
     } else if ($(element).hasClass('fave_shows')) {
         newlist = 'fave_shows';
     }
+
+    $('.selector_wrapper').toggle(newlist == 'all_channels');
 
     $('.master_list').toggle(newlist == 'all_channels');
     $('.master_list').toggleClass('active', newlist == 'all_channels');
@@ -1118,7 +1045,21 @@ function show_stars() {
 }
 
 function buildFavoritesList() {
-    getFavorites(function(favorites) {
+    getFavorites(function(favoritesObject) {
+        // Convert object to array
+        var favorites = [];
+        $.each(favoritesObject, function(index, val) {
+            favorites.push(val);
+        });
+        // Sort the array of favorites
+        favorites = favorites.sort(function(a, b) {
+            if (a.sortOrder > b.sortOrder) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
+
         // Build the html for the favorites tab
         var favesHtml = '';
         $('.faves_list').html('');
@@ -1127,12 +1068,40 @@ function buildFavoritesList() {
         } else {
             $.each(favorites, function(index, val) {
                 favesHtml += '<li data-image="' + bg.getChannelImage(val) + '" title="' + val.name +
-                    '" data-site="' + val.site +
-                    '" data-trigger="' + val.id + '_' + val.key + '">' + val.name + '</li>';
+                    '" data-site="' + val.site + '" data-id="' + val.id +
+                    '" data-trigger="' + val.id + '_' + val.key + '"><span class="handle"/>' +
+                    val.name + '</li>';
             });
-            $('.faves_list').append($(favesHtml));
+            var favesList = $('.faves_list');
+            favesList.append($(favesHtml));
+            favesList.sortable({ handle: '> .handle', update: updateFavoriteOrder });
             loadCurrentTracks();
         }
+    });
+}
+
+function updateFavoriteOrder(event, ui) {
+    getFavorites(function(favorites) {
+        faveList = $('.faves_list');
+        $.each(favorites, function(index, val) {
+            val.sortOrder = faveList.find('li[data-id="' + val.id + '"]').index();
+        });
+        saveFavorites(favorites);
+    });
+};
+
+function buildEpisodeList(slug) {
+    var pageSize = 10;
+    var apiUrl = bg.buildApiUrl();
+    var episodesUrl = apiUrl + '/shows/' + slug + '/episodes?page=1&per_page=' + pageSize;
+
+    $.getJSON(episodesUrl, function(data) {
+        var showImage = bg.getChannelImage(data[0].show);
+        $.each(data, function(index, episode) {
+            var track = episode.tracks[0];
+            appendTrackInfoToChannel(slug, track.display_title, showImage, track.id);
+            //http://content.audioaddict.com/prd/6f50aea1e62c444db5d874def8c2f3c5c3b5bddb3a60811048f120da7cee59a2.mp4?audio_token=0d1e1d58c0c53715cd0ade09642afa24&purpose=playback&exp=2017-03-16T10:36:51Z&auth=5c36a267972c6180ff1cf2e7887bffea50b17447
+        });
     });
 }
 
@@ -1143,35 +1112,13 @@ function buildShowlist() {
 
     $.getJSON(showsUrl, function(data) {
         if (data && data.results) {
-            $.each(data.results, function(key, val) {
-                showsHtml += '<li data-image="' + bg.getChannelImage(val) + '" title="' + val.name + '" data-trigger="' + val.slug + '">' + val.name + '</li>';
-                var episodesUrl = apiUrl + '/shows/' + val.slug + '/episodes?page=1&per_page=10';
-                $.getJSON(episodesUrl, function(data) {
-                    if (data.length > 0) {
-                        var firstEpId = data[0].tracks[0].id;
-                        var firstEpTitle = data[0].tracks[0].display_title; //data.most_recent_events[0];
-                        var showImage = bg.getChannelImage(data[0].show);
-                        //var desc = val.artists_tagline + '\nEpisode ' + firstEp.name;
-                        appendTrackInfoToChannel(val.slug, firstEpTitle, showImage, firstEpId);
-                        //http://content.audioaddict.com/prd/6f50aea1e62c444db5d874def8c2f3c5c3b5bddb3a60811048f120da7cee59a2.mp4?audio_token=0d1e1d58c0c53715cd0ade09642afa24&purpose=playback&exp=2017-03-16T10:36:51Z&auth=5c36a267972c6180ff1cf2e7887bffea50b17447
-                    }
-                });
+            $.each(data.results, function(key, show) {
+                showsHtml += '<li data-image="' + bg.getChannelImage(show) + '" title="' + show.name + '" data-trigger="' + show.slug + '">' + show.name + '</li>';
             });
         }
         $('.shows_list').html(showsHtml);
     });
 }
-
-$(document).ready(function() {
-    $('.list_selector').click(function() {
-        swap_lists(this);
-    });
-
-    $('.add_to_fav').click(function() {
-        addToFavorites();
-    });
-    start_track_duration();
-});
 
 function start_track_duration() {
     setInterval(function() {
