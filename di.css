@@ -352,7 +352,7 @@ body {
     background-color: #222;
 }
 
-.select li:hover span {
+.select li:hover .handle {
     cursor: move;
     width: 12px;
     display: inline-block;
@@ -360,7 +360,7 @@ body {
     margin-top: -5px;
 }
 
-.select li:hover span.handle:after {
+.select li:hover .handle:after {
     content: '.. .. .. ..';
 }
 

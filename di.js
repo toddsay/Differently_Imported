@@ -271,7 +271,7 @@ $(document).ready(function() {
                 bg.setCurrentSite(site);
             }
 
-            var channelName = $(this).contents().get(0).nodeValue;
+            var channelName = $(this).find('.channel_name').text();
             $.cookie("diChPt", channelName, {
                 expires: 365
             });
@@ -735,7 +735,7 @@ function go() {
     drawContext.clearRect(0, 0, canvasX, canvasY);
 
     if (bg.analyser == null || bg.analyser.context == null || bg.analyser.context.sampleRate == 0) {
-        return; // nothing to see here        
+        return; // nothing to see here
     }
 
     try {
@@ -949,7 +949,7 @@ function buildChannelList(siteIndex) {
         var channelHtml = "";
         $.each(data, function(key, channelData) {
             channelHtml += '<li data-image="' + bg.getChannelImage(channelData) + '" title="' + channelData.name + ' - ' + channelData.description + ' (Ctrl+Click for PLS)" data-trigger="' +
-                channelData.id + '_' + channelData.key + '" data-site="' + site + '">' + channelData.name + '</li>';
+                channelData.id + '_' + channelData.key + '" data-site="' + site + '"><span class="channel_name">' + channelData.name + '</span></li>';
         });
 
         $('.master_list').append($(channelHtml));
@@ -960,8 +960,12 @@ function buildChannelList(siteIndex) {
 
 function appendTrackInfoToChannel(key, info, image, id) {
     var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "']");
-    trackHtml = '<div data-image="' + image + '" data-id="' + id + '"></div>';
     if (liChannel) {
+        trackHtml = '<div data-image="' + image + '"';
+        if (id) {
+            trackHtml += ' data-id="' + id + '"';
+        }
+        trackHtml += '>' + info + '</div>';
         liChannel.append(trackHtml);
     }
 }
@@ -970,6 +974,7 @@ function loadCurrentTracksForSite(site) {
     var apiUrl = bg.buildApiUrl(site) + '/track_history';
     // Load current track titles for each channel
     $.getJSON(apiUrl, function(data) {
+        //TODO: Flip this, loading history for favorites, intead of checking each history for a matching favorite
         $.each(data, function(key, val) {
             appendTrackInfoToChannel(key + '_', val.track, bg.getChannelImage(val));
         });
@@ -1070,7 +1075,7 @@ function buildFavoritesList() {
                 favesHtml += '<li data-image="' + bg.getChannelImage(val) + '" title="' + val.name +
                     '" data-site="' + val.site + '" data-id="' + val.id +
                     '" data-trigger="' + val.id + '_' + val.key + '"><span class="handle"/>' +
-                    val.name + '</li>';
+                    '<span class="channel_name">' + val.name + '</span></li>';
             });
             var favesList = $('.faves_list');
             favesList.append($(favesHtml));
