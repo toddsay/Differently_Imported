@@ -263,13 +263,14 @@ $(document).ready(function() { //Set some vars
             last_response['last_np_track'] = directTitle;
         } else {
             chUrl = ch.substring(delimitPos + 1, chLength); //channel name for the url
+            var domain = "." + getCurrentSite().url;
             if ($.cookie("premium") == "1") {
                 if ($.cookie("diHq") == "1") {
                     chUrl = chUrl + "_hi"; // high or low quality stream
                 }
-                url = "http://prem" + server + ".di.fm:80/" + chUrl + "?" + ky;
+                url = "http://prem" + server + domain + "/" + chUrl + "?" + ky;
             } else {
-                url = "http://pub" + server + ".di.fm/di_" + chUrl + "_aac?type=.flv";
+                url = "http://pub" + server + domain + "/di_" + chUrl + "_aac?type=.flv";
             }
         }
 
