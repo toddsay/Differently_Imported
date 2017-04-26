@@ -364,6 +364,10 @@ body {
     content: '.. .. .. ..';
 }
 
+.handle {
+    vertical-align: sub;
+}
+
 
 /* Track within channel */
 

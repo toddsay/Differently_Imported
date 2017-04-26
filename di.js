@@ -371,6 +371,7 @@ $(document).ready(function() {
             $.cookie("newT", "0", {
                 expires: 365
             });
+            loadCurrentTracks(); // update the list of tracks for the current tab
         }
     }
 
@@ -705,6 +706,7 @@ $(document).ready(function() {
 
     $('body').on('click', '.shows_list li', function() {
         var showSlug = $(this).attr("data-trigger");
+        $(this).find('div').empty();
         buildEpisodeList(showSlug);
     });
 
@@ -958,15 +960,25 @@ function buildChannelList(siteIndex) {
     });
 }
 
-function appendTrackInfoToChannel(key, info, image, id) {
+function appendTrackInfoToChannel(replaceExistingDiv, key, info, image, id) {
     var liChannel = $('#lC.active').find("li[data-trigger^='" + key + "']");
-    if (liChannel) {
+    if (liChannel.length > 0) {
         trackHtml = '<div data-image="' + image + '"';
         if (id) {
             trackHtml += ' data-id="' + id + '"';
         }
         trackHtml += '>' + info + '</div>';
-        liChannel.append(trackHtml);
+
+        if (replaceExistingDiv) {
+            childDiv = liChannel.children('div').first();
+            if (childDiv.length > 0) {
+                childDiv.html(trackHtml);
+            } else {
+                liChannel.append(trackHtml);
+            }
+        } else {
+            liChannel.append(trackHtml);
+        }
     }
 }
 
@@ -974,9 +986,9 @@ function loadCurrentTracksForSite(site) {
     var apiUrl = bg.buildApiUrl(site) + '/track_history';
     // Load current track titles for each channel
     $.getJSON(apiUrl, function(data) {
-        //TODO: Flip this, loading history for favorites, intead of checking each history for a matching favorite
+        //TODO: Flip this, loading history for favorites, intead of checking each history for a matching favorite?
         $.each(data, function(key, val) {
-            appendTrackInfoToChannel(key + '_', val.track, bg.getChannelImage(val));
+            appendTrackInfoToChannel(true, key + '_', val.track, bg.getChannelImage(val));
         });
     });
 }
@@ -994,58 +1006,6 @@ function loadCurrentTracks() {
     // For each site, load track_history and apply
     $.each(siteList, function(key, val) {
         loadCurrentTracksForSite(key);
-    });
-}
-
-function swap_lists(element) {
-    if ($(element).hasClass('all_channels')) {
-        newlist = 'all_channels';
-        buildSiteSelector();
-        buildChannelList();
-    } else if ($(element).hasClass('faves')) {
-        newlist = 'faves';
-        buildFavoritesList();
-    } else if ($(element).hasClass('shows')) {
-        newlist = 'shows';
-        buildShowlist();
-    } else if ($(element).hasClass('fave_shows')) {
-        newlist = 'fave_shows';
-    }
-
-    $('.selector_wrapper').toggle(newlist == 'all_channels');
-
-    $('.master_list').toggle(newlist == 'all_channels');
-    $('.master_list').toggleClass('active', newlist == 'all_channels');
-    $('.all_channels').toggleClass('active_list', newlist == 'all_channels');
-
-    $('.faves_list').toggle(newlist == 'faves');
-    $('.faves_list').toggleClass('active', newlist == 'faves');
-    $('.faves').toggleClass('active_list', newlist == 'faves');
-
-    $('.shows_list').toggle(newlist == 'shows');
-    $('.shows_list').toggleClass('active', newlist == 'shows');
-    $('.shows').toggleClass('active_list', newlist == 'shows');
-
-    $('.fave_shows_list').toggle(newlist == 'fave_shows');
-    $('.fave_shows_list').toggleClass('active', newlist == 'fave_shows');
-    $('.fave_shows').toggleClass('active_list', newlist == 'fave_shows');
-
-    $.cookie("Dilistview", newlist, {
-        expires: 365
-    });
-
-    scrolCh();
-}
-
-function show_stars() {
-    getFavorites(function(favorites) {
-        // Enable or disable the favorite 'star'
-        var channelId = getCurrentChannelId();
-        if (favorites[channelId]) {
-            $('.add_to_fav').attr('src', 'fav_filled.png');
-        } else {
-            $('.add_to_fav').attr('src', 'fav_hollow.png');
-        }
     });
 }
 
@@ -1104,7 +1064,7 @@ function buildEpisodeList(slug) {
         var showImage = bg.getChannelImage(data[0].show);
         $.each(data, function(index, episode) {
             var track = episode.tracks[0];
-            appendTrackInfoToChannel(slug, track.display_title, showImage, track.id);
+            appendTrackInfoToChannel(false, slug, track.display_title, showImage, track.id);
             //http://content.audioaddict.com/prd/6f50aea1e62c444db5d874def8c2f3c5c3b5bddb3a60811048f120da7cee59a2.mp4?audio_token=0d1e1d58c0c53715cd0ade09642afa24&purpose=playback&exp=2017-03-16T10:36:51Z&auth=5c36a267972c6180ff1cf2e7887bffea50b17447
         });
     });
@@ -1122,6 +1082,58 @@ function buildShowlist() {
             });
         }
         $('.shows_list').html(showsHtml);
+    });
+}
+
+function swap_lists(element) {
+    if ($(element).hasClass('all_channels')) {
+        newlist = 'all_channels';
+        buildSiteSelector();
+        buildChannelList();
+    } else if ($(element).hasClass('faves')) {
+        newlist = 'faves';
+        buildFavoritesList();
+    } else if ($(element).hasClass('shows')) {
+        newlist = 'shows';
+        buildShowlist();
+    } else if ($(element).hasClass('fave_shows')) {
+        newlist = 'fave_shows';
+    }
+
+    $('.selector_wrapper').toggle(newlist == 'all_channels');
+
+    $('.master_list').toggle(newlist == 'all_channels');
+    $('.master_list').toggleClass('active', newlist == 'all_channels');
+    $('.all_channels').toggleClass('active_list', newlist == 'all_channels');
+
+    $('.faves_list').toggle(newlist == 'faves');
+    $('.faves_list').toggleClass('active', newlist == 'faves');
+    $('.faves').toggleClass('active_list', newlist == 'faves');
+
+    $('.shows_list').toggle(newlist == 'shows');
+    $('.shows_list').toggleClass('active', newlist == 'shows');
+    $('.shows').toggleClass('active_list', newlist == 'shows');
+
+    $('.fave_shows_list').toggle(newlist == 'fave_shows');
+    $('.fave_shows_list').toggleClass('active', newlist == 'fave_shows');
+    $('.fave_shows').toggleClass('active_list', newlist == 'fave_shows');
+
+    $.cookie("Dilistview", newlist, {
+        expires: 365
+    });
+
+    scrolCh();
+}
+
+function show_stars() {
+    getFavorites(function(favorites) {
+        // Enable or disable the favorite 'star'
+        var channelId = getCurrentChannelId();
+        if (favorites[channelId]) {
+            $('.add_to_fav').attr('src', 'fav_filled.png');
+        } else {
+            $('.add_to_fav').attr('src', 'fav_hollow.png');
+        }
     });
 }
 
