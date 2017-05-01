@@ -239,7 +239,7 @@ body {
     cursor: pointer;
 }
 
-#list_selector {
+#list_selector_group {
     position: fixed;
     left: 214px;
     top: 523px;
@@ -275,7 +275,7 @@ body {
 }
 
 
-/* Handle */
+/* Scrollbar Handle */
 
 .select::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
@@ -302,6 +302,12 @@ body {
 .selector_wrapper {
     position: relative;
     display: flex;
+}
+
+.selector_choices {
+    width: 100%;
+    font-size: 14px;
+    text-align: center;
 }
 
 .selector_wrapper img {
@@ -337,8 +343,6 @@ body {
 /* Channel names */
 
 .select li {
-    padding-left: 10px;
-    padding-top: 2px;
     padding-bottom: 2px;
     list-style-type: none;
     font-family: Tahoma, Geneva, sans-serif;
@@ -356,7 +360,6 @@ body {
     cursor: move;
     width: 12px;
     display: inline-block;
-    line-height: 4px;
     margin-top: -5px;
 }
 
@@ -365,6 +368,7 @@ body {
 }
 
 .handle {
+    line-height: 4px;
     vertical-align: sub;
 }
 
@@ -373,17 +377,21 @@ body {
 
 .select li div {
     font-size: 11px;
-    margin-left: 10px;
+    margin-left: 4px;
     color: gray;
     max-height: 28px;
     overflow: hidden;
     white-space: pre-wrap;
 }
 
+.select li.show div:hover {
+    color: #fff;
+}
+
 .select {
     height: 450px;
     background: #212737;
-    color: grey;
+    color: #bbb;
     overflow-x: hidden;
     overflow-y: scroll;
     width: 180px;
