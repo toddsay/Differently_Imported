@@ -247,46 +247,46 @@ $(document).ready(function() {
     });
 
     $('body').on('click', '#lC.channel li, #lC.show div', function() {
+        var element = $(this);
         if (ctrlPressed) {
-            mkdownload($("#server").val(), $(this).attr("data-trigger"), $.cookie("premium"));
+            mkdownload($("#server").val(), element.attr("data-trigger"), $.cookie("premium"));
         } else {
+            var parent = element.parent();
             $.cookie('lastLiked', '0', { 'expires': 365 })
 
+            if (parent.hasClass('show')) {
+                var channelImageHtml = bg.makeHtml($('.selector_choices').children(':visible').first().attr("data-image"));
+                $("#channelImage").html(channelImageHtml);
+                $.cookie("diChImage", channelImageHtml, { expires: 365 });
+                var showImageHtml = bg.makeHtml(parent.attr("data-image"));
+                $("#trackImage").html(showImageHtml);
+                $.cookie("diChan", parent.attr("data-trigger"), { expires: 365 });
+                var showId = element.attr("data-id");
+                playShow(showId);
+                return;
+            }
+
             // Set channel/track images
-            var channelImageHtml = bg.makeHtml($(this).attr("data-image"));
+            var channelImageHtml = bg.makeHtml(element.attr("data-image"));
             $("#channelImage").html(channelImageHtml);
-            $.cookie("diChImage", channelImageHtml, {
-                expires: 365
-            });
+            $.cookie("diChImage", channelImageHtml, { expires: 365 });
 
             var nowPlayingImageHtml = channelImageHtml;
-            var childDiv = $(this).find('div').first();
+            var childDiv = element.find('div').first();
             if (childDiv.length > 0) {
                 nowPlayingImageHtml = bg.makeHtml($(childDiv).attr("data-image"));
             }
             $("#trackImage").html(nowPlayingImageHtml);
 
-            var showId = $(this).attr("data-show");
-            if (showId) {
-                $.cookie("diChan", $(this).parent().attr("data-trigger"), { expires: 365 });
-                playShow(showId);
-                return;
-            }
-
-            var site = $(this).attr("data-site");
+            var site = element.attr("data-site");
             if (site) {
                 bg.setCurrentSite(site);
             }
 
-            $.cookie("diChan", $(this).attr("data-trigger"), {
-                expires: 365
-            });
-
-            var channelName = $(this).find('.channel_name').text();
+            $.cookie("diChan", element.attr("data-trigger"), { expires: 365 });
+            var channelName = element.find('.channel_name').text();
             $("#mini_tn").text(channelName);
-            $.cookie("diChPt", channelName, {
-                expires: 365
-            });
+            $.cookie("diChPt", channelName, { expires: 365 });
 
             if (bg.playing) {
                 clearInterval(disTimer);
@@ -701,7 +701,7 @@ $(document).ready(function() {
                 if (channelIndex >= siteData.length) {
                     channelIndex = 0;
                 } else if (channelIndex < 0) {
-                    channelIndex = siteData.length;
+                    channelIndex = siteData.length - 1;
                 }
                 selectChannel(channelIndex);
             });
@@ -975,7 +975,7 @@ function buildChannelSelector() {
         var choices = "";
         var channelIndex = 0;
         $.each(data, function(key, channelData) {
-            choices += '<span>' + channelData.name + '</span>';
+            choices += '<span data-image="' + bg.getChannelImage(channelData) + '">' + channelData.name + '</span>';
             if (channelData.id == currentChannelId) {
                 channelIndex = key;
             }
@@ -1052,11 +1052,10 @@ function buildEpisodeList(channel, slug) {
     var episodesUrl = apiUrl + '/shows/' + slug + '/episodes?page=1&per_page=' + pageSize;
 
     $.getJSON(episodesUrl, function(data) {
-        var showImage = bg.getChannelImage(data[0].show);
         $.each(data, function(index, episode) {
             var track = episode.tracks[0];
             var nodeQuery = 'li[data-show="' + slug + '"]';
-            appendTrackInfoToChannel(false, nodeQuery, track.display_title, showImage, track.id);
+            appendTrackInfoToChannel(false, nodeQuery, track.display_title, null, track.id);
             //http://content.audioaddict.com/prd/6f50aea1e62c444db5d874def8c2f3c5c3b5bddb3a60811048f120da7cee59a2.mp4?audio_token=0d1e1d58c0c53715cd0ade09642afa24&purpose=playback&exp=2017-03-16T10:36:51Z&auth=5c36a267972c6180ff1cf2e7887bffea50b17447
         });
     });
@@ -1065,7 +1064,10 @@ function buildEpisodeList(channel, slug) {
 function appendTrackInfoToChannel(replaceExistingDiv, nodeQuery, info, image, id) {
     var liChannel = $('#lC.active').find(nodeQuery);
     if (liChannel.length > 0) {
-        trackHtml = '<div data-image="' + image + '"';
+        trackHtml = '<div';
+        if (image) {
+            trackHtml += ' data-image="' + image + '"';
+        }
         if (id) {
             trackHtml += ' data-id="' + id + '"';
         }
