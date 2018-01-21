@@ -39,7 +39,7 @@ var appTitle = 'Differently Imported+';
 
 var currentSiteIndex = 0;
 var SiteList = [
-    { site: 'di', url: 'di.fm', desc: 'Digitally Imported', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/di-825c83af566b394c18cc132ec2c7132a.png' },
+    { site: 'di', url: 'di.fm', desc: 'Digitally Imported', logo: 'http://cdn.audioaddict.com/di.fm/assets/flux/branding/logo-di@2x-440fb06c9aa3fa5b216eefb187c957da.png' },
     { site: 'radiotunes', url: 'radiotunes.com', desc: 'RadioTunes', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/radiotunes-8f6b58a3539aae382863302c1ae8fe5b.png' },
     { site: 'rockradio', url: 'rockradio.com', desc: 'ROCKRADIO', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/rockradio-1323bbe051c0d79ec49de6e9e37e73cb.png' },
     { site: 'jazzradio', url: 'jazzradio.com', desc: 'JAZZRADIO', logo: 'http://cdn.audioaddict.com/di.fm/assets/network_site_logos_2x/jazzradio-8866b0d7ef949f7ef6f0c39c73cca097.png' },
@@ -75,7 +75,6 @@ function buildApiUrl(site) {
     if (!site) {
         site = getCurrentSite().site;
     }
-    //return 'http://www.' + currentSite.url + '/_papi/v1/' + currentSite.site;
     return 'http://api.audioaddict.com/v1/' + site;
 }
 
@@ -93,7 +92,50 @@ function getChannelImage(channelData) {
     return image.replace(/^\/\//, 'http://');
 }
 
+var castSession = null;
+
+function castPlay(mediaUrl, contentType) {
+    if (castSession == null) {
+        return false;
+    }
+
+    //var player = new cast.framework.RemotePlayer();
+    //var controller = new cast.framework.RemotePlayerController(player);
+    //var sess = new chrome.cast.SessionRequest(chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID);
+    //$('#chromecast-button').click();
+    //var sess = cast.framework.CastContext.getInstance().requestSession();
+    // var sess = cast.framework.CastContext.getInstance().requestSession().then(function() {
+    //     console.log('foo');
+    // });
+
+    //var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+    var mediaInfo = new chrome.cast.media.MediaInfo(mediaUrl, contentType);
+    var request = new chrome.cast.media.LoadRequest(mediaInfo);
+    castSession.loadMedia(request).then(
+        function() { console.log('Load succeed'); },
+        function(errorCode) { console.log('Error code: ' + errorCode); });
+    return true;
+}
+
+function castStop() {
+    if (castSession == null || castSession.getMediaSession() == null) {
+        return false;
+    }
+
+    castSession.getMediaSession().pause();
+    return true;
+}
+
 $(document).ready(function() { //Set some vars
+    window['__onGCastApiAvailable'] = function(isAvailable) {
+        if (isAvailable) {
+            cast.framework.CastContext.getInstance().setOptions({
+                receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+            });
+        }
+    }
+
     chrome.commands.onCommand.addListener(function(command) {
         if (command == "toggle-play") {
             if (!playing) {
@@ -232,13 +274,16 @@ $(document).ready(function() { //Set some vars
     });
 
     function stop() {
-        scrollIcon(false); // disable the play badge on the icon
-        chrome.browserAction.setTitle({ title: appTitle });
+        castStop();
+
         $("#diPlyr").attr("src", "");
         $("#diPlyr").remove();
         try {
             audioContext.close().then(function() {});
         } catch (e) {}
+
+        scrollIcon(false); // disable the play badge on the icon
+        chrome.browserAction.setTitle({ title: appTitle });
         if (playing == "false") {
             $.cookie("diChTn", motd, {
                 expires: 365
@@ -291,21 +336,24 @@ $(document).ready(function() { //Set some vars
         vol = vol / 100;
         if ($('#diPlyr').length != 1) { // if there is already a player and nothing changed do nothing.
             scrollIcon(true); // enable the play badge on the icon
-            audio = $('<audio />', { // otherwise build a player
-                controls: 'controls',
-                id: 'diPlyr',
-                autoPlay: 'autoplay',
-                src: url,
-                volume: vol
-            });
-            audio.appendTo('body');
-            capAudio = document.getElementById('diPlyr');
-            audioContext = new AudioContext();
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 2048;
-            source = audioContext.createMediaElementSource(capAudio);
-            source.connect(analyser);
-            analyser.connect(audioContext.destination);
+            if (!castPlay(url, 'audio/mp3')) {
+                audio = $('<audio />', { // otherwise build a player
+                    controls: 'controls',
+                    id: 'diPlyr',
+                    autoPlay: 'autoplay',
+                    src: url,
+                    volume: vol
+                });
+                audio.appendTo('body');
+                capAudio = document.getElementById('diPlyr');
+                audioContext = new AudioContext();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 2048;
+                analyser.smoothingTimeConstant = 0.5;
+                source = audioContext.createMediaElementSource(capAudio);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+            }
         }
 
         playing = true;

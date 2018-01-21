@@ -8,6 +8,7 @@
     "version": "4.3.70.2",
     "permissions": [
         "storage",
+        "https://*.google.com/*",
         "http://*.audioaddict.com/*",
         "http://*.di.fm/*",
         "http://*.radiotunes.com/*",

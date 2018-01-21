@@ -37,11 +37,21 @@ var t_out = true;
 
 $(document).ready(function() {
     analyseThis();
-    if ($.cookie('diChan') != null) {
+    window['__onGCastApiAvailable'] = function(isAvailable) {
+        if (isAvailable) {
+            cast.framework.CastContext.getInstance().setOptions({
+                receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+            });
+        }
+    };
+
+    if ($.cookie('diChan') != null && $.cookie('diChan') != null) {
         $('#lK').val($.cookie("diKeys"));
         $('#lC').val($.cookie("diChan"));
         $('#server').val($.cookie("Diserver"));
-        swap_lists($("." + $.cookie("Dilistview")));
+        var listView = $.cookie("Dilistview") ? $.cookie("Dilistview") : "all_channels";
+        swap_lists($("." + listView));
         show_stars();
 
         $('#vol').val($.cookie("diVol"));
@@ -399,6 +409,23 @@ function scrolCh() {
 function doPlay(directUrl, directArtist, directTitle) {
     // Just to test that the listen_key is valid (note that the URL changed)
     var testUrl = "http://listen.di.fm/premium/00sclubhits.pls?listen_key="; // was http://listen.di.fm/public3/favorites?
+
+    var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+    if (castSession) {
+        bg.castSession = castSession;
+    }
+    // var sess = cast.framework.CastContext.getInstance().requestSession().then(function() {
+    //     console.log('foo');
+    // });
+    // var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+    // if (castSession) {
+    //     bg.castStream('http://prem4.di.fm/epictrance?feafe5da4f3ea496e3aa1eec', 'audio/mp3');
+    //     var mediaInfo = new chrome.cast.media.MediaInfo('http://prem4.di.fm/epictrance?feafe5da4f3ea496e3aa1eec', 'audio/mp3');
+    //     var request = new chrome.cast.media.LoadRequest(mediaInfo);
+    //     castSession.loadMedia(request).then(
+    //         function() { console.log('Load succeed'); },
+    //         function(errorCode) { console.log('Error code: ' + errorCode); });
+    // }
 
     var checkKey = $.ajax({
         type: "get",
@@ -907,11 +934,11 @@ function getSiteDetails(siteUrl, callback) {
 
     chrome.storage.local.get(siteUrl, function(data) {
         if (data[siteUrl] === undefined || data[siteUrl].expiration == null || data[siteUrl].expiration < new Date()) {
-            var configUrl = 'http://www.' + siteUrl + '/webplayer3/config';
+            var configUrl = 'http://listen.' + siteUrl + '/premium';
             $.getJSON(configUrl, function(data) {
                 var channelData = {};
                 // Extract the channel list and sort by name
-                channelData.channels = data.API.Config.channels.sort(function(a, b) {
+                channelData.channels = data.sort(function(a, b) {
                     if (a.name > b.name) {
                         return 1;
                     } else {
@@ -1161,6 +1188,7 @@ function updateFavoriteOrder(event, ui) {
 };
 
 function swap_lists(element) {
+    var newlist = '';
     if ($(element).hasClass('all_channels')) {
         newlist = 'all_channels';
         buildSiteSelector();
