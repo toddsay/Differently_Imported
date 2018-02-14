@@ -408,7 +408,8 @@ function scrolCh() {
 // Play the currently selected channel, or optionally load a specific url (show)
 function doPlay(directUrl, directArtist, directTitle) {
     // Just to test that the listen_key is valid (note that the URL changed)
-    var testUrl = "http://listen.di.fm/premium/00sclubhits.pls?listen_key="; // was http://listen.di.fm/public3/favorites?
+    //var testUrl = "http://listen.di.fm/premium/00sclubhits.pls?listen_key="; // was http://listen.di.fm/public3/favorites?
+    var testUrl = "http://listen.di.fm/premium/favorites?listen_key=";
 
     var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
     if (castSession) {
@@ -934,7 +935,8 @@ function getSiteDetails(siteUrl, callback) {
 
     chrome.storage.local.get(siteUrl, function(data) {
         if (data[siteUrl] === undefined || data[siteUrl].expiration == null || data[siteUrl].expiration < new Date()) {
-            var configUrl = 'http://listen.' + siteUrl + '/premium';
+            var stream = siteUrl == 'rockradio.com' ? 'android_premium' : 'premium';
+            var configUrl = 'http://listen.' + siteUrl + '/' + stream;
             $.getJSON(configUrl, function(data) {
                 var channelData = {};
                 // Extract the channel list and sort by name

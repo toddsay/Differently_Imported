@@ -311,7 +311,7 @@ $(document).ready(function() { //Set some vars
             var domain = "." + getCurrentSite().url;
             if ($.cookie("premium") == "1") {
                 if ($.cookie("diHq") == "1") {
-                    chUrl = chUrl + "_hi"; // high or low quality stream
+                    chUrl = chUrl + "_aac"; // high or low quality stream (was 'hi')
                 }
                 url = "http://prem" + server + domain + "/" + chUrl + "?" + ky;
             } else {
