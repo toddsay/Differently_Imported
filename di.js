@@ -723,7 +723,7 @@ $(document).ready(function() {
             // Navigating channel selector for shows
             var siteUrl = getCurrentSiteForShows().url;
             var channelId = getCurrentChannelId(siteUrl);
-            getSiteDetails(siteUrl, function(siteData) {
+            bg.getSiteDetails(siteUrl, function(siteData) {
                 var channelIndex = $('.selector_choices').children(':visible').index();
                 channelIndex += adjustment;
                 if (channelIndex >= siteData.length) {
@@ -913,7 +913,7 @@ function addToFavorites() {
     var siteUrl = bg.getCurrentSite().url;
     var channelId = getCurrentChannelId();
 
-    getChannelInfo(siteUrl, channelId, function(channelData) {
+    bg.getChannelInfo(siteUrl, channelId, function(channelData) {
         getFavorites(function(favorites) {
             if (favorites[channelId]) {
                 delete favorites[channelId];
@@ -923,59 +923,6 @@ function addToFavorites() {
             }
             saveFavorites(favorites);
             show_stars();
-        });
-    });
-}
-
-function getSiteDetails(siteUrl, callback) {
-    if (!siteUrl) {
-        siteUrl = bg.getCurrentSite().url;
-    }
-    var site = bg.getSite(siteUrl).site;
-
-    chrome.storage.local.get(siteUrl, function(data) {
-        if (data[siteUrl] === undefined || data[siteUrl].expiration == null || data[siteUrl].expiration < new Date()) {
-            var stream = siteUrl == 'rockradio.com' ? 'android_premium' : 'premium';
-            var configUrl = 'http://listen.' + siteUrl + '/' + stream;
-            $.getJSON(configUrl, function(data) {
-                var channelData = {};
-                // Extract the channel list and sort by name
-                channelData.channels = data.sort(function(a, b) {
-                    if (a.name > b.name) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
-                });
-
-                // populate each channel with site info for convenience
-                $.each(channelData.channels, function(key, val) {
-                    val.site = site;
-                    val.siteUrl = siteUrl;
-                });
-
-                var expirationDate = new Date();
-                expirationDate.setDate(new Date().getDate() + daysToCache);
-                channelData.expiration = expirationDate;
-                channelData.site = site;
-
-                var cacheData = {};
-                cacheData[siteUrl] = channelData;
-                chrome.storage.local.set(cacheData, function() {});
-                callback(channelData.channels);
-            });
-        } else {
-            callback(data[siteUrl].channels);
-        }
-    });
-}
-
-function getChannelInfo(siteUrl, channelId, callback) {
-    getSiteDetails(siteUrl, function(data) {
-        $.each(data, function(key, channelData) {
-            if (channelData.id == channelId || !channelId) { // selected channel (or first channel if none specified)
-                callback(channelData);
-            }
         });
     });
 }
@@ -1000,7 +947,7 @@ function buildChannelSelector() {
     var siteUrl = getCurrentSiteForShows().url;
     var currentChannelId = getCurrentChannelId(siteUrl);
 
-    getSiteDetails(siteUrl, function(data) {
+    bg.getSiteDetails(siteUrl, function(data) {
         var choices = "";
         var channelIndex = 0;
         $.each(data, function(key, channelData) {
@@ -1023,11 +970,11 @@ function selectChannel(index) {
 function buildChannelList() {
     var site = bg.getCurrentSite().site;
 
-    getSiteDetails(null, function(data) {
+    bg.getSiteDetails(null, function(data) {
         $('.master_list').empty();
         var channelHtml = "";
         $.each(data, function(key, channelData) {
-            channelHtml += '<li data-image="' + bg.getChannelImage(channelData) +
+            channelHtml += '<li data-image="' + channelData.asset_url +
                 '" title="' + channelData.name + ' - ' + channelData.description + ' (Ctrl+Click for PLS)" data-trigger="' +
                 channelData.id + '_' + channelData.key + '" data-site="' + site + '"><span class="channel_name">' +
                 channelData.name + '</span></li>';
@@ -1043,7 +990,7 @@ function buildShowList() {
     var site = getCurrentSiteForShows();
     var channelIndex = $('.selector_choices').children(':visible').index();
 
-    getSiteDetails(site.url, function(data) {
+    bg.getSiteDetails(site.url, function(data) {
         var showsHtml = '';
         var apiUrl = bg.buildApiUrl(site.site);
         var channel = data[channelIndex];
@@ -1116,13 +1063,14 @@ function appendTrackInfoToChannel(replaceExistingDiv, nodeQuery, info, image, id
 }
 
 function loadCurrentTracksForSite(site) {
-    var apiUrl = bg.buildApiUrl(site) + '/track_history';
+    var apiUrl = bg.buildApiUrl(site) + '/currently_playing'; //'/track_history';
     // Load current track titles for each channel
     $.getJSON(apiUrl, function(data) {
         //TODO: Flip this, loading history for favorites, intead of checking each history for a matching favorite?
-        $.each(data, function(key, val) {
-            var nodeQuery = 'li[data-trigger^="' + key + '_"]';
-            appendTrackInfoToChannel(true, nodeQuery, val.track, bg.getChannelImage(val));
+        $.each(data, function(index, info) {
+            var nodeQuery = 'li[data-trigger^="' + info.channel_id + '_"]';
+            var title = info.track.display_artist + ' - ' + info.track.display_title;
+            appendTrackInfoToChannel(true, nodeQuery, title, bg.getChannelImage(info));
         });
     });
 }

@@ -78,6 +78,61 @@ function buildApiUrl(site) {
     return 'http://api.audioaddict.com/v1/' + site;
 }
 
+function getSiteDetails(siteUrl, callback) {
+    if (!siteUrl) {
+        siteUrl = getCurrentSite().url;
+    }
+    var site = getSite(siteUrl).site;
+    var forceReload = false;
+
+    chrome.storage.local.get(siteUrl, function(data) {
+        if (forceReload || data[siteUrl] === undefined || data[siteUrl].expiration == null || data[siteUrl].expiration < new Date()) {
+            // var stream = siteUrl == 'rockradio.com' ? 'android_premium' : 'premium';
+            // var configUrl = 'http://listen.' + siteUrl + '/' + stream;
+            var apiUrl = buildApiUrl(site) + '/channels';
+            $.getJSON(apiUrl, function(data) {
+                var channelData = {};
+                // Extract the channel list and sort by name
+                channelData.channels = data.sort(function(a, b) {
+                    if (a.name > b.name) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+
+                // populate each channel with site info for convenience
+                $.each(channelData.channels, function(key, val) {
+                    val.site = site;
+                    val.siteUrl = siteUrl;
+                });
+
+                var expirationDate = new Date();
+                expirationDate.setDate(new Date().getDate() + daysToCache);
+                channelData.expiration = expirationDate;
+                channelData.site = site;
+
+                var cacheData = {};
+                cacheData[siteUrl] = channelData;
+                chrome.storage.local.set(cacheData, function() {});
+                callback(channelData.channels);
+            });
+        } else {
+            callback(data[siteUrl].channels);
+        }
+    });
+}
+
+function getChannelInfo(siteUrl, channelId, callback) {
+    getSiteDetails(siteUrl, function(data) {
+        $.each(data, function(key, channelData) {
+            if (channelData.id == channelId || !channelId) { // selected channel (or first channel if none specified)
+                callback(channelData);
+            }
+        });
+    });
+}
+
 function getChannelImage(channelData) {
     var image = 'diffI.png';
     if (channelData) {
@@ -689,6 +744,7 @@ function showTrack() { // tracklist api call. timed with flags to stop server ha
 
         get_time();
         var url = buildApiUrl() + '/track_history';
+        //var url = buildApiUrl() + '/events/upcoming?limit=100'; ... wrong purpose though
 
         $.getJSON(url, function(data) {
             $.each(data, function(key, val) {
